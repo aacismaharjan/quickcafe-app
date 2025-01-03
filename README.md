@@ -23,3 +23,22 @@
 2. Vs Code
 3. Workbench
 4. Postman
+
+
+/login
+/register
+
+
+backend
+-> /api
+
+frontend
+ -> /dashboard
+    -> 
+ -> /app
+    -> 
+
+
+react.js
+material-ui
+
