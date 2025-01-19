@@ -1,0 +1,6 @@
+version: "2"
+syncs:
+  backend-sync:
+    src: './src'
+    dest: '/app/src'
+    sync_strategy: "native"

@@ -33,7 +33,7 @@ const LoginPage: React.FC = () => {
         }}
       >
         <Typography variant="h4" component="h1" sx={{ mb: 4 }}>
-          QuickCafe Aashish
+          QuickCafe App
         </Typography>
         <TextField
           label="Email"

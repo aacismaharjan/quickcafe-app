@@ -49,7 +49,11 @@ export default defineConfig({
     }),
   ],
   server: {
-    host: '0.0.0.0',
-    port: 5173,
+    host: true, // Allows access from outside the container
+    strictPort: true, // Ensures the port is not changed
+    port: 3000,
+    watch: {
+      usePolling: true // Enables polling for files changes
+    }
   },
 });

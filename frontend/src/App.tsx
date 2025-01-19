@@ -8,11 +8,12 @@ import { CartProvider } from './context/CartContext';
 import { LoadingProvider } from './context/LoadingContext';
 import LoadingOverlay from './components/template/LoadingOverlay';
 
+
 function App() {
   return (
     <>
       <LoadingProvider>
-        <LoadingOverlay />
+        {/* <LoadingOverlay /> */}
         <ThemeProvider theme={theme}>
           <CartProvider>
             <AppRoutes />

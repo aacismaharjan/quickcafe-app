@@ -1,0 +1,16 @@
+# Use Maven with OpenJDK 17 as the base image
+FROM maven:3.8-openjdk-17
+
+# Set the working directory
+WORKDIR /app
+
+# Copy all project files
+COPY . .
+
+# Expose the port the app runs on
+EXPOSE 8080
+
+# Run the Spring Boot app using Maven
+CMD ["mvn", "spring-boot:run", "-Dspring-boot.run.profiles=dev", \
+     "-Dspring.devtools.restart.enabled=true", \
+     "-Dspring.devtools.livereload.enabled=true"]

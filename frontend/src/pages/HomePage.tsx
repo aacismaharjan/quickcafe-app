@@ -52,7 +52,7 @@ const HomePage: React.FC = () => {
         <Box sx={{ marginTop: 2 }} />
         {ledgerData && (
           <>
-            <Ledger ledger={{ name: ledgerData.name, description: ledgerData.description }} />
+            {/* <Ledger ledger={{ name: ledgerData.name, description: ledgerData.description }} /> */}
             {ledgerData.menus.map((menu: any) => (
               <MenuContainer
                 key={menu.id} // Unique key for each menu

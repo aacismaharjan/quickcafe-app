@@ -42,3 +42,16 @@ frontend
 react.js
 material-ui
 
+
+1. Documentation
+2. Manual Testing
+3. Project Code
+4. System Diagrams
+
+
+1. Dashboard Page
+2. Login page
+3. Register Page
+
+
+1. QR Code

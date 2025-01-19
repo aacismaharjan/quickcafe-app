@@ -10,4 +10,4 @@ public class CanteenDemoApplication {
 		SpringApplication.run(CanteenDemoApplication.class, args);
 	}
 }
-// lombok extension
+// lombok

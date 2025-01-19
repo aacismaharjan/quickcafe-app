@@ -14,12 +14,17 @@ import { MyOrderHistory } from '../pages/MyOrderHistory';
 import { SettingsPage } from '../pages/SettingsPage';
 import { ProfilePage } from '../pages/ProfilePage';
 import AppLayout from '../components/template/AppLayout';
+import { DashboardPage } from '../pages/DashboardPage';
+import { DashboardMenuDetailPage } from '../pages/DashboardMenuDetailPage';
 
 const AppRoutes: React.FC = () => (
   <Router>
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+
+      <Route path="/dashboard" element={<DashboardPage/>} />
+      <Route path="/dashboard/menu-detail" element={<DashboardMenuDetailPage/>} />
       <Route
         path="/"
         element={

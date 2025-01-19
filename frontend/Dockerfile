@@ -1,10 +1,10 @@
-# Use a Node.js image to build the project
-FROM node:16 AS build
+# Use a Node.js image for development
+FROM node:16.20.1
 
 # Set the working directory
-WORKDIR /app/frontend
+WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copy only package.json and package-lock.json to install dependencies
 COPY package*.json ./
 
 # Install dependencies
@@ -13,18 +13,8 @@ RUN npm install
 # Copy the rest of the application files
 COPY . .
 
-# Build the application
-RUN npm run build
-
-
-# Use a lightweight Nginx image for production
-FROM nginx:1.21-alpine
-
-# Copy the build files to the Nginx directory
-COPY --from=build /app/frontend/dist /usr/share/nginx/html
-
 # Expose the application port
-EXPOSE 80
+EXPOSE 3000
 
-# Start Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Start the development server
+CMD ["npm", "run", "start"]
