@@ -35,8 +35,8 @@ public class LedgerController {
     // Get a ledger by its ID
     @GetMapping("/{id}")
     public ResponseEntity<Ledger> getLedgerById(@PathVariable Long id) {
-//         Optional<Ledger> ledger = ledgerService.getLedgerById(id);
-        Optional<Ledger> ledger = null;
+         Optional<Ledger> ledger = ledgerService.getLedgerById(id);
+//        Optional<Ledger> ledger = null;
         return ledger.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
