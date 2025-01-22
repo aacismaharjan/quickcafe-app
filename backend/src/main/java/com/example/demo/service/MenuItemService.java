@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import jakarta.persistence.criteria.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,21 +14,15 @@ import com.example.demo.utils.APIFeatures;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 
 import java.awt.print.Pageable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service 
 public class MenuItemService {
@@ -92,6 +87,24 @@ public class MenuItemService {
     			}
     			
     		});
+
+			// Apply sorting if the 'sort' parameter exists
+			if(queryParams.containsKey("sort")) {
+				String sortParam = queryParams.get("sort");
+				List<Order> orders = Arrays.stream(sortParam.split(","))
+						.map(sortField -> {
+							boolean isDescending = sortField.startsWith("-");
+							String fieldName = isDescending ? sortField.substring(1) : sortField;
+
+							if(isDescending) {
+								return criteriaBuilder.desc(root.get(fieldName));
+							}else {
+								return criteriaBuilder.asc(root.get(fieldName));
+							}
+						})
+						.collect(Collectors.toList());
+				query.orderBy(orders);
+			}
     		
     		return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
     	};

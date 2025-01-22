@@ -52,10 +52,10 @@ const DashboardLayout = (props: React.PropsWithChildren) => {
 
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, href: "/dashboard" },
+    { text: 'Ledger', icon: <RestaurantIcon />, href:"/dashboard/ledger" },
     { text: 'Menu', icon: <RestaurantIcon />, href:"/dashboard/menu" },
     { text: 'Menu Items', icon: <RestaurantIcon />, href:"/dashboard/menu-detail" },
     { text: 'Orders', icon: <ShoppingCartIcon />, href: "/dashboard/orders" },
-    { text: 'Customers', icon: <PeopleIcon />, href: "/dashboard/customers" },
     { text: 'Settings', icon: <SettingsIcon />, href: "/dashboard/settings" },
   ];
 
@@ -65,7 +65,8 @@ const DashboardLayout = (props: React.PropsWithChildren) => {
       <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar>
           <IconButton color="inherit" edge="start" onClick={handleDrawerToggle} sx={{ mr: 2 }}>
-            {open ? <ChevronLeftIcon /> : <MenuIcon />}
+            {/* {open ? <ChevronLeftIcon /> : <MenuIcon />} */}
+            <MenuIcon/>
           </IconButton>
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 0 }}>
             Canteen Dashboard
@@ -109,6 +110,10 @@ const DashboardLayout = (props: React.PropsWithChildren) => {
         open={open}
         sx={{
           width: drawerWidth,
+          ...(!open && {
+            width: (theme) => theme.spacing(7),
+            overflowX: 'hidden',
+          }),
           flexShrink: 0,
           [`& .MuiDrawer-paper`]: {
             width: drawerWidth,
@@ -125,7 +130,9 @@ const DashboardLayout = (props: React.PropsWithChildren) => {
           <List>
             {menuItems.map((item) => (
               <ListItem  key={item.text} component={Link} to={item.href}>
-                <ListItemIcon>{item.icon}</ListItemIcon>
+                <ListItemIcon sx={{
+                  minWidth: open ? "56px" : "auto",
+                }}>{item.icon}</ListItemIcon>
                 {open && <ListItemText primary={item.text} />}
               </ListItem>
             ))}
