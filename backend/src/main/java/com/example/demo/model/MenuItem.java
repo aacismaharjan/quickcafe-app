@@ -48,8 +48,15 @@ public class MenuItem {
     @ManyToMany(mappedBy = "items")
     private List<Menu> menus= new ArrayList<>();
 
-    @ManyToMany(mappedBy = "items")
-    private List<Category> categories = new ArrayList<>();
+
+//    @ManyToMany(cascade= {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(cascade= {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinTable(
+            name="tbl_category_menuItem",
+            joinColumns = @JoinColumn(name="menu_item_id"),
+            inverseJoinColumns = @JoinColumn(name="category_id")
+    )
+    private List<Category> categories;
 
     @OneToMany(mappedBy = "menuItem", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews = new ArrayList<>();

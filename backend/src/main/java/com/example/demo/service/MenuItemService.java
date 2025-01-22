@@ -125,4 +125,28 @@ public class MenuItemService {
             throw new RuntimeException("MenuItem not found");
         }
     }
+
+    public MenuItem partiallyUpdateMenuItem(Long id, MenuItem menuItem) {
+		MenuItem existingMenuItem = menuItemRepository.findById(id)
+				.orElseThrow(() -> new RuntimeException("MenuItem not found"));
+
+		// Update only non-null fields
+		if(menuItem.getName() != null) {
+			existingMenuItem.setName(menuItem.getName());
+		}
+
+		if(menuItem.getDescription() != null) {
+			existingMenuItem.setDescription(menuItem.getDescription());
+		}
+
+		if(menuItem.getImage_url() != null) {
+			existingMenuItem.setImage_url(menuItem.getImage_url());
+		}
+
+		existingMenuItem.setPrice(menuItem.getPrice());
+		existingMenuItem.setPreparation_time_in_min(menuItem.getPreparation_time_in_min());
+		existingMenuItem.setCategories(menuItem.getCategories());
+
+		return menuItemRepository.save(existingMenuItem);
+    }
 }

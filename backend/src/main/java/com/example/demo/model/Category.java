@@ -21,11 +21,6 @@ public class Category {
     @NotBlank(message = "Name cannot be blank")
     private String name;
 
-    @ManyToMany
-    @JoinTable(
-            name="tbl_category_menuItem",
-            joinColumns = @JoinColumn(name = "category_id"),
-            inverseJoinColumns = @JoinColumn(name = "menu_item_id")
-    )
+    @ManyToMany(mappedBy = "categories")
     private List<MenuItem> items = new ArrayList<>();
 }

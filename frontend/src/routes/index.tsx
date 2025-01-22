@@ -14,17 +14,15 @@ import { MyOrderHistory } from '../pages/MyOrderHistory';
 import { SettingsPage } from '../pages/SettingsPage';
 import { ProfilePage } from '../pages/ProfilePage';
 import AppLayout from '../components/template/AppLayout';
-import { DashboardPage } from '../pages/DashboardPage';
-import { DashboardMenuDetailPage } from '../pages/DashboardMenuDetailPage';
+import { DashboardPage } from '../pages/dashboard/DashboardPage';
+import { DashboardMenuDetailPage } from '../pages/dashboard/DashboardMenuDetailPage';
+import { DashboardCreateMenuDetailPage } from '../pages/dashboard/DashboardCreateMenuDetailPage';
 
 const AppRoutes: React.FC = () => (
   <Router>
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-
-      <Route path="/dashboard" element={<DashboardPage/>} />
-      <Route path="/dashboard/menu-detail" element={<DashboardMenuDetailPage/>} />
       <Route
         path="/"
         element={
@@ -35,6 +33,7 @@ const AppRoutes: React.FC = () => (
       >
         <Route path="/" element={<HomePage />} />
         <Route path="/menu-items/:menuItemId" element={<MenuItemPage />} />
+        <Route path="/menu-items/:menuItemId" element={<MenuItemPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/favorites" element={<FavoritesPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
@@ -43,6 +42,11 @@ const AppRoutes: React.FC = () => (
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/account" element={<SettingsPage />} />
       </Route>
+
+      <Route path="/dashboard" element={<DashboardPage />} />
+      <Route path="/dashboard/menu-detail" element={<DashboardMenuDetailPage />} />
+      <Route path="/dashboard/menu-detail/create" element={<DashboardCreateMenuDetailPage />} />
+      <Route path="/dashboard/menu-detail/:menuItemId/edit" element={<DashboardCreateMenuDetailPage />} />
     </Routes>
   </Router>
 );

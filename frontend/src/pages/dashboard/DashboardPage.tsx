@@ -1,44 +1,15 @@
 import React, { useState } from 'react';
 import {
-  AppBar,
-  Avatar,
   Box,
   Card,
   CardContent,
-  Drawer,
-  IconButton,
-  InputBase,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Menu,
-  MenuItem,
   Stack,
-  Toolbar,
   Typography,
-  Paper,
-  Badge,
-  Divider
 } from '@mui/material';
-import {
-  Menu as MenuIcon,
-  Search as SearchIcon,
-  Notifications as NotificationsIcon,
-  Dashboard as DashboardIcon,
-  Restaurant as RestaurantIcon,
-  ShoppingCart as ShoppingCartIcon,
-  People as PeopleIcon,
-  BarChart as BarChartIcon,
-  Settings as SettingsIcon,
-  ChevronLeft as ChevronLeftIcon,
-} from '@mui/icons-material';
+import DashboardLayout from './DashboardLayout';
 
-const drawerWidth = 240;
 
 const DashboardPage = () => {
-  const [open, setOpen] = useState(true);
-  const [anchorEl, setAnchorEl] = useState(null);
   const [salesData] = useState([
     { name: 'Mon', sales: 2400 },
     { name: 'Tue', sales: 1398 },
@@ -54,121 +25,11 @@ const DashboardPage = () => {
     { name: 'Pasta', orders: 75, revenue: 675 },
   ]);
 
-  const handleDrawerToggle = () => {
-    setOpen(!open);
-  };
-
-  const handleProfileMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleProfileMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const menuItems = [
-    { text: 'Dashboard', icon: <DashboardIcon /> },
-    { text: 'Menu', icon: <RestaurantIcon /> },
-    { text: 'Orders', icon: <ShoppingCartIcon /> },
-    { text: 'Customers', icon: <PeopleIcon /> },
-    { text: 'Analytics', icon: <BarChartIcon /> },
-    { text: 'Settings', icon: <SettingsIcon /> },
-  ];
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      {/* App Bar */}
-      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2 }}
-          >
-            {open ? <ChevronLeftIcon /> : <MenuIcon />}
-          </IconButton>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 0 }}>
-            Canteen Dashboard
-          </Typography>
-          
-          {/* Search Bar */}
-          <Paper
-            component="form"
-            sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400, ml: 4, mr: 2 }}
-          >
-            <IconButton sx={{ p: '10px' }}>
-              <SearchIcon />
-            </IconButton>
-            <InputBase
-              sx={{ ml: 1, flex: 1 }}
-              placeholder="Search..."
-            />
-          </Paper>
-
-          <Box sx={{ flexGrow: 1 }} />
-
-          {/* Notification Icon */}
-          <IconButton color="inherit">
-            <Badge badgeContent={4} color="error">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
-
-          {/* Profile Menu */}
-          <IconButton
-            onClick={handleProfileMenuOpen}
-            color="inherit"
-          >
-            <Avatar sx={{ width: 32, height: 32 }}>JD</Avatar>
-          </IconButton>
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleProfileMenuClose}
-          >
-            <MenuItem>Profile</MenuItem>
-            <MenuItem>Settings</MenuItem>
-            <MenuItem>Logout</MenuItem>
-          </Menu>
-        </Toolbar>
-      </AppBar>
-
-      {/* Sidebar */}
-      <Drawer
-        variant="permanent"
-        open={open}
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          [`& .MuiDrawer-paper`]: { 
-            width: drawerWidth, 
-            boxSizing: 'border-box',
-            ...(!open && {
-              width: theme => theme.spacing(7),
-              overflowX: 'hidden'
-            })
-          },
-        }}
-      >
-        <Toolbar />
-        <Box sx={{ overflow: 'auto' }}>
-          <List>
-            {menuItems.map((item, index) => (
-              <ListItem button key={item.text}>
-                <ListItemIcon>
-                  {item.icon}
-                </ListItemIcon>
-                {open && <ListItemText primary={item.text} />}
-              </ListItem>
-            ))}
-          </List>
-        </Box>
-      </Drawer>
-
+    <DashboardLayout>
       {/* Main Content */}
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <Toolbar />
         {/* Stats Cards */}
         <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
           {[
@@ -252,7 +113,7 @@ const DashboardPage = () => {
           </Card>
         </Stack>
       </Box>
-    </Box>
+    </DashboardLayout>
   );
 };
 

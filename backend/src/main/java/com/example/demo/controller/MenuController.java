@@ -52,7 +52,7 @@ public class MenuController {
     public ResponseEntity<Menu> updateMenu(@PathVariable Long id, @RequestBody Menu menu) {
         try {
             List<MenuItem> existingItems = menu.getItems().stream()
-                    .map(item -> item.getId())
+                    .map(MenuItem::getId)
                     .map(itemId -> menuItemService.getMenuItemById(itemId)
                             .orElseThrow(() -> new RuntimeException("Item not found with ID: " + itemId)))
                     .toList();
