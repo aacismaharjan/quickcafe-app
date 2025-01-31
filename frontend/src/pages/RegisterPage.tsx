@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Box, Button, Container, TextField, Typography, Link } from '@mui/material';
+import { Box, Button, TextField, Typography, Link } from '@mui/material';
 import { useAuth } from '../hooks/useAuth';
+import { deepOrange } from '@mui/material/colors';
 
 const RegisterPage: React.FC = () => {
   const [firstName, setFirstName] = useState<string>('');
@@ -14,59 +15,67 @@ const RegisterPage: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="xs">
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          mt: 8,
-        }}
-      >
-        <Typography variant="h4" component="h1" sx={{ mb: 4 }}>
-          Register - QuickCafe
-        </Typography>
-        <TextField
-          label="First Name"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-        />
-        <TextField
-          label="Last Name"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-        />
-        <TextField
-          label="Email"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <TextField
-          label="Password"
-          type="password"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <Button variant="contained" color="primary" fullWidth sx={{ mt: 2 }} onClick={handleRegister}>
-          Register
-        </Button>
-        <Link href="/login" variant="body2" sx={{ mt: 2 }}>
-          Already have an account? Login here
-        </Link>
+    <Box className="auth-wrapper">
+      <Box className="container">
+        <Box className="banner" sx={{ background: deepOrange[500] }}>
+          <Box>
+            <Typography variant="h4">QuickCafe</Typography>
+            <Typography variant="h5">Scan. Order. Enjoy.</Typography>
+          </Box>
+        </Box>
+        <Box className="form-wrapper">
+          <Box sx={{ maxWidth: '620px' }}>
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="h5" component="h1">
+                Get started absolutely free
+              </Typography>
+              <Typography>
+                Already have an account?{' '}
+                <Link href="/login" variant="body2" sx={{ mt: 2 }}>
+                  Get started.
+                </Link>
+              </Typography>
+            </Box>
+            <TextField
+              label="First Name"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+            />
+            <TextField
+              label="Last Name"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+            />
+            <TextField
+              label="Email"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <TextField
+              label="Password"
+              type="password"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <Button variant="contained" color="primary" fullWidth sx={{ mt: 2 }} onClick={handleRegister}>
+              Register
+            </Button>
+          </Box>
+        </Box>
       </Box>
-    </Container>
+    </Box>
   );
 };
 

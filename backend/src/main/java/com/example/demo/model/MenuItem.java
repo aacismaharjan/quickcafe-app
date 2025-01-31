@@ -45,7 +45,7 @@ public class MenuItem {
     private Boolean is_active = true;
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "items")
+    @ManyToMany(mappedBy = "items", cascade= {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private List<Menu> menus= new ArrayList<>();
 
 

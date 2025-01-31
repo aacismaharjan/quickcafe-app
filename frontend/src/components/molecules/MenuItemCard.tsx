@@ -39,11 +39,29 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({ item }) => {
           },
         }}
       >
-        <CardMedia component="img" height="140" image={`${API_SERVER}/${item.image_url}`} alt={item.name} />
+        <CardMedia
+          component="img"
+          height="140"
+          image={`${API_SERVER}/${item.image_url}`}
+          alt={item.name}
+          sx={{ aspectRatio: '16/9', objectFit: 'fill' }}
+        />
         <CardContent sx={{ flexGrow: 1 }}>
           <Typography variant="h6">{item.name}</Typography>
           <RatingDisplay {...item.reviewsStat} />
-          <Typography variant="body2" color="text.secondary">
+          {/* <Typography variant="body2" color="text.secondary">
+            {item.description}
+          </Typography> */}
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            noWrap
+            sx={{
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
             {item.description}
           </Typography>
           <Typography variant="h6" color="primary">

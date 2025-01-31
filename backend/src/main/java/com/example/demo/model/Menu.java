@@ -26,12 +26,11 @@ public class Menu {
     @Size(max = 50, message = "Status cannot exceed 50 characters")
     private String status = "My Menu";
 
-    @NotNull(message = "Creation date is required")
     private Date created_at = new Date();
 
     private Boolean is_active = true;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinTable(
             name="tbl_menu_menu_items",
             joinColumns = @JoinColumn(name = "menu_id"),

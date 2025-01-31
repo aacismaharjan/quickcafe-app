@@ -1,4 +1,7 @@
-type RoleTypeI = "ADMIN" | "USER";
+interface RoleTypeI {
+  id: number;
+  name: string;
+}
 interface CategoryTypeI {
   id: number;
   name: string;
@@ -9,10 +12,10 @@ interface UserTypeI {
   firstName: string;
   lastName: string;
   email: string;
-  role: RoleTypeI;
+  role: RoleTypeI[];
   enabled: boolean;
   authorities: {
-    authority: RoleTypeI;
+    authority: RoleTypeI.name;
   }[],
   username: string;
   accountNonExpired: boolean;
@@ -48,6 +51,40 @@ interface MenuItemTypeI {
     rating: number;
     reviewersNo: number;
   }
+}
+
+interface MenuTypeI {
+  id: number;
+  name: string;
+  status: string;
+  created_at: string;
+  is_active: boolean;
+  items: MenuItemTypeI[];
+}
+
+interface CanteenTypeI {
+  id: number;
+  name: string;
+  image_url: string;
+  address: string;
+  phone_no: string;
+  about: string;
+  email: string;
+  created_at: string;
+  is_active: boolean;
+  opening_hours: string;
+  closing_hours: string;
+  user: UserTypeI;
+}
+
+interface LedgerTypeI {
+  id: number;
+  name: string;
+  description: string;
+  isActive: boolean;
+  created_at: string;
+  canteen: CanteenTypeI;
+  menus: MenuTypeI[];
 }
 
 

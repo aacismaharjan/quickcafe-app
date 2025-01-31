@@ -201,9 +201,9 @@ const MenuItemPage: React.FC = () => {
               >
                 Add to Cart
               </Button>
-              <Button variant="outlined" color="secondary" fullWidth>
+              {/* <Button variant="outlined" color="secondary" fullWidth>
                 Buy Now
-              </Button>
+              </Button> */}
 
               {/* Button to open the modal for a new review */}
               {enableNewReview && (

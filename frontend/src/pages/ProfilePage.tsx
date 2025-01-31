@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react';
-import { TextField, Button, Typography, Box } from '@mui/material';
+import { TextField, Button, Typography, Box, Container } from '@mui/material';
 import axiosInstance from '../utils/AxiosInstance';
 import { toast } from 'react-toastify';
 import { useLoading } from '../context/LoadingContext';
+import { useNavigate } from 'react-router-dom';
 
 const ProfilePage: React.FC = () => {
   const [profile, setProfile] = useState<any>(null);
+  const navigate = useNavigate();
   const { loading, setLoading } = useLoading();
 
   // Fetch profile data
@@ -49,6 +51,7 @@ const ProfilePage: React.FC = () => {
       toast.error('Failed to update profile.');
     } finally {
       setLoading(false);
+      navigate("/account");
     }
   };
 
@@ -56,46 +59,51 @@ const ProfilePage: React.FC = () => {
 
   return (
     <React.Fragment>
-      <Box sx={{ padding: 2 }}>
-        <Typography variant="h4" gutterBottom>
-          Profile Settings
-        </Typography>
-        <form onSubmit={handleSubmit}>
-          <Box mb={2}>
-            <TextField
-              label="First Name"
-              name="firstName"
-              value={profile?.firstName}
-              onChange={handleChange}
-              fullWidth
-              required
-            />
-          </Box>
-          <Box mb={2}>
-            <TextField
-              label="Last Name"
-              name="lastName"
-              value={profile?.lastName}
-              onChange={handleChange}
-              fullWidth
-              required
-            />
-          </Box>
-          <Box mb={2}>
-            <TextField
-              label="Username"
-              name="username"
-              value={profile?.username}
-              onChange={handleChange}
-              fullWidth
-              required
-            />
-          </Box>
-          <Button variant="contained" color="primary" type="submit">
-            Save Changes
-          </Button>
-        </form>
-      </Box>
+      <Container maxWidth="xl" disableGutters>
+        <Box sx={{ padding: 2 }}>
+          <Typography variant="h5" gutterBottom sx={{paddingBottom: 1}}>
+            Profile Settings
+          </Typography>
+          <form onSubmit={handleSubmit}>
+            <Box mb={2}>
+              <TextField
+                label="First Name"
+                name="firstName"
+                value={profile?.firstName}
+                onChange={handleChange}
+                fullWidth
+                required
+              />
+            </Box>
+            <Box mb={2}>
+              <TextField
+                label="Last Name"
+                name="lastName"
+                value={profile?.lastName}
+                onChange={handleChange}
+                fullWidth
+                required
+              />
+            </Box>
+            <Box mb={2}>
+              <TextField
+                label="Username"
+                name="username"
+                value={profile?.username}
+                onChange={handleChange}
+                fullWidth
+                required
+              />
+            </Box>
+            <Button disableElevation variant="contained" color="primary" type="submit">
+              Save Changes
+            </Button>
+            <Button disableElevation sx={{marginLeft: 2}} variant="contained" color="inherit" onClick={() => navigate("/account")}>
+              Cancel
+            </Button>
+          </form>
+        </Box>
+      </Container>
     </React.Fragment>
   );
 };

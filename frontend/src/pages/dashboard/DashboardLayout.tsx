@@ -31,6 +31,7 @@ import {
   ChevronLeft as ChevronLeftIcon,
 } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
+import ProfileMenu from '../../components/molecules/ProfileMenu';
 
 const drawerWidth = 240;
 
@@ -51,29 +52,29 @@ const DashboardLayout = (props: React.PropsWithChildren) => {
   };
 
   const menuItems = [
-    { text: 'Dashboard', icon: <DashboardIcon />, href: "/dashboard" },
-    { text: 'Ledger', icon: <RestaurantIcon />, href:"/dashboard/ledger" },
-    { text: 'Menu', icon: <RestaurantIcon />, href:"/dashboard/menu" },
-    { text: 'Menu Items', icon: <RestaurantIcon />, href:"/dashboard/menu-detail" },
-    { text: 'Orders', icon: <ShoppingCartIcon />, href: "/dashboard/orders" },
-    { text: 'Settings', icon: <SettingsIcon />, href: "/dashboard/settings" },
+    { text: 'Dashboard', icon: <DashboardIcon />, href: '/dashboard' },
+    { text: 'Ledger', icon: <RestaurantIcon />, href: '/dashboard/ledger' },
+    { text: 'Menu', icon: <RestaurantIcon />, href: '/dashboard/menu' },
+    { text: 'Menu Items', icon: <RestaurantIcon />, href: '/dashboard/menu-detail' },
+    { text: 'Orders', icon: <ShoppingCartIcon />, href: '/dashboard/orders' },
+    { text: 'Settings', icon: <SettingsIcon />, href: '/dashboard/settings' },
   ];
 
   return (
     <Box sx={{ display: 'flex' }}>
       {/* App Bar */}
-      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-        <Toolbar>
+      <AppBar color="default" position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer - 1 }}>
+        <Toolbar sx={{ marginLeft: open ? '240px' : '0px' }}>
           <IconButton color="inherit" edge="start" onClick={handleDrawerToggle} sx={{ mr: 2 }}>
             {/* {open ? <ChevronLeftIcon /> : <MenuIcon />} */}
-            <MenuIcon/>
+            <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 0 }}>
-            Canteen Dashboard
+            QuickCafe Dashboard
           </Typography>
 
           {/* Search Bar */}
-          <Paper
+          {/* <Paper
             component="form"
             sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400, ml: 4, mr: 2 }}
           >
@@ -81,26 +82,28 @@ const DashboardLayout = (props: React.PropsWithChildren) => {
               <SearchIcon />
             </IconButton>
             <InputBase sx={{ ml: 1, flex: 1 }} placeholder="Search..." />
-          </Paper>
-
-          <Box sx={{ flexGrow: 1 }} />
+          </Paper> */}
 
           {/* Notification Icon */}
-          <IconButton color="inherit">
+          {/* <IconButton color="inherit">
             <Badge badgeContent={4} color="error">
               <NotificationsIcon />
             </Badge>
-          </IconButton>
+          </IconButton> */}
 
           {/* Profile Menu */}
-          <IconButton onClick={handleProfileMenuOpen} color="inherit">
+          {/* <IconButton onClick={handleProfileMenuOpen} color="inherit">
             <Avatar sx={{ width: 32, height: 32 }}>JD</Avatar>
           </IconButton>
           <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleProfileMenuClose}>
             <MenuItem>Profile</MenuItem>
             <MenuItem>Settings</MenuItem>
             <MenuItem>Logout</MenuItem>
-          </Menu>
+          </Menu> */}
+
+          <Box sx={{flexGrow: 1}}/>
+
+          <ProfileMenu />
         </Toolbar>
       </AppBar>
 
@@ -108,7 +111,9 @@ const DashboardLayout = (props: React.PropsWithChildren) => {
       <Drawer
         variant="permanent"
         open={open}
+        
         sx={{
+          display: open ? "block" : "none",
           width: drawerWidth,
           ...(!open && {
             width: (theme) => theme.spacing(7),
@@ -116,6 +121,11 @@ const DashboardLayout = (props: React.PropsWithChildren) => {
           }),
           flexShrink: 0,
           [`& .MuiDrawer-paper`]: {
+            color: '#b3b9c6',
+            svg: {
+              color: '#b3b9c6',
+            },
+            backgroundColor: '#121621',
             width: drawerWidth,
             boxSizing: 'border-box',
             ...(!open && {
@@ -125,14 +135,25 @@ const DashboardLayout = (props: React.PropsWithChildren) => {
           },
         }}
       >
-        <Toolbar />
         <Box sx={{ overflow: 'auto' }}>
+          <Box sx={{ padding: 2 }}>
+            <Typography textAlign="center" variant="h5">
+              QuickCafe
+            </Typography>
+            <Typography textAlign="center" variant="subtitle2">
+              Scan. Order. Enjoy.
+            </Typography>
+          </Box>
           <List>
             {menuItems.map((item) => (
-              <ListItem  key={item.text} component={Link} to={item.href}>
-                <ListItemIcon sx={{
-                  minWidth: open ? "56px" : "auto",
-                }}>{item.icon}</ListItemIcon>
+              <ListItem key={item.text} component={Link} to={item.href}>
+                <ListItemIcon
+                  sx={{
+                    minWidth: open ? '56px' : 'auto',
+                  }}
+                >
+                  {item.icon}
+                </ListItemIcon>
                 {open && <ListItemText primary={item.text} />}
               </ListItem>
             ))}
@@ -141,7 +162,7 @@ const DashboardLayout = (props: React.PropsWithChildren) => {
       </Drawer>
 
       {/* Main Content */}
-      <Box sx={{ paddingTop: "64px", width: "100%" }}>{props.children}</Box>
+      <Box sx={{ paddingTop: '64px', width: '100%' }}>{props.children}</Box>
     </Box>
   );
 };

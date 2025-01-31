@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react';
-import { Box } from '@mui/material';
+import { Box, Container } from '@mui/material';
 import CanteenBanner from '../components/organisms/CanteenBanner';
 import axiosInstance from '../utils/AxiosInstance';
-import Ledger from '../components/organisms/Ledger';
 import MenuContainer from '../components/organisms/MenuItemContainer';
 import { useLoading } from '../context/LoadingContext';
+
+export const canteenID = 3;
 
 const HomePage: React.FC = () => {
   const [canteen, setCanteen] = useState<any>(null);
@@ -16,7 +17,7 @@ const HomePage: React.FC = () => {
     const fetchCanteenData = async () => {
       setLoading(true);
       try {
-        const response = await axiosInstance.get('/canteens/3');
+        const response = await axiosInstance.get(`/canteens/${canteenID}`);
         setCanteen(response.data);
       } catch (error) {
         console.error('Error fetching canteen data:', error);
@@ -46,27 +47,29 @@ const HomePage: React.FC = () => {
 
   return (
     <React.Fragment>
-      <Box sx={{ flexGrow: 1, bgcolor: 'white', p: 1 }}>{canteen && <CanteenBanner canteen={canteen} />}</Box>
+      <Container maxWidth="xl" disableGutters>
+        <Box sx={{ flexGrow: 1, bgcolor: 'white', p: 1 }}>{canteen && <CanteenBanner canteen={canteen} />}</Box>
 
-      <Box sx={{ flexGrow: 1, bgcolor: 'white', p: 2 }}>
-        <Box sx={{ marginTop: 2 }} />
-        {ledgerData && (
-          <>
-            {/* <Ledger ledger={{ name: ledgerData.name, description: ledgerData.description }} /> */}
-            {ledgerData.menus.map((menu: any) => (
-              <MenuContainer
-                key={menu.id} // Unique key for each menu
-                menu={{
-                  id: menu.id,
-                  name: menu.name,
-                  description: menu.status, // Assuming you want to use the status as a description
-                  items: menu.items,
-                }}
-              />
-            ))}
-          </>
-        )}
-      </Box>
+        <Box sx={{ flexGrow: 1, bgcolor: 'white', p: 2 }}>
+          <Box sx={{ marginTop: 2 }} />
+          {ledgerData && (
+            <>
+              {/* <Ledger ledger={{ name: ledgerData.name, description: ledgerData.description }} /> */}
+              {ledgerData.menus.map((menu: any) => (
+                <MenuContainer
+                  key={menu.id} // Unique key for each menu
+                  menu={{
+                    id: menu.id,
+                    name: menu.name,
+                    description: menu.status, // Assuming you want to use the status as a description
+                    items: menu.items,
+                  }}
+                />
+              ))}
+            </>
+          )}
+        </Box>
+      </Container>
     </React.Fragment>
   );
 };

@@ -69,16 +69,57 @@ public class LedgerController {
         return new ResponseEntity<>(createdLedger, HttpStatus.CREATED);
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<Ledger> updateLedgerPartially(@PathVariable Long id, @RequestBody Ledger ledger) {
+        try{
+            // Fetch the existing menus from the database using their IDs
+            List<Menu> existingMenus = ledger.getMenus().stream()
+                    .map(menuWrapper -> menuWrapper) // Extracting Menu objects
+                    .map(menu -> {
+                        // Assuming you have a MenuService to fetch Menu entities by ID
+                        return menuService.getMenuById(menu.getId())
+                                .orElseThrow(() -> new RuntimeException("Menu not found with ID: " + menu.getId()));
+                    })
+                    .toList();
+
+            // Map the fetched Menu entities to the ledger
+            ledger.setMenus(existingMenus);
+
+            // Save the ledger
+            Ledger updatedLedger = ledgerService.partiallyUpdateLedger(id, ledger);
+            return new ResponseEntity<>(updatedLedger, HttpStatus.CREATED);
+        } catch(Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+    }
+
+
+
     // Update an existing ledger
     @PutMapping("/{id}")
     public ResponseEntity<Ledger> updateLedger(@PathVariable Long id, @RequestBody Ledger updatedLedger) {
         try {
+            // Fetch the existing menus from the database using their IDs
+            List<Menu> existingMenus = updatedLedger.getMenus().stream()
+                    .map(menuWrapper -> menuWrapper) // Extracting Menu objects
+                    .map(menu -> {
+                        // Assuming you have a MenuService to fetch Menu entities by ID
+                        return menuService.getMenuById(menu.getId())
+                                .orElseThrow(() -> new RuntimeException("Menu not found with ID: " + menu.getId()));
+                    })
+                    .toList();
+
+            // Map the fetched Menu entities to the ledger
+            updatedLedger.setMenus(existingMenus);
+
             Ledger ledger = ledgerService.updateLedger(id, updatedLedger);
             return ResponseEntity.ok(ledger);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
+
 
     // Delete a ledger by its ID
     @DeleteMapping("/{id}")

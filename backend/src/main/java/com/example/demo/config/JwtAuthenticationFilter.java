@@ -1,7 +1,9 @@
 package com.example.demo.config;
 
+import com.example.demo.model.ErrorResponse;
 import com.example.demo.service.JwtService;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
@@ -11,6 +13,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -60,14 +64,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
-        }  catch (ExpiredJwtException | MalformedJwtException ex) {
-            // Do not handle the exception here; let it propagate to the global exception handler
-            throw ex; // This will be caught by GlobalExceptionHandler
-        } catch (Exception ex) {
-            // Handle other exceptions as needed
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("Authentication error");
-            return; // Stop further processing
+        }  catch (ExpiredJwtException ex) {
+            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(),
+                    "Token has expired.", ex);
+
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse));
+            return;
+
         }
         filterChain.doFilter(request, response);
     }

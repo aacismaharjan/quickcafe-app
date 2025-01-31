@@ -7,6 +7,7 @@ import theme from './theme';
 import { CartProvider } from './context/CartContext';
 import { LoadingProvider } from './context/LoadingContext';
 import LoadingOverlay from './components/template/LoadingOverlay';
+import './GlobalStyle.scss';
 
 
 function App() {
@@ -17,7 +18,7 @@ function App() {
         <ThemeProvider theme={theme}>
           <CartProvider>
             <AppRoutes />
-            <ToastContainer />
+            <ToastContainer position='top-center'/>
           </CartProvider>
         </ThemeProvider>
       </LoadingProvider>

@@ -1,11 +1,13 @@
 package com.example.demo.service;
 
 import com.example.demo.model.Ledger;
+import com.example.demo.model.Menu;
 import com.example.demo.repository.LedgerRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,6 +57,33 @@ public class LedgerService {
             return ledgerRepository.save(existingLedger);
         } else {
             throw new RuntimeException("Ledger with ID " + id + " not found");
+        }
+    }
+
+    public Ledger partiallyUpdateLedger(Long id, Ledger ledger) {
+        try {
+            Ledger existingLedger = ledgerRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Ledger not found"));
+
+            // Update only non-null fields
+            if(ledger.getName() != null) {
+                existingLedger.setName(ledger.getName());
+            }
+
+            if(ledger.getDescription() != null) {
+                existingLedger.setDescription(ledger.getDescription());
+            }
+
+            if(ledger.getIsActive() != null) {
+                existingLedger.setIsActive(ledger.getIsActive());
+            }
+
+//            existingLedger.setMenus(ledger.getMenus());
+            existingLedger.setMenus(new ArrayList<>(ledger.getMenus()));
+
+            return ledgerRepository.save(existingLedger);
+        }catch(Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

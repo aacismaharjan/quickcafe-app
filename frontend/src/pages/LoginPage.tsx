@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, Container, TextField, Typography, Link } from '@mui/material';
-import { toast } from 'react-toastify';
+import { Box, Button, TextField, Typography, Link } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { deepOrange } from '@mui/material/colors';
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState<string>('');
@@ -12,8 +12,6 @@ const LoginPage: React.FC = () => {
 
   useEffect(() => {
     if (user) {
-      console.log(user);
-      toast.info('You are already logged in!');
       navigate('/');
     }
   }, [user, navigate]);
@@ -23,43 +21,51 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="xs">
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          mt: 8,
-        }}
-      >
-        <Typography variant="h4" component="h1" sx={{ mb: 4 }}>
-          QuickCafe App
-        </Typography>
-        <TextField
-          label="Email"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <TextField
-          label="Password"
-          type="password"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <Button variant="contained" color="primary" fullWidth sx={{ mt: 2 }} onClick={handleSubmit}>
-          Submit
-        </Button>
-        <Link href="/register" variant="body2" sx={{ mt: 2 }}>
-          Don't have an account? Register here
-        </Link>
+    <Box className="auth-wrapper">
+      <Box className="container">
+        <Box className="banner" sx={{ background: deepOrange[500] }}>
+          <Box>
+            <Typography variant="h4">QuickCafe</Typography>
+            <Typography variant="h5">Scan. Order. Enjoy.</Typography>
+          </Box>
+        </Box>
+        <Box className="form-wrapper">
+          <Box sx={{ maxWidth: '620px' }}>
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="h5" component="h1">
+                Sign in to your account
+              </Typography>
+              <Typography>
+                Don't have account?{' '}
+                <Link href="/register" variant="body2" sx={{ mt: 2 }}>
+                  Get started.
+                </Link>
+              </Typography>
+            </Box>
+            <TextField
+              label="Email"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <TextField
+              label="Password"
+              type="password"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <Button variant="contained" color="primary" fullWidth sx={{ mt: 2 }} onClick={handleSubmit}>
+              Submit
+            </Button>
+          </Box>
+        </Box>
       </Box>
-    </Container>
+    </Box>
   );
 };
 

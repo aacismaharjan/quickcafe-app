@@ -87,4 +87,26 @@ public class MenuService {
 
         return false;
     }
+
+    public Menu partiallyUpdateMenu(Long id, Menu menu) {
+        Menu existingMenu = menuRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Menu not found"));
+
+        // Update only non-null fields
+        if(menu.getName() != null) {
+            existingMenu.setName(menu.getName());
+        }
+
+        if(menu.getStatus() != null) {
+            existingMenu.setStatus(menu.getStatus());
+        }
+
+        if(menu.getIs_active() != null) {
+            existingMenu.setIs_active(menu.getIs_active());
+        }
+
+        existingMenu.setItems(menu.getItems());
+
+        return menuRepository.save(existingMenu);
+    }
 }

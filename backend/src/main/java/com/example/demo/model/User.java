@@ -19,6 +19,8 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -37,13 +39,23 @@ public class User implements UserDetails{
 	private String password;
 	
 
-	@Builder.Default
-	@Enumerated(EnumType.STRING)
-	private Role role = Role.USER;
+//	@Builder.Default
+//	@Enumerated(EnumType.STRING)
+//	private Role role = Role.USER;
+
+	@ManyToMany(fetch=FetchType.EAGER)
+	private Set<Role> roles;
+
+
+//	@Override
+//	public Collection<? extends GrantedAuthority> getAuthorities() {
+//		return List.of(new SimpleGrantedAuthority(role.name()));
+//	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return List.of(new SimpleGrantedAuthority(role.name()));
+		return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName()))
+				.collect(Collectors.toList());
 	}
 
 	@Override

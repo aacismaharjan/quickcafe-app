@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Divider, List, ListItem, ListItemText } from '@mui/material';
+import { Box, Typography, Divider, List, ListItem, ListItemText, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { handleLogout } from '../components/template/AppLayout';
 
@@ -21,14 +21,15 @@ const SettingsPage: React.FC = () => {
         <Divider sx={{ mb: 2 }} />
 
         <List>
-          <ListItem onClick={() => handleNavigate('/profile')}>
+          <ListItem onClick={() => handleNavigate('/profile')} component={Button}>
             <ListItemText primary="Profile Settings" />
           </ListItem>
-          <ListItem onClick={() => handleNavigate('/my-order-history')}>
+          <ListItem onClick={() => handleNavigate('/my-order-history')}  component={Button}>
             <ListItemText primary="My Order History" />
           </ListItem>
           <Divider sx={{ my: 2 }} />
           <ListItem
+           component={Button}
             onClick={() => {
               handleLogout(navigate);
             }}

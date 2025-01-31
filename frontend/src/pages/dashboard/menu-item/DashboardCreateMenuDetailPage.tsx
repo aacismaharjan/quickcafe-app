@@ -14,7 +14,7 @@ import {
   Autocomplete,
   Chip,
 } from '@mui/material';
-import DashboardLayout from './DashboardLayout';
+import DashboardLayout from '../DashboardLayout';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
@@ -46,9 +46,9 @@ const DashboardCreateMenuDetailPage = () => {
   const [formData, setFormData] = useState<FormDataTypeI>({
     name: '',
     description: '',
-    price: 0,
+    price: undefined,
     image_url: '',
-    preparation_time_in_min: 0,
+    preparation_time_in_min: undefined,
     is_active: true,
   });
 
@@ -83,13 +83,11 @@ const DashboardCreateMenuDetailPage = () => {
     if (params.menuItemId) {
       fetchMenuItem(params.menuItemId);
     }
-    
   }, [params]);
 
-
-  useEffect(()=>{
+  useEffect(() => {
     fetchCategories();
-  }, [])
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value, checked } = e.target;
@@ -129,14 +127,14 @@ const DashboardCreateMenuDetailPage = () => {
       }
 
       // Append the categories as an array
-     if(selectedCategories.length > 0) {
-      tempFormData.append('categories', JSON.stringify(selectedCategories));
-     }
+      if (selectedCategories.length > 0) {
+        tempFormData.append('categories', JSON.stringify(selectedCategories));
+      }
 
       const response = await fetch(url, {
         method: editMode ? 'PATCH' : 'POST',
         body: tempFormData,
-      })
+      });
 
       if (response.ok) {
         toast.success('Menu item saved successfully');
@@ -147,126 +145,121 @@ const DashboardCreateMenuDetailPage = () => {
     }
   };
 
-
   return (
     <DashboardLayout>
       <Box sx={{ p: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1, px: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
           <Typography variant="h5">{editMode == false ? 'Create a new menu item' : 'Update a menu item'}</Typography>
         </Box>
 
         <form onSubmit={handleSubmit}>
-          <DialogContent>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <TextField
-                  name="name"
-                  label="Name"
-                  fullWidth
-                  required
-                  value={formData.name}
-                  onChange={handleInputChange}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  name="description"
-                  label="Description"
-                  fullWidth
-                  multiline
-                  rows={3}
-                  required
-                  value={formData.description}
-                  onChange={handleInputChange}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  name="price"
-                  label="Price"
-                  type="number"
-                  fullWidth
-                  required
-                  value={formData.price}
-                  onChange={handleInputChange}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  name="preparation_time_in_min"
-                  label="Preparation Time (minutes)"
-                  type="number"
-                  fullWidth
-                  required
-                  value={formData.preparation_time_in_min}
-                  onChange={handleInputChange}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <Autocomplete
-                  multiple
-                  fullWidth
-                  value={selectedCategories}
-                  onChange={(event, newValue) => {
-                    setSelectedCategories([... new Set(newValue)]);
-                  }}
-                  options={categories.map((option) => option)}
-                  getOptionLabel={(option) => option.name}
-                  renderTags={(tagValue, getTagProps) =>
-                    tagValue.map((option, index) => {
-                      const { key, ...tagProps } = getTagProps({ index });
-                      return (
-                        <Chip key={key} label={option.name} {...tagProps} />
-                      );
-                    })
-                  }
-                  style={{ width: 500 }}
-                  renderInput={(params) => <TextField {...params} label="Categories" placeholder="Favorites"  fullWidth/>}
-                  isOptionEqualToValue={(option, value) => option.id === value.id}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <Button
-                  component="label"
-                  role={undefined}
-                  variant="contained"
-                  tabIndex={-1}
-                  startIcon={<CloudUploadIcon />}
-                >
-                  Upload product photo
-                  <VisuallyHiddenInput
-                    type="file"
-                    onChange={(event) => {
-                      const file = event.target.files[0];
-                      if (file) {
-                        setFormData((prev) => ({ ...prev, image_file: file }));
-                      }
-                    }}
-                    accept="image/*"
-                  />
-                </Button>
-                {formData.image_file && (
-                  <Typography component="span" sx={{ paddingLeft: 1 }}>
-                    {formData.image_file.name} - {formData.image_file.size} bytes
-                  </Typography>
-                )}
-              </Grid>
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={<Switch name="is_active" checked={formData.is_active} onChange={handleInputChange} />}
-                  label="Active"
-                />
-              </Grid>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                name="name"
+                label="Name"
+                fullWidth
+                required
+                value={formData.name}
+                onChange={handleInputChange}
+              />
             </Grid>
-          </DialogContent>
-          <DialogActions>
+            <Grid item xs={12}>
+              <TextField
+                name="description"
+                label="Description"
+                fullWidth
+                multiline
+                rows={3}
+                required
+                value={formData.description}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                name="price"
+                label="Price"
+                type="number"
+                fullWidth
+                required
+                value={formData.price || ''}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                name="preparation_time_in_min"
+                label="Preparation Time (minutes)"
+                type="number"
+                fullWidth
+                required
+                value={formData.preparation_time_in_min  || ''}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Autocomplete
+                multiple
+                fullWidth
+                value={selectedCategories}
+                onChange={(event, newValue) => {
+                  setSelectedCategories([...new Set(newValue)]);
+                }}
+                options={categories.map((option) => option)}
+                getOptionLabel={(option) => option.name}
+                renderTags={(tagValue, getTagProps) =>
+                  tagValue.map((option, index) => {
+                    const { key, ...tagProps } = getTagProps({ index });
+                    return <Chip key={key} label={option.name} {...tagProps} />;
+                  })
+                }
+                style={{ width: 500 }}
+                renderInput={(params) => <TextField {...params} label="Categories" placeholder="Favorites" fullWidth />}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Button
+                component="label"
+                role={undefined}
+                variant="contained"
+                tabIndex={-1}
+                startIcon={<CloudUploadIcon />}
+              >
+                Upload product photo
+                <VisuallyHiddenInput
+                  type="file"
+                  onChange={(event) => {
+                    const file = event.target.files[0];
+                    if (file) {
+                      setFormData((prev) => ({ ...prev, image_file: file }));
+                    }
+                  }}
+                  accept="image/*"
+                />
+              </Button>
+              {formData.image_file && (
+                <Typography component="span" sx={{ paddingLeft: 1 }}>
+                  {formData.image_file.name} - {formData.image_file.size} bytes
+                </Typography>
+              )}
+            </Grid>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={<Switch name="is_active" checked={formData.is_active} onChange={handleInputChange} />}
+                label="Active"
+              />
+            </Grid>
+          </Grid>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, gap: 2 }}>
             <Button component={Link} to="/dashboard/menu-detail">
               Go Back
             </Button>
             <Button type="submit" variant="contained">
               Submit
             </Button>
-          </DialogActions>
+          </Box>
         </form>
       </Box>
     </DashboardLayout>

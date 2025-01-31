@@ -1,0 +1,23 @@
+.auth-wrapper .container {
+  display: flex;
+  flex-direction: row;
+  min-height: 100vh;
+}
+.auth-wrapper .container .banner {
+  flex-basis: 520px;
+  padding: 1rem;
+  color: white;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.auth-wrapper .container .form-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+  padding: 1rem;
+  flex: 1;
+}/*# sourceMappingURL=GlobalStyle.css.map */

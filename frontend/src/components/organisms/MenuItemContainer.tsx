@@ -29,7 +29,7 @@ const MenuContainer: React.FC<MenuContainerProps> = ({ menu }) => {
       </Typography>
       <Grid container spacing={2}>
         {menu.items.map((item) => (
-          <Grid item xs={6} sm={4} key={item.id}>
+          <Grid item  sx={{maxWidth: "380px", flexGrow: 1, width: "320px"}} key={item.id}>
             <MenuItemCard item={item} />
           </Grid>
         ))}
