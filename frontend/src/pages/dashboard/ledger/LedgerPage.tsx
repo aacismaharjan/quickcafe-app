@@ -58,7 +58,7 @@ const LedgerPage = () => {
           <Typography variant="h5">Ledgers
           </Typography>
           <Button component={Link} to="/dashboard/ledger/create" variant="contained" startIcon={<AddIcon />}>
-            Add Ledger
+            Add Book
           </Button>
         </Box>
 
