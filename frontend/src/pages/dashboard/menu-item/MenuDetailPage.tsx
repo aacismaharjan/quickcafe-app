@@ -17,8 +17,7 @@ import {
   styled,
   tableCellClasses,
 } from '@mui/material';
-import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, Close as CloseIcon } from '@mui/icons-material';
-import DashboardLayout from '../DashboardLayout';
+import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon} from '@mui/icons-material';
 import moment from "moment";
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -43,7 +42,7 @@ export const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-const DashboardMenuDetailPage = () => {
+const MenuDetailPage = () => {
   const [items, setItems] = useState<MenuItemTypeI[]>([]);
 
   // Fetch menu items
@@ -62,7 +61,7 @@ const DashboardMenuDetailPage = () => {
   }, []);
 
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: number) => {
     try {
       await fetch(`http://localhost:8080/api/v1/menu-items/${id}`, {
         method: 'DELETE',
@@ -76,7 +75,7 @@ const DashboardMenuDetailPage = () => {
   };
 
   return (
-    <DashboardLayout>
+    <React.Fragment>
       <Box sx={{ p: 3 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
           <Typography variant="h5">Menu Items</Typography>
@@ -165,8 +164,8 @@ const DashboardMenuDetailPage = () => {
           </Table>
         </TableContainer>
       </Box>
-    </DashboardLayout>
+    </React.Fragment>
   );
 };
 
-export { DashboardMenuDetailPage };
+export { MenuDetailPage };

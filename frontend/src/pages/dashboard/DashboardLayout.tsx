@@ -1,107 +1,99 @@
 import React, { useState } from 'react';
 import {
   AppBar,
-  Avatar,
   Box,
+  Collapse,
   Drawer,
   IconButton,
-  InputBase,
   List,
-  ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
-  Menu,
-  MenuItem,
   Toolbar,
   Typography,
-  Paper,
-  Badge,
-  Button,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
-  Search as SearchIcon,
-  Notifications as NotificationsIcon,
   Dashboard as DashboardIcon,
   Restaurant as RestaurantIcon,
   ShoppingCart as ShoppingCartIcon,
-  People as PeopleIcon,
-  BarChart as BarChartIcon,
   Settings as SettingsIcon,
-  ChevronLeft as ChevronLeftIcon,
+  ExpandLess,
+  ExpandMore,
 } from '@mui/icons-material';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import ProfileMenu from '../../components/molecules/ProfileMenu';
 
 const drawerWidth = 240;
 
-const DashboardLayout = (props: React.PropsWithChildren) => {
+interface MenuItem {
+  text: string;
+  icon?: React.ReactNode;
+  href: string;
+  children?: MenuItem[];
+}
+
+interface MenuSection {
+  label: string;
+  items: MenuItem[];
+}
+
+interface DashboardLayoutProps {
+  children: React.ReactNode;
+}
+
+const DashboardLayout: React.FC<DashboardLayoutProps> = (props) => {
   const [open, setOpen] = useState(true);
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
 
   const handleDrawerToggle = () => {
     setOpen(!open);
   };
 
-  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
+  const handleMenuToggle = () => {
+    setMenuOpen(!menuOpen);
   };
 
-  const handleProfileMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const menuItems = [
-    { text: 'Dashboard', icon: <DashboardIcon />, href: '/dashboard' },
-    { text: 'Ledger', icon: <RestaurantIcon />, href: '/dashboard/ledger' },
-    { text: 'Menu', icon: <RestaurantIcon />, href: '/dashboard/menu' },
-    { text: 'Menu Items', icon: <RestaurantIcon />, href: '/dashboard/menu-detail' },
-    { text: 'Orders', icon: <ShoppingCartIcon />, href: '/dashboard/orders' },
-    { text: 'Settings', icon: <SettingsIcon />, href: '/dashboard/settings' },
+  const menuSections: MenuSection[] = [
+    {
+      label: 'Overview',
+      items: [{ text: 'Dashboard', icon: <DashboardIcon />, href: '/dashboard' }],
+    },
+    {
+      label: 'Management',
+      items: [
+        { text: 'Ledger', icon: <RestaurantIcon />, href: '/dashboard/ledger' },
+        { text: 'Orders', icon: <ShoppingCartIcon />, href: '/dashboard/orders' },
+        {
+          text: 'Menu',
+          icon: <RestaurantIcon />,
+          href: "",
+          children: [
+            { text: 'View Menu', href: '/dashboard/menu' },
+            { text: 'Menu Items', href: '/dashboard/menu-detail' },
+          ],
+        },
+      ],
+    },
+    {
+      label: 'Misc',
+      items: [{ text: 'Settings', icon: <SettingsIcon />, href: '/dashboard/settings' }],
+    },
   ];
 
   return (
     <Box sx={{ display: 'flex' }}>
-      {/* App Bar */}
       <AppBar color="default" position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer - 1 }}>
         <Toolbar sx={{ marginLeft: open ? '240px' : '0px' }}>
           <IconButton color="inherit" edge="start" onClick={handleDrawerToggle} sx={{ mr: 2 }}>
-            {/* {open ? <ChevronLeftIcon /> : <MenuIcon />} */}
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 0 }}>
             QuickCafe Dashboard
           </Typography>
 
-          {/* Search Bar */}
-          {/* <Paper
-            component="form"
-            sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400, ml: 4, mr: 2 }}
-          >
-            <IconButton sx={{ p: '10px' }}>
-              <SearchIcon />
-            </IconButton>
-            <InputBase sx={{ ml: 1, flex: 1 }} placeholder="Search..." />
-          </Paper> */}
-
-          {/* Notification Icon */}
-          {/* <IconButton color="inherit">
-            <Badge badgeContent={4} color="error">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton> */}
-
-          {/* Profile Menu */}
-          {/* <IconButton onClick={handleProfileMenuOpen} color="inherit">
-            <Avatar sx={{ width: 32, height: 32 }}>JD</Avatar>
-          </IconButton>
-          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleProfileMenuClose}>
-            <MenuItem>Profile</MenuItem>
-            <MenuItem>Settings</MenuItem>
-            <MenuItem>Logout</MenuItem>
-          </Menu> */}
-
-          <Box sx={{flexGrow: 1}}/>
+          <Box sx={{ flexGrow: 1 }} />
 
           <ProfileMenu />
         </Toolbar>
@@ -111,27 +103,15 @@ const DashboardLayout = (props: React.PropsWithChildren) => {
       <Drawer
         variant="permanent"
         open={open}
-        
         sx={{
-          display: open ? "block" : "none",
+          display: open ? 'block' : 'none',
           width: drawerWidth,
-          ...(!open && {
-            width: (theme) => theme.spacing(7),
-            overflowX: 'hidden',
-          }),
           flexShrink: 0,
           [`& .MuiDrawer-paper`]: {
             color: '#b3b9c6',
-            svg: {
-              color: '#b3b9c6',
-            },
             backgroundColor: '#121621',
             width: drawerWidth,
             boxSizing: 'border-box',
-            ...(!open && {
-              width: (theme) => theme.spacing(7),
-              overflowX: 'hidden',
-            }),
           },
         }}
       >
@@ -145,17 +125,48 @@ const DashboardLayout = (props: React.PropsWithChildren) => {
             </Typography>
           </Box>
           <List>
-            {menuItems.map((item) => (
-              <ListItem key={item.text} component={Link} to={item.href}>
-                <ListItemIcon
-                  sx={{
-                    minWidth: open ? '56px' : 'auto',
-                  }}
-                >
-                  {item.icon}
-                </ListItemIcon>
-                {open && <ListItemText primary={item.text} />}
-              </ListItem>
+            {menuSections.map((section) => (
+              <Box key={section.label}>
+                <Typography sx={{ paddingLeft: 2, paddingTop: 1, color: '#b3b9c6' }} variant="caption">
+                  {section.label}
+                </Typography>
+                {section.items.map((item) => (
+                  item.children ? (
+                    <Box key={item.text}>
+                      <ListItemButton onClick={handleMenuToggle} selected={location.pathname.includes('/dashboard/menu')}>
+                        <ListItemIcon>{item.icon}</ListItemIcon>
+                        {open && <ListItemText primary={item.text} />}
+                        {menuOpen ? <ExpandLess /> : <ExpandMore />}
+                      </ListItemButton>
+                      <Collapse in={menuOpen} timeout="auto" unmountOnExit>
+                        <List component="div" disablePadding>
+                          {item.children.map((subItem) => (
+                            <ListItemButton
+                              key={subItem.text}
+                              component={Link}
+                              to={subItem.href}
+                              selected={location.pathname === subItem.href}
+                              sx={{ pl: 4 }}
+                            >
+                              <ListItemText primary={subItem.text} />
+                            </ListItemButton>
+                          ))}
+                        </List>
+                      </Collapse>
+                    </Box>
+                  ) : (
+                    <ListItemButton
+                      key={item.text}
+                      component={Link}
+                      to={item.href}
+                      selected={location.pathname === item.href}
+                    >
+                      <ListItemIcon>{item.icon}</ListItemIcon>
+                      {open && <ListItemText primary={item.text} />}
+                    </ListItemButton>
+                  )
+                ))}
+              </Box>
             ))}
           </List>
         </Box>

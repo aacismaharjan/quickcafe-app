@@ -15,8 +15,8 @@ import { SettingsPage } from '../pages/SettingsPage';
 import { ProfilePage } from '../pages/ProfilePage';
 import AppLayout from '../components/template/AppLayout';
 import { DashboardPage } from '../pages/dashboard/DashboardPage';
-import { DashboardMenuDetailPage } from '../pages/dashboard/menu-item/DashboardMenuDetailPage';
-import { DashboardCreateMenuDetailPage } from '../pages/dashboard/menu-item/DashboardCreateMenuDetailPage';
+import { MenuDetailPage } from '../pages/dashboard/menu-item/MenuDetailPage';
+import { CreateMenuDetailPage } from '../pages/dashboard/menu-item/CreateMenuDetailPage';
 import DashboardLayout from '../pages/dashboard/DashboardLayout';
 import MenuPage from '../pages/dashboard/menu/MenuPage';
 import CreateMenuPage from '../pages/dashboard/menu/CreateMenuPage';
@@ -30,8 +30,11 @@ import { OrderDetailsPage } from '../pages/dashboard/order/OrderDetailsPage';
 const AppRoutes: React.FC = () => (
   <Router>
     <Routes>
+      {/* Public Routes */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+
+      {/* Protected Routes for Main App */}
       <Route
         path="/"
         element={
@@ -41,7 +44,6 @@ const AppRoutes: React.FC = () => (
         }
       >
         <Route path="/" element={<HomePage />} />
-        <Route path="/menu-items/:menuItemId" element={<MenuItemPage />} />
         <Route path="/menu-items/:menuItemId" element={<MenuItemPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/favorites" element={<FavoritesPage />} />
@@ -53,21 +55,28 @@ const AppRoutes: React.FC = () => (
         <Route path="/account" element={<SettingsPage />} />
       </Route>
 
-      <Route path="/dashboard" element={<DashboardProtectedRoute />}>
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/dashboard/menu-detail" element={<DashboardMenuDetailPage />} />
-        <Route path="/dashboard/menu-detail/create" element={<DashboardCreateMenuDetailPage />} />
-        <Route path="/dashboard/menu-detail/:menuItemId/edit" element={<DashboardCreateMenuDetailPage />} />
-        <Route path="/dashboard/menu" element={<MenuPage />} />
-        <Route path="/dashboard/menu/create" element={<CreateMenuPage />} />
-        <Route path="/dashboard/menu/:menuId/edit" element={<CreateMenuPage />} />
-        <Route path="/dashboard/ledger" element={<LedgerPage />} />
-        <Route path="/dashboard/ledger/create" element={<CreateLedgerPage />} />
-        <Route path="/dashboard/ledger/:ledgerId/edit" element={<CreateLedgerPage />} />
-        <Route path="/dashboard/orders" element={<OrderPage />} />
-        <Route path="/dashboard/orders/:id" element={<OrderDetailsPage />} />
-        <Route path="/dashboard/settings" element={<DashboardSettingPage />} />
-        <Route path="/dashboard/*" element={<DashboardLayout />} />
+      {/* Dashboard Routes with Layout */}
+      <Route
+        path="/dashboard"
+        element={
+          <DashboardLayout>
+            <DashboardProtectedRoute />
+          </DashboardLayout>
+        }
+      >
+        <Route index element={<DashboardPage />} />
+        <Route path="menu-detail" element={<MenuDetailPage />} />
+        <Route path="menu-detail/create" element={<CreateMenuDetailPage />} />
+        <Route path="menu-detail/:menuItemId/edit" element={<CreateMenuDetailPage />} />
+        <Route path="menu" element={<MenuPage />} />
+        <Route path="menu/create" element={<CreateMenuPage />} />
+        <Route path="menu/:menuId/edit" element={<CreateMenuPage />} />
+        <Route path="ledger" element={<LedgerPage />} />
+        <Route path="ledger/create" element={<CreateLedgerPage />} />
+        <Route path="ledger/:ledgerId/edit" element={<CreateLedgerPage />} />
+        <Route path="orders" element={<OrderPage />} />
+        <Route path="orders/:id" element={<OrderDetailsPage />} />
+        <Route path="settings" element={<DashboardSettingPage />} />
       </Route>
     </Routes>
   </Router>

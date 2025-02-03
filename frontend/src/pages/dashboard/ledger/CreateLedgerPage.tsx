@@ -12,22 +12,12 @@ import {
   ListItem,
   List,
   ListItemText,
-  Avatar,
-  ListItemAvatar,
   IconButton,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Autocomplete,
   Divider,
 } from '@mui/material';
-import DashboardLayout from '../DashboardLayout';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Add, PlusOne } from '@mui/icons-material';
-import { set } from 'react-hook-form';
 import { canteenID } from '../../HomePage';
 
 interface FormDataTypeI extends Partial<LedgerTypeI> {}
@@ -107,8 +97,7 @@ const CreateLedgerPage = () => {
         id: canteenID,
       },
       created_at: new Date().toISOString(),
-    }
-
+    };
 
     try {
       const url = editMode
@@ -118,7 +107,7 @@ const CreateLedgerPage = () => {
       const response = await fetch(url, {
         method: editMode ? 'PATCH' : 'POST',
         headers: {
-         "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(finalData),
       });
@@ -174,67 +163,45 @@ const CreateLedgerPage = () => {
     setMenus(newMenuItems);
   };
 
-  const handleDelete = async (ledgerId: number, menuItemId: number) => {
-    try {
-      await fetch(`http://localhost:8080/api/v1/menus/${ledgerId}/items/menuItemId`, {
-        method: 'DELETE',
-      }).then(() => {
-        toast.success('Menu item deleted successfully');
-      });
-    } catch (error) {
-      console.error('Error deleting menu item:', error);
-    }
-  };
-
-  console.log(menus);
-
   return (
-    <DashboardLayout>
-      <Box sx={{ p: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-          <Typography variant="h5">{editMode == false ? 'Create a new ledger' : 'Update a ledger'}</Typography>
-        </Box>
+    <Box sx={{ p: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
+        <Typography variant="h5">{editMode == false ? 'Create a new ledger' : 'Update a ledger'}</Typography>
+      </Box>
 
-        <form onSubmit={handleSubmit}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TextField
-                name="name"
-                label="Name"
-                fullWidth
-                required
-                value={formData.name}
-                onChange={handleInputChange}
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <TextField
-                name="description"
-                label="Description"
-                fullWidth
-                multiline
-                rows={3}
-                required
-                value={formData.description}
-                onChange={handleInputChange}
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <FormControlLabel
-                control={<Switch name="isActive" checked={formData.isActive} onChange={handleInputChange} />}
-                label="Active"
-              />
-            </Grid>
+      <form onSubmit={handleSubmit}>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <TextField name="name" label="Name" fullWidth required value={formData.name} onChange={handleInputChange} />
           </Grid>
- 
-          <Divider sx={{marginTop: 2, marginBottom: 2}} />
 
-          <Box sx={{ marginTop: 2 }}>
-            <Typography variant="h6">Menu Items</Typography>
+          <Grid item xs={12}>
+            <TextField
+              name="description"
+              label="Description"
+              fullWidth
+              multiline
+              rows={3}
+              required
+              value={formData.description}
+              onChange={handleInputChange}
+            />
+          </Grid>
 
-            {/* <Box sx={{ display: 'flex', gap: 2 }}>
+          <Grid item xs={12}>
+            <FormControlLabel
+              control={<Switch name="isActive" checked={formData.isActive} onChange={handleInputChange} />}
+              label="Active"
+            />
+          </Grid>
+        </Grid>
+
+        <Divider sx={{ marginTop: 2, marginBottom: 2 }} />
+
+        <Box sx={{ marginTop: 2 }}>
+          <Typography variant="h6">Menu Items</Typography>
+
+          {/* <Box sx={{ display: 'flex', gap: 2 }}>
               <Autocomplete
                 disablePortal
                 fullWidth
@@ -252,119 +219,118 @@ const CreateLedgerPage = () => {
               </Button>
             </Box> */}
 
-            <Typography sx={{ display: 'block', mt: 2 }}>Available Menu Items: </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: 1, mt: 0 }}>
-              {allMenus
-                .filter((i) => !menus.some((el) => el.id === i.id))
-                .map((menu, index) => {
-                  return (
-                    <ListItem
-                      component={Button}
-                      onClick={() => {
-                        setMenus((prev) => [...prev, menu]);
-                      }}
-                      draggable
-                      // onDragStart={(e: React.DragEvent<HTMLButtonElement>) => handleDragStart(e, index)}
-                      //     onDragEnd={handleDragEnd}
-                      //     onDragOver={handleDragOver}
-                      //     onDrop={(e: React.DragEvent<HTMLButtonElement>) => handleDrop(e, index)}
-                      onDragStart={(event) => {
-                        event.dataTransfer.setData('item', JSON.stringify(menu));
-                        event.dataTransfer.setData('source', 'all');
-                      }}
-                      key={menu.id}
-                      sx={{
-                        border: '1px solid #ccc',
-                        borderRadius: '8px',
-                        flexBasis: '200px',
-                        flexGrow: 1,
-                        padding: '8px',
-                        '& .MuiListItemText-root': {
-                          margin: 0,
-                        },
-                        '& .MuiListItemText-primary': {
-                          fontSize: '14px',
-                          lineHeight: 1.2,
-                        },
-                        '& .MuiListItemText-secondary': {
-                          fontSize: '14px',
-                          lineHeight: 1.2,
-                        },
-                      }}
-                    >
-                      <ListItemText primary={menu.name} secondary={`${menu.status}`} />
-                    </ListItem>
-                  );
-                })}
-            </Box>
+          <Typography sx={{ display: 'block', mt: 2 }}>Available Menu Items: </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: 1, mt: 0 }}>
+            {allMenus
+              .filter((i) => !menus.some((el) => el.id === i.id))
+              .map((menu) => {
+                return (
+                  <ListItem
+                    component={Button}
+                    onClick={() => {
+                      setMenus((prev) => [...prev, menu]);
+                    }}
+                    draggable
+                    // onDragStart={(e: React.DragEvent<HTMLButtonElement>) => handleDragStart(e, index)}
+                    //     onDragEnd={handleDragEnd}
+                    //     onDragOver={handleDragOver}
+                    //     onDrop={(e: React.DragEvent<HTMLButtonElement>) => handleDrop(e, index)}
+                    onDragStart={(event) => {
+                      event.dataTransfer.setData('item', JSON.stringify(menu));
+                      event.dataTransfer.setData('source', 'all');
+                    }}
+                    key={menu.id}
+                    sx={{
+                      border: '1px solid #ccc',
+                      borderRadius: '8px',
+                      flexBasis: '200px',
+                      flexGrow: 1,
+                      padding: '8px',
+                      '& .MuiListItemText-root': {
+                        margin: 0,
+                      },
+                      '& .MuiListItemText-primary': {
+                        fontSize: '14px',
+                        lineHeight: 1.2,
+                      },
+                      '& .MuiListItemText-secondary': {
+                        fontSize: '14px',
+                        lineHeight: 1.2,
+                      },
+                    }}
+                  >
+                    <ListItemText primary={menu.name} secondary={`${menu.status}`} />
+                  </ListItem>
+                );
+              })}
           </Box>
+        </Box>
 
-          <Grid item xs={12} md={6}>
-            <Typography sx={{ display: 'block', mt: 2 }}>Selected Menu Items: </Typography>
-            <List
-              sx={{
-                display: 'flex',
-                gap: 1,
-                padding: '8px',
-                border: '1px solid #ccc',
-                borderRadius: '8px',
-                minHeight: '64px',
-                flexWrap: "wrap",
-                flexDirection: "column",
-              }}
-              onDrop={(e) => {
-                if (menus.length === 0) {
-                  handleDrop(e, 0); 
-                }
-              }}
-              onDragOver={handleDragOver}
-            >
-              {menus &&
-                menus.map((item, index) => {
-                  return (
-                    <ListItem
-                      component={Button}
-                      draggable
-                      onDragStart={(e: React.DragEvent<HTMLButtonElement>) => handleDragStart(e, index)}
-                      onDragEnd={handleDragEnd}
-                      onDragOver={handleDragOver}
-                      onDrop={(e: React.DragEvent<HTMLButtonElement>) => handleDrop(e, index)}
-                      key={item.id}
-                      sx={{
-                        border: '1px solid #ccc',
-                        borderRadius: '8px',
-                        padding: '8px',
-                      }}
-                      secondaryAction={
-                        <IconButton
-                          edge="end"
-                          aria-label="delete"
-                          onClick={() => {
-                            setMenus((prev) => prev.filter((i) => i.id !== item.id));
-                          }}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      }
-                    > 
-                      <ListItemText primary={item.name} secondary={item.status} />
-                    </ListItem>
-                  );
-                })}
-            </List>
-          </Grid>
+        <Grid item xs={12} md={6}>
+          <Typography sx={{ display: 'block', mt: 2 }}>Selected Menu Items: </Typography>
+          <List
+            sx={{
+              display: 'flex',
+              gap: 1,
+              padding: '8px',
+              border: '1px solid #ccc',
+              borderRadius: '8px',
+              minHeight: '64px',
+              flexWrap: 'wrap',
+              flexDirection: 'column',
+            }}
+            onDrop={(e) => {
+              if (menus.length === 0) {
+                handleDrop(e, 0);
+              }
+            }}
+            onDragOver={handleDragOver}
+          >
+            {menus &&
+              menus.map((item, index) => {
+                return (
+                  <ListItem
+                    component={Button}
+                    draggable
+                    onDragStart={(e: React.DragEvent<HTMLButtonElement>) => handleDragStart(e, index)}
+                    onDragEnd={handleDragEnd}
+                    onDragOver={handleDragOver}
+                    onDrop={(e: React.DragEvent<HTMLButtonElement>) => handleDrop(e, index)}
+                    key={item.id}
+                    sx={{
+                      border: '1px solid #ccc',
+                      borderRadius: '8px',
+                      padding: '8px',
+                    }}
+                    secondaryAction={
+                      <IconButton
+                        edge="end"
+                        aria-label="delete"
+                        onClick={() => {
+                          setMenus((prev) => prev.filter((i) => i.id !== item.id));
+                        }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    }
+                  >
+                    <ListItemText primary={item.name} secondary={item.status} />
+                  </ListItem>
+                );
+              })}
+          </List>
+        </Grid>
 
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, gap: 2 }}>
-            <Button component={Link} to="/dashboard/ledger">
-              Go Back
-            </Button>
-            <Button type="submit" variant="contained">
-              Submit
-            </Button>
-          </Box>
-        </form>
-      </Box>
-    </DashboardLayout>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, gap: 2 }}>
+          <Button component={Link} to="/dashboard/ledger">
+            Go Back
+          </Button>
+          <Button type="submit" variant="contained">
+            Submit
+          </Button>
+        </Box>
+      </form>
+    </Box>
   );
 };
 

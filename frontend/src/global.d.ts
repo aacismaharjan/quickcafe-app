@@ -29,6 +29,17 @@ interface OrderDetailTypeI {
   unitPrice: number;
 }
 
+interface OrderTypeI {
+  id: number;
+  uuid: string;
+  user: UserTypeI;
+  orderStatus: string;
+  orderDetails: OrderDetailTypeI[];
+  paymentMethod: string;
+  paymentStatus: string;
+  createdAt: string;
+}
+
 interface ReviewTypeI {
   id: number;
   user: UserTypeI;

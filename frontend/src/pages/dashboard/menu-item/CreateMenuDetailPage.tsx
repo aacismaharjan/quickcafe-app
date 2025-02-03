@@ -1,10 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Button,
-  DialogActions,
-  DialogContent,
   Grid,
   TextField,
   Typography,
@@ -35,7 +33,7 @@ interface FormDataTypeI extends Partial<MenuItemTypeI> {
   image_file?: any;
 }
 
-const DashboardCreateMenuDetailPage = () => {
+const CreateMenuDetailPage = () => {
   const [editMode, setEditMode] = useState(false);
   const [categories, setCategories] = useState<CategoryTypeI[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<CategoryTypeI[]>([]);
@@ -89,15 +87,16 @@ const DashboardCreateMenuDetailPage = () => {
     fetchCategories();
   }, []);
 
-  const handleInputChange = (e) => {
-    const { name, value, checked } = e.target;
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value,type, checked } = e.target as HTMLInputElement;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === 'is_active' ? checked : value,
+      [name]: type === 'checkbox' || type === "radio" ? checked : value,
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       const url = editMode
@@ -231,8 +230,9 @@ const DashboardCreateMenuDetailPage = () => {
                 <VisuallyHiddenInput
                   type="file"
                   onChange={(event) => {
-                    const file = event.target.files[0];
-                    if (file) {
+                    const files = event.target.files;
+                    if (files && files[0]) {
+                      const file = files[0];
                       setFormData((prev) => ({ ...prev, image_file: file }));
                     }
                   }}
@@ -266,4 +266,4 @@ const DashboardCreateMenuDetailPage = () => {
   );
 };
 
-export { DashboardCreateMenuDetailPage };
+export { CreateMenuDetailPage };

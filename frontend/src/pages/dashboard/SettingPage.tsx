@@ -4,25 +4,19 @@ import { TextField, Button, Typography, Box, Container } from '@mui/material';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/AxiosInstance';
-import { useLoading } from '../../context/LoadingContext';
-import DashboardLayout from './DashboardLayout';
 
 const DashboardSettingPage: React.FC = () => {
   const [canteen, setCanteen] = useState<any>(null);
   const navigate = useNavigate();
-  const { loading, setLoading } = useLoading();
 
   // Fetch canteen data
   useEffect(() => {
     const fetchCanteen = async () => {
       try {
-        setLoading(true);
         const response = await axiosInstance.get('/canteens/3'); // Assuming ID = 3
         setCanteen(response.data);
       } catch (err) {
         console.log('Failed to fetch canteen data.', err);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -42,21 +36,18 @@ const DashboardSettingPage: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      setLoading(true);
       await axiosInstance.put(`/canteens/${canteen.id}`, canteen); // Update canteen
       toast.info('Canteen details updated successfully!');
     } catch (err) {
       console.log(err);
       toast.error('Failed to update canteen details.');
     } finally {
-      setLoading(false);
       navigate('/dashboard');
     }
   };
 
 
   return (
-    <DashboardLayout>
       <Container maxWidth="xl" disableGutters>
         <Box sx={{ padding: 2 }}>
           <Typography variant="h5" gutterBottom sx={{ paddingBottom: 1 }}>
@@ -159,7 +150,6 @@ const DashboardSettingPage: React.FC = () => {
           </form>
         </Box>
       </Container>
-    </DashboardLayout>
   );
 };
 
