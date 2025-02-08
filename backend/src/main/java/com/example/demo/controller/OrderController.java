@@ -1,6 +1,12 @@
 package com.example.demo.controller;
 
+import com.example.demo.model.Menu;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,8 +15,8 @@ import com.example.demo.model.Order;
 import com.example.demo.service.MenuItemService;
 import com.example.demo.service.OrderService;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/orders") // Base mapping for the controller
@@ -26,6 +32,51 @@ public class OrderController {
     @GetMapping // Maps to GET /order
     public List<Order> getAllOrder() {
         return orderService.getAllOrder();
+    }
+
+    // Endpoint to get monthly order status distribution for a specific year
+    @GetMapping("/monthly-status-distribution")
+    public Map<String, Map<Integer, Long>> getMonthlyOrderStatusDistribution(@RequestParam int year) {
+        return orderService.getMonthlyOrderStatusDistributionByYear(year);
+    }
+
+    @GetMapping("/stats")
+    public OrderStats getOrderStats() {
+        long totalOrders = orderService.getTotalOrders();
+        long pendingOrders = orderService.getPendingOrders();
+        long completedOrders = orderService.getCompletedOrders();
+        long cancelledOrders = orderService.getCancelledOrders();
+
+        double totalRevenue = orderService.getTotalRevenue();
+        double pendingPayment = orderService.getPendingPayment();
+        double paidAmount = orderService.getPaidAmount();
+        double failedAmount = orderService.getFailedAmount();
+
+        return new OrderStats(
+                totalOrders,
+                pendingOrders,
+                completedOrders,
+                cancelledOrders,
+                totalRevenue,
+                pendingPayment,
+                paidAmount,
+                failedAmount
+        );
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class OrderStats {
+        private long totalOrders;
+        private long pendingOrders;
+        private long completedOrders;
+        private long cancelledOrders;
+        private double totalRevenue;
+        private double pendingPayment;
+        private double paidAmount;
+        private double failedAmount;
+
     }
 
     @GetMapping("/{id}") // Maps to GET /order/{id}
@@ -46,6 +97,35 @@ public class OrderController {
             return ResponseEntity.ok(updateOrder);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PatchMapping(path="/{id}", consumes={MediaType.APPLICATION_JSON_VALUE},
+            produces= MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Order> partiallyUpdateOrder(
+            @PathVariable Long id,
+            @RequestBody Order order
+    ) {
+        try {
+//            Set<MenuItem> managedMenuItems = menu.getItems().stream()
+//                    .map(menuItem -> {
+//                        if (menuItem.getId() != null) {
+//                            return menuItemRepository.findById(menuItem.getId()).orElse(menuItem);
+//                        }
+//                        return menuItem;
+//                    })
+//                    .collect(Collectors.toCollection(LinkedHashSet::new));
+//            menu.setItems(managedMenuItems);
+//
+//            // Save the menu to the database
+//            Menu savedMenu = menuService.partiallyUpdateMenu(id, menu);
+//
+//            return ResponseEntity.ok(savedMenu);
+
+            Order savedOrder = orderService.partiallyUpdateOrder(id, order);
+            return ResponseEntity.ok(savedOrder);
+        } catch(Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 

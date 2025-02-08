@@ -29,14 +29,14 @@ public class Order {
     private User user;
 
     @NotNull(message = "Order status cannot be null")
-    private String orderStatus;
+    private OrderStatus orderStatus;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<OrderDetail> orderDetails;
 
 
     @NotNull(message = "Payment method cannot be null")
-    private PaymentMethod paymentMethod = PaymentMethod.CASH; // Default payment method
+    private PaymentMethod paymentMethod;// Default payment method
 
     @NotNull(message = "Payment status cannot be null")
     private PaymentStatus paymentStatus;

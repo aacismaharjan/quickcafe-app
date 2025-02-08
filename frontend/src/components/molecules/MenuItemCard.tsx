@@ -5,6 +5,7 @@ import { CartContext } from '../../context/CartContext';
 import { toast } from 'react-toastify';
 import { API_SERVER } from '../../utils/AxiosInstance';
 import RatingDisplay from './RatingDisplay';
+import { getPrice } from '../../pages/CartPage';
 
 interface MenuItemCardProps {
   item: {
@@ -65,7 +66,7 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({ item }) => {
             {item.description}
           </Typography>
           <Typography variant="h6" color="primary">
-            ${item.price.toFixed(2)}
+           {getPrice(item.price)}
           </Typography>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
             <Button

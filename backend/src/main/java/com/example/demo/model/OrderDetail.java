@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -31,5 +32,6 @@ public class OrderDetail {
 	private double unitPrice;
 
 	@OneToOne(mappedBy = "orderDetail", fetch = FetchType.EAGER)
+	@JsonBackReference
 	private Review review;
 }

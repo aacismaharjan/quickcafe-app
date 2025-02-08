@@ -23,6 +23,7 @@ import {
 } from '@mui/icons-material';
 import { Link, useLocation } from 'react-router-dom';
 import ProfileMenu from '../../components/molecules/ProfileMenu';
+import StarsOutlinedIcon from '@mui/icons-material/StarsOutlined';
 
 const drawerWidth = 240;
 
@@ -47,13 +48,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = (props) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
 
-  const handleDrawerToggle = () => {
-    setOpen(!open);
-  };
-
-  const handleMenuToggle = () => {
-    setMenuOpen(!menuOpen);
-  };
+  const handleDrawerToggle = () => setOpen(!open);
+  const handleMenuToggle = () => setMenuOpen(!menuOpen);
 
   const menuSections: MenuSection[] = [
     {
@@ -74,6 +70,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = (props) => {
             { text: 'Menu Items', href: '/dashboard/menu-detail' },
           ],
         },
+        { text: 'Reviews', icon: <StarsOutlinedIcon />, href: '/dashboard/reviews' },
       ],
     },
     {
@@ -84,17 +81,26 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = (props) => {
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <AppBar color="default" position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer - 1 }}>
-        <Toolbar sx={{ marginLeft: open ? '240px' : '0px' }}>
+      <AppBar
+        color="default"
+        position="fixed"
+        sx={{
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          backgroundColor: '#1E293B', // Dark Blue Shade
+          color: '#FFFFFF', // White Text
+          width: `calc(100% - ${open ? drawerWidth: 0}px)`,
+          marginLeft: `${open ? drawerWidth: 0}px`
+        }}
+      >
+        <Toolbar>
           <IconButton color="inherit" edge="start" onClick={handleDrawerToggle} sx={{ mr: 2 }}>
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 0 }}>
+          <Typography variant="h6" noWrap component="div">
             QuickCafe Dashboard
           </Typography>
 
           <Box sx={{ flexGrow: 1 }} />
-
           <ProfileMenu />
         </Toolbar>
       </AppBar>
@@ -102,42 +108,50 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = (props) => {
       {/* Sidebar */}
       <Drawer
         variant="permanent"
-        open={open}
         sx={{
-          display: open ? 'block' : 'none',
-          width: drawerWidth,
+          width: open ? drawerWidth : 0,
           flexShrink: 0,
-          [`& .MuiDrawer-paper`]: {
-            color: '#b3b9c6',
+          '& .MuiDrawer-paper': {
+            width: open ? drawerWidth : 0,
             backgroundColor: '#121621',
-            width: drawerWidth,
-            boxSizing: 'border-box',
+            color: '#FFFFFF',
+            boxShadow: '3px 0px 5px rgba(0,0,0,0.2)',
           },
         }}
       >
-        <Box sx={{ overflow: 'auto' }}>
-          <Box sx={{ padding: 2 }}>
-            <Typography textAlign="center" variant="h5">
-              QuickCafe
-            </Typography>
-            <Typography textAlign="center" variant="subtitle2">
-              Scan. Order. Enjoy.
-            </Typography>
-          </Box>
-          <List>
+        <Box sx={{ overflow: 'auto', paddingY: 2 }}>
+          <Typography textAlign="center" variant="h5">
+            QuickCafe
+          </Typography>
+          <Typography textAlign="center" variant="subtitle2" color="gray">
+            Scan. Order. Enjoy.
+          </Typography>
+
+          <List sx={{ paddingTop: 2 }}>
             {menuSections.map((section) => (
-              <Box key={section.label}>
-                <Typography sx={{ paddingLeft: 2, paddingTop: 1, color: '#b3b9c6' }} variant="caption">
+              <Box key={section.label} sx={{ px: 2 }}>
+                <Typography sx={{ paddingY: 1, fontSize: '0.85rem', color: 'gray' }}>
                   {section.label}
                 </Typography>
-                {section.items.map((item) => (
+
+                {section.items.map((item) =>
                   item.children ? (
                     <Box key={item.text}>
-                      <ListItemButton onClick={handleMenuToggle} selected={location.pathname.includes('/dashboard/menu')}>
-                        <ListItemIcon>{item.icon}</ListItemIcon>
+                      <ListItemButton
+                        onClick={handleMenuToggle}
+                        selected={location.pathname.includes('/dashboard/menu')}
+                        sx={{
+                          borderRadius: 2,
+                          '&.Mui-selected': { backgroundColor: '#334155' },
+                          '&:hover': { backgroundColor: '#1E293B' },
+                          marginBottom: "4px !important",
+                        }}
+                      >
+                        <ListItemIcon sx={{ color: (theme) => theme.palette.primary.main  }}>{item.icon}</ListItemIcon>
                         {open && <ListItemText primary={item.text} />}
                         {menuOpen ? <ExpandLess /> : <ExpandMore />}
                       </ListItemButton>
+
                       <Collapse in={menuOpen} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding>
                           {item.children.map((subItem) => (
@@ -146,7 +160,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = (props) => {
                               component={Link}
                               to={subItem.href}
                               selected={location.pathname === subItem.href}
-                              sx={{ pl: 4 }}
+                              sx={{
+                                pl: 4,
+                                borderRadius: 2,
+                                '&.Mui-selected': { backgroundColor: '#475569' },
+                                '&:hover': { backgroundColor: '#1E293B' },
+                              }}
                             >
                               <ListItemText primary={subItem.text} />
                             </ListItemButton>
@@ -160,12 +179,17 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = (props) => {
                       component={Link}
                       to={item.href}
                       selected={location.pathname === item.href}
+                      sx={{
+                        borderRadius: 2,
+                        '&.Mui-selected': { backgroundColor: '#334155' },
+                        '&:hover': { backgroundColor: '#1E293B' },
+                      }}
                     >
-                      <ListItemIcon>{item.icon}</ListItemIcon>
+                      <ListItemIcon sx={{ color: (theme) => theme.palette.primary.main  }}>{item.icon}</ListItemIcon>
                       {open && <ListItemText primary={item.text} />}
                     </ListItemButton>
                   )
-                ))}
+                )}
               </Box>
             ))}
           </List>
@@ -173,7 +197,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = (props) => {
       </Drawer>
 
       {/* Main Content */}
-      <Box sx={{ paddingTop: '64px', width: '100%' }}>{props.children}</Box>
+      <Box sx={{ flexGrow: 1, paddingTop: '64px',  backgroundColor: '#F1F5F9', minHeight: '100vh' }}>
+        {props.children}
+      </Box>
     </Box>
   );
 };

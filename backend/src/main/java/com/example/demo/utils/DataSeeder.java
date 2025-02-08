@@ -37,7 +37,7 @@ public class DataSeeder implements CommandLineRunner {
             return roleRepository.save(role);
         });
 
-        userRepository.findById(1).ifPresent(user -> {
+        userRepository.findById(302).ifPresent(user -> {
             Set<Role> userRoles = new HashSet<>(user.getRoles());
             userRoles.add(userRole);
             userRoles.add(adminRole);

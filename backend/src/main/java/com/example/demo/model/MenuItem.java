@@ -1,20 +1,26 @@
 package com.example.demo.model;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.sql.Array;
+import java.util.*;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "tbl_menu_items")
 @Data
 public class MenuItem {
@@ -58,7 +64,8 @@ public class MenuItem {
     )
     private List<Category> categories;
 
-    @OneToMany(mappedBy = "menuItem", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "menuItem", cascade = CascadeType.ALL, orphanRemoval = true,  fetch = FetchType.EAGER)
+    @JsonIgnoreProperties({"menuItem"})
     private List<Review> reviews = new ArrayList<>();
 
     public ReviewStats getReviewsStat() {
@@ -74,5 +81,19 @@ public class MenuItem {
 
         float averageRating = totalRating / reviewerCount;
         return new ReviewStats(averageRating, reviewerCount);
+    }
+
+    @Override
+    public String toString() {
+        return "MenuItem{" +
+                "is_active=" + is_active +
+                ", created_at=" + created_at +
+                ", preparation_time_in_min=" + preparation_time_in_min +
+                ", image_url='" + image_url + '\'' +
+                ", price=" + price +
+                ", description='" + description + '\'' +
+                ", name='" + name + '\'' +
+                ", id=" + id +
+                '}';
     }
 }

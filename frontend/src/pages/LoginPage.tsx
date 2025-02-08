@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Button, TextField, Typography, Link } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { deepOrange } from '@mui/material/colors';
 
@@ -37,7 +37,7 @@ const LoginPage: React.FC = () => {
               </Typography>
               <Typography>
                 Don't have account?{' '}
-                <Link href="/register" variant="body2" sx={{ mt: 2 }}>
+                <Link component={RouterLink} to="/register" variant="body2" sx={{ mt: 2 }}>
                   Get started.
                 </Link>
               </Typography>
@@ -62,6 +62,9 @@ const LoginPage: React.FC = () => {
             <Button variant="contained" color="primary" fullWidth sx={{ mt: 2 }} onClick={handleSubmit}>
               Submit
             </Button>
+            <Link component={RouterLink} to="/reset-password" sx={{textDecoration: "none", display: "inline-block", mt:1}} variant="body2" >
+                  Forgot password?
+                </Link>
           </Box>
         </Box>
       </Box>

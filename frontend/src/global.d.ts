@@ -23,20 +23,27 @@ interface UserTypeI {
   credentialsNonExpired: boolean;
 }
 
+export type OrderStatus = "RECEIVED" | "IN_PROGRESS" | "COMPLETED" | "CANCELED";
+
+export type PaymentStatus = "PENDING" | "PAID" | "FAILED";
+
+export type PaymentMethod = "CARD" | "CASH" | "ONLINE";
+
 interface OrderDetailTypeI {
   id: number;
   quantity: number;
   unitPrice: number;
+  menuItem: MenuItemTypeI;
 }
 
 interface OrderTypeI {
   id: number;
   uuid: string;
   user: UserTypeI;
-  orderStatus: string;
+  orderStatus: OrderStatus;
   orderDetails: OrderDetailTypeI[];
-  paymentMethod: string;
-  paymentStatus: string;
+  paymentMethod: PaymentMethod;
+  paymentStatus: PaymentStatus;
   createdAt: string;
 }
 
@@ -45,6 +52,10 @@ interface ReviewTypeI {
   user: UserTypeI;
   orderDetail: OrderDetailTypeI; 
   menuItem: MenuItemTypeI;
+  rating: number;
+  comment: string;
+  type: string;
+  createdAt: string;
 }
 
 interface MenuItemTypeI {

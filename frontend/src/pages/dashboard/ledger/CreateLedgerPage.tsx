@@ -18,7 +18,7 @@ import {
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { canteenID } from '../../HomePage';
+import useStoredIDs from '../../../utils/useStoredIDs';
 
 interface FormDataTypeI extends Partial<LedgerTypeI> {}
 
@@ -30,6 +30,7 @@ const CreateLedgerPage = () => {
   const [draggedItem, setDraggedItem] = useState<MenuTypeI | null>(null);
   const navigate = useNavigate();
   const params = useParams();
+  const {canteenID} = useStoredIDs();
 
   const [formData, setFormData] = useState<FormDataTypeI>({
     name: '',
@@ -114,7 +115,7 @@ const CreateLedgerPage = () => {
 
       if (response.ok) {
         toast.success('Ledger saved successfully');
-        navigate('/dashboard/menu');
+        navigate('/dashboard/ledger');
       }
     } catch (error) {
       console.error('Error saving ledger:', error);

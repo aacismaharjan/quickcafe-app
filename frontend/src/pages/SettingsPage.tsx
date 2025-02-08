@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Divider, List, ListItem, ListItemText, Button } from '@mui/material';
+import { Box, Typography, Divider, List, ListItem, ListItemText, Button, Paper, Container } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { handleLogout } from '../components/template/AppLayout';
 
@@ -14,8 +14,9 @@ const SettingsPage: React.FC = () => {
 
   return (
     <React.Fragment>
-      <Box sx={{ p: 3, maxWidth: 600, margin: 'auto' }}>
-        <Typography variant="h4" sx={{ mb: 2 }}>
+      <Container maxWidth="md" sx={{ p: 3, maxWidth: 600, margin: 'auto' }}>
+       <Paper sx={{padding: 2}}>
+       <Typography variant="h5" sx={{ mb: 2 }}>
           Settings
         </Typography>
         <Divider sx={{ mb: 2 }} />
@@ -43,7 +44,8 @@ const SettingsPage: React.FC = () => {
             &copy; {new Date().getFullYear()} QuickCafe. All rights reserved.
           </Typography>
         </Box>
-      </Box>
+       </Paper>
+      </Container>
     </React.Fragment>
   );
 };

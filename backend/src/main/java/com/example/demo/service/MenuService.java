@@ -88,6 +88,7 @@ public class MenuService {
         return false;
     }
 
+    @Transactional
     public Menu partiallyUpdateMenu(Long id, Menu menu) {
         Menu existingMenu = menuRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Menu not found"));

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react';
-import { TextField, Button, Typography, Box, Container } from '@mui/material';
+import { TextField, Button, Typography, Box, Container, Paper } from '@mui/material';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/AxiosInstance';
@@ -46,10 +46,10 @@ const DashboardSettingPage: React.FC = () => {
     }
   };
 
-
   return (
-      <Container maxWidth="xl" disableGutters>
-        <Box sx={{ padding: 2 }}>
+    <Container maxWidth="xl" disableGutters>
+        <Box sx={{ padding: 3 }}>
+      <Paper sx={{padding: 2}}>
           <Typography variant="h5" gutterBottom sx={{ paddingBottom: 1 }}>
             Canteen Settings
           </Typography>
@@ -143,13 +143,14 @@ const DashboardSettingPage: React.FC = () => {
               sx={{ marginLeft: 2 }}
               variant="contained"
               color="inherit"
-              onClick={() => navigate('/canteens')}
+              onClick={() => navigate('/dashboard')}
             >
               Cancel
             </Button>
           </form>
+      </Paper>
         </Box>
-      </Container>
+    </Container>
   );
 };
 

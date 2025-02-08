@@ -15,9 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -48,11 +46,11 @@ public class MenuController {
 
     @PostMapping
     public Menu createMenu(@RequestBody Menu menu) {
-        List<MenuItem> existingItems = menu.getItems().stream()
-                .map(item -> item.getId())
+        Set<MenuItem> existingItems = menu.getItems().stream()
+                .map(MenuItem::getId)
                 .map(itemId -> menuItemService.getMenuItemById(itemId)
                         .orElseThrow(() -> new RuntimeException("Item not found with ID: " + itemId)))
-                .toList();
+                .collect(Collectors.toCollection(LinkedHashSet::new));
 
         menu.setItems(existingItems);
         return menuService.createMenu(menu);
@@ -61,11 +59,11 @@ public class MenuController {
     @PutMapping("/{id}")
     public ResponseEntity<Menu> updateMenu(@PathVariable Long id, @RequestBody Menu menu) {
         try {
-            List<MenuItem> existingItems = menu.getItems().stream()
+            Set<MenuItem> existingItems = menu.getItems().stream()
                     .map(MenuItem::getId)
                     .map(itemId -> menuItemService.getMenuItemById(itemId)
                             .orElseThrow(() -> new RuntimeException("Item not found with ID: " + itemId)))
-                    .toList();
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
 
             menu.setItems(existingItems);
             Menu updatedMenu = menuService.updateMenu(id, menu);
@@ -82,14 +80,14 @@ public class MenuController {
             @RequestBody Menu menu
     ) {
         try {
-            List<MenuItem> managedMenuItems = menu.getItems().stream()
+            Set<MenuItem> managedMenuItems = menu.getItems().stream()
                     .map(menuItem -> {
                         if (menuItem.getId() != null) {
                             return menuItemRepository.findById(menuItem.getId()).orElse(menuItem);
                         }
                         return menuItem;
                     })
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
             menu.setItems(managedMenuItems);
 
             // Save the menu to the database

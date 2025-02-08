@@ -1,6 +1,9 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,8 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cascade;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name = "tbl_ledger")
@@ -35,13 +37,25 @@ public class Ledger {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Date createdAt = new Date();
 
-    @ManyToOne
+
+    @JsonIgnoreProperties({"ledgers", "activeLedger"})
+    @ManyToOne( cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "canteen_id", nullable = false)
     private Canteen canteen;
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
-    @JoinColumn(name = "ledger_id")
-    private List<Menu> menus;
+
+//    // Many-to-many relationship with Menu
+//    @ManyToMany(mappedBy = "ledgers") // mappedBy indicates this is the inverse side
+//    private Set<Menu> menus = new HashSet<>(); // A ledger can have multiple menus
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch=FetchType.EAGER)
+    @JoinTable(
+            name="tbl_ledger_menus",
+            joinColumns = @JoinColumn(name = "ledger_id"),
+            inverseJoinColumns  = @JoinColumn(name = "menu_id"),
+            uniqueConstraints = @UniqueConstraint(columnNames = {"ledger_id", "menu_id"})
+    )
+    private Set<Menu> menus = new HashSet<>();
 
     @Override
     public String toString() {

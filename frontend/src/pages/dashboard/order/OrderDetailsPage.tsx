@@ -5,43 +5,15 @@ import moment from 'moment';
 import { toast } from 'react-toastify';
 import { StyledTableCell, StyledTableRow } from '../menu-item/MenuDetailPage';
 
-// Define types for the order details
-interface MenuItem {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  image_url: string;
-}
-
-interface OrderDetail {
-  id: number;
-  quantity: number;
-  unitPrice: number;
-  menuItem: MenuItem;
-}
-
-interface Order {
-  id: number;
-  user: {
-    firstName: string;
-    lastName: string;
-  };
-  createdAt: string;
-  paymentMethod: string;
-  orderStatus: string;
-  orderDetails: OrderDetail[];
-}
-
 const OrderDetailsPage = () => {
   const { id } = useParams<{ id: string }>(); // Get the order ID from the URL
-  const [order, setOrder] = useState<Order | null>(null);
+  const [order, setOrder] = useState<OrderTypeI | null>(null);
   const navigate = useNavigate();
 
   const fetchOrderDetails = async () => {
     try {
       const response = await fetch(`http://localhost:8080/api/v1/orders/${id}`);
-      const data: Order = await response.json();
+      const data: OrderTypeI = await response.json();
       setOrder(data);
     } catch (error) {
       console.error('Error fetching order details:', error);
@@ -77,11 +49,21 @@ const OrderDetailsPage = () => {
           Payment Method: {order.paymentMethod}
         </Typography>
         <Typography variant="subtitle2" mt={1}>
-          Status:{' '}
+        Payment:{" "}
+          <Chip
+            variant="outlined"
+            color={order.paymentStatus === 'Completed' ? 'warning' : 'success'}
+            label={order.paymentStatus}
+            size="small"
+          />
+        </Typography>
+        <Typography variant="subtitle2" mt={1}>
+          Order Status:{' '}
           <Chip
             variant="outlined"
             color={order.orderStatus === 'Pending' ? 'warning' : 'success'}
             label={order.orderStatus}
+            size="small"
           />
         </Typography>
 

@@ -2,16 +2,25 @@ import React, { useState } from 'react';
 import { Box, Button, TextField, Typography, Link } from '@mui/material';
 import { useAuth } from '../hooks/useAuth';
 import { deepOrange } from '@mui/material/colors';
+import { Link as RouterLink } from "react-router-dom";
 
 const RegisterPage: React.FC = () => {
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false); // Track loading state
   const { register } = useAuth();
 
   const handleRegister = async () => {
-    register(firstName, lastName, email, password);
+    setLoading(true); 
+    try {
+      await register(firstName, lastName, email, password);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false); 
+    }
   };
 
   return (
@@ -31,7 +40,7 @@ const RegisterPage: React.FC = () => {
               </Typography>
               <Typography>
                 Already have an account?{' '}
-                <Link href="/login" variant="body2" sx={{ mt: 2 }}>
+                <Link component={RouterLink} to="/login" variant="body2" sx={{ mt: 2 }}>
                   Get started.
                 </Link>
               </Typography>
@@ -69,8 +78,15 @@ const RegisterPage: React.FC = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <Button variant="contained" color="primary" fullWidth sx={{ mt: 2 }} onClick={handleRegister}>
-              Register
+            <Button
+              variant="contained"
+              color="primary"
+              fullWidth
+              sx={{ mt: 2 }}
+              onClick={handleRegister}
+              disabled={loading}
+            >
+              {loading ? 'Registering...' : 'Register'} 
             </Button>
           </Box>
         </Box>

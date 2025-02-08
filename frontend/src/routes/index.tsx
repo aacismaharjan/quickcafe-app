@@ -1,6 +1,6 @@
 // routes/index.tsx
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import { HomePage } from '../pages/HomePage';
 import { LoginPage } from '../pages/LoginPage';
 import { RegisterPage } from '../pages/RegisterPage';
@@ -26,14 +26,40 @@ import { SearchPage } from '../pages/SearchPage';
 import { DashboardSettingPage } from '../pages/dashboard/SettingPage';
 import { OrderPage } from '../pages/dashboard/order/OrderPage';
 import { OrderDetailsPage } from '../pages/dashboard/order/OrderDetailsPage';
+import { ResetPasswordPage } from '../pages/ResetPasswordPage';
+import { useAuth } from '../hooks/useAuth';
+import MapPage from '../pages/MapPage';
+import ReviewsPage from '../pages/dashboard/review/ReviewsPage';
 
-const AppRoutes: React.FC = () => (
-  <Router>
+const AppRoutes: React.FC = () => {
+  const { verify, refresh } = useAuth();
+  useEffect(() => {
+    const checkToken = async () => {
+      const accessToken = localStorage.getItem('accessToken');
+      if (accessToken) {
+        const isValid = await verify(accessToken);
+        if (!isValid) {
+          const newToken = await refresh();
+          if (newToken) {
+            localStorage.setItem('accessToken', newToken);
+          } else {
+            window.location.href = '/login';
+          }
+        }
+      }
+    };
+
+    checkToken();
+  }, []);
+
+  return (
     <Routes>
       {/* Public Routes */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
 
+        <Route path="/map" element={<MapPage />} />
       {/* Protected Routes for Main App */}
       <Route
         path="/"
@@ -76,10 +102,11 @@ const AppRoutes: React.FC = () => (
         <Route path="ledger/:ledgerId/edit" element={<CreateLedgerPage />} />
         <Route path="orders" element={<OrderPage />} />
         <Route path="orders/:id" element={<OrderDetailsPage />} />
+        <Route path="reviews" element={<ReviewsPage />} />
         <Route path="settings" element={<DashboardSettingPage />} />
       </Route>
     </Routes>
-  </Router>
-);
+  );
+};
 
 export default AppRoutes;

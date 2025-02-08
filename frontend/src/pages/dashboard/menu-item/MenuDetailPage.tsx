@@ -17,10 +17,12 @@ import {
   styled,
   tableCellClasses,
 } from '@mui/material';
+import OutdoorGrillIcon from '@mui/icons-material/OutdoorGrill';
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon} from '@mui/icons-material';
 import moment from "moment";
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { getPrice } from '../../CartPage';
 
 export const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -90,10 +92,9 @@ const MenuDetailPage = () => {
               <StyledTableRow>
                 <StyledTableCell>ID</StyledTableCell>
                 <StyledTableCell>Name</StyledTableCell>
-                <StyledTableCell>Created At</StyledTableCell>
+                <StyledTableCell>Created</StyledTableCell>
                 <StyledTableCell>Description</StyledTableCell>
-                <StyledTableCell>Price</StyledTableCell>
-                <StyledTableCell>Prep Time (min)</StyledTableCell>
+                <StyledTableCell>Prep.</StyledTableCell>
                 <StyledTableCell>Categories</StyledTableCell>
                 <StyledTableCell>Reviews</StyledTableCell>
                 <StyledTableCell>Status</StyledTableCell>
@@ -118,7 +119,8 @@ const MenuDetailPage = () => {
                         image={image_url}
                         alt={item.name}
                       />
-                      <span>{item.name}</span>
+                      <span>{item.name} <div>{getPrice(item.price)}</div></span>
+                      
                       </Box>
                     </StyledTableCell>
                     <StyledTableCell>
@@ -126,8 +128,7 @@ const MenuDetailPage = () => {
                     <div>{created_at_time}</div>
                     </StyledTableCell>
                     <StyledTableCell>{item.description}</StyledTableCell>
-                    <StyledTableCell>${item.price}</StyledTableCell>
-                    <StyledTableCell>{item.preparation_time_in_min}</StyledTableCell>
+                    <StyledTableCell>{item.preparation_time_in_min} mins</StyledTableCell>
                     <StyledTableCell>
                       <Box sx={{display: "flex", flexDirection: "row", gap: "8px", maxWidth: 180, flexWrap: "wrap"}}>
                       {item.categories.map((category) => (<div>
@@ -148,8 +149,6 @@ const MenuDetailPage = () => {
                       </IconButton>
                       <IconButton
                         onClick={() => {
-                          // setSelectedItem(item);
-                          // setDeleteDialogOpen(true);
                           handleDelete(item.id);
                         }}
                         color="error"

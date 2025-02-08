@@ -1,6 +1,7 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,15 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Data
@@ -29,6 +22,8 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name="tbl_users")
 @JsonIgnoreProperties({"password"})
+@Setter
+@Getter
 public class User implements UserDetails{
 	@Id
 	@GeneratedValue
@@ -37,6 +32,8 @@ public class User implements UserDetails{
 	private String lastName;
 	private String email;
 	private String password;
+
+	private boolean enabled = false;
 	
 
 //	@Builder.Default
@@ -44,7 +41,7 @@ public class User implements UserDetails{
 //	private Role role = Role.USER;
 
 	@ManyToMany(fetch=FetchType.EAGER)
-	private Set<Role> roles;
+	private Set<Role> roles = new HashSet<>();
 
 
 //	@Override
@@ -89,7 +86,7 @@ public class User implements UserDetails{
 	@Override
 	public boolean isEnabled() {
 //		return UserDetails.super.isEnabled();
-		return true;
+		return enabled;
 	}
 }
 

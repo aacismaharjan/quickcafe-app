@@ -1,8 +1,6 @@
 package com.example.demo.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -34,6 +32,8 @@ public class Review {
     @NotNull(message = "Order Detail cannot be null")
     @JoinColumn(name = "order_detail_id", nullable = false)
     @JsonIgnoreProperties({"review", "menuItem"})
+    @JsonManagedReference
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     private OrderDetail orderDetail;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
@@ -59,6 +59,17 @@ public class Review {
     @Column(name = "created_at", nullable = false, updatable = false)
     @NotNull(message = "Creation date cannot be null")
     private Date createdAt = new Date();
+
+    @Override
+    public String toString() {
+        return "Review{" +
+                "id=" + id +
+                ", rating=" + rating +
+                ", comment='" + comment + '\'' +
+                ", response='" + response + '\'' +
+                ", createdAt=" + createdAt +
+                '}';
+    }
 }
 
 enum ReviewType {

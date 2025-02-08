@@ -1,9 +1,103 @@
-import { useState, useEffect } from 'react';
-import { Box, IconButton, Paper, Table, TableBody, TableContainer, TableHead, Typography, Chip } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  IconButton,
+  Paper,
+  Table,
+  TableBody,
+  TableContainer,
+  TableHead,
+  Typography,
+  Chip,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Menu,
+} from '@mui/material';
 import { Edit as EditIcon, RemoveRedEye } from '@mui/icons-material';
 import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
 import { StyledTableCell, StyledTableRow } from '../menu-item/MenuDetailPage';
+import { getPrice } from '../../CartPage';
+import axiosInstance from '../../../utils/AxiosInstance';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+
+export enum OrderStatus {
+  RECEIVED = 'RECEIVED',
+  IN_PROGRESS = 'IN_PROGRESS',
+  COMPLETED = 'COMPLETED',
+  CANCELED = 'CANCELED',
+}
+
+export enum PaymentStatus {
+  PENDING = 'PENDING',
+  PAID = 'PAID',
+  FAILED = 'FAILED',
+}
+
+const getStatusColor = (status) => {
+  switch (status) {
+    case 'RECEIVED':
+      return 'info';
+    case 'IN_PROGRESS':
+      return 'warning';
+    case 'COMPLETED':
+      return 'success';
+    case 'CANCELED':
+      return 'error';
+    case 'PENDING':
+      return 'warning';
+    case 'PAID':
+      return 'success';
+    case 'FAILED':
+      return 'error';
+    default:
+      return 'default';
+  }
+};
+
+export default function ChipMenu({ label = "Dashboard", options = [], selectedOption, onSelect }) {
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = (option) => {
+    setAnchorEl(null);
+    if (option && onSelect) {
+      onSelect(option);
+    }
+  };
+
+  return (
+    <div>
+      <Chip
+        label={selectedOption || label}
+        onClick={handleClick}
+        deleteIcon={<ArrowDropDownIcon />}
+        onDelete={handleClick}
+        color={getStatusColor(selectedOption)}
+        size="small"
+      />
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={() => handleClose(null)}
+        MenuListProps={{ 'aria-labelledby': 'chip-menu' }}
+      >
+        {options.map((option, index) => (
+          <MenuItem key={index} onClick={() => handleClose(option)}>
+            {option}
+          </MenuItem>
+        ))}
+      </Menu>
+    </div>
+  );
+}
+
 
 const OrderPage = () => {
   const [orders, setOrders] = useState<OrderTypeI[]>([]);
@@ -16,6 +110,30 @@ const OrderPage = () => {
       setOrders(data);
     } catch (error) {
       console.error('Error fetching orders:', error);
+    }
+  };
+
+  const updateOrder = async (orderId: string, updatedFields: Partial<OrderTypeI>) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/v1/orders/${orderId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedFields),
+      });
+  
+      if (response.ok) {
+        setOrders((prevOrders) =>
+          prevOrders.map((order) =>
+            order.id === orderId ? { ...order, ...updatedFields } : order
+          )
+        );
+      } else {
+        console.error('Error updating order');
+      }
+    } catch (error) {
+      console.error('Error updating order:', error);
     }
   };
 
@@ -37,6 +155,7 @@ const OrderPage = () => {
               <StyledTableCell>Created At</StyledTableCell>
               <StyledTableCell>Total Price</StyledTableCell>
               <StyledTableCell>Status</StyledTableCell>
+              <StyledTableCell>Payment Status</StyledTableCell>
               <StyledTableCell>Payment Method</StyledTableCell>
               <StyledTableCell>Actions</StyledTableCell>
             </StyledTableRow>
@@ -45,6 +164,7 @@ const OrderPage = () => {
             {orders.map((order) => {
               const created_at_date = moment(order.createdAt).format('DD MMM YYYY');
               const totalPrice = order.orderDetails.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
+
               return (
                 <StyledTableRow key={order.id}>
                   <StyledTableCell>{order.id}</StyledTableCell>
@@ -52,20 +172,29 @@ const OrderPage = () => {
                     {order.user.firstName} {order.user.lastName}
                   </StyledTableCell>
                   <StyledTableCell>{created_at_date}</StyledTableCell>
-                  <StyledTableCell>${totalPrice.toFixed(2)}</StyledTableCell>
+                  <StyledTableCell>{getPrice(totalPrice)}</StyledTableCell>
                   <StyledTableCell>
-                    <Chip
-                      variant="outlined"
-                      color={order.orderStatus === 'Pending' ? 'warning' : 'success'}
-                      size="small"
-                      label={order.orderStatus}
+                    <ChipMenu
+                      label="Status"
+                      options={Object.values(OrderStatus)}
+                      selectedOption={order.orderStatus}
+                      onSelect={(value) => updateOrder(order.id, { orderStatus: value })}
                     />
                   </StyledTableCell>
-                  <StyledTableCell>{order.paymentMethod}</StyledTableCell>
                   <StyledTableCell>
-                    <IconButton color="primary">
-                      <EditIcon />
-                    </IconButton>
+                    <ChipMenu
+                      label="Payment Status"
+                      options={Object.values(PaymentStatus)}
+                      selectedOption={order.paymentStatus}
+                      onSelect={(value) => updateOrder(order.id, { paymentStatus: value })}
+                    />
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    <Typography variant="caption" color="textSecondary">
+                      {order.paymentMethod}
+                    </Typography>
+                  </StyledTableCell>
+                  <StyledTableCell>
                     <IconButton color="error" onClick={() => navigate('/dashboard/orders/' + order.id)}>
                       <RemoveRedEye />
                     </IconButton>

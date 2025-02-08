@@ -87,12 +87,11 @@ const CreateMenuDetailPage = () => {
     fetchCategories();
   }, []);
 
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value,type, checked } = e.target as HTMLInputElement;
+    const { name, value, type, checked } = e.target as HTMLInputElement;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' || type === "radio" ? checked : value,
+      [name]: type === 'checkbox' || type === 'radio' ? checked : value,
     }));
   };
 
@@ -145,124 +144,115 @@ const CreateMenuDetailPage = () => {
   };
 
   return (
-    <DashboardLayout>
-      <Box sx={{ p: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-          <Typography variant="h5">{editMode == false ? 'Create a new menu item' : 'Update a menu item'}</Typography>
-        </Box>
-
-        <form onSubmit={handleSubmit}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TextField
-                name="name"
-                label="Name"
-                fullWidth
-                required
-                value={formData.name}
-                onChange={handleInputChange}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                name="description"
-                label="Description"
-                fullWidth
-                multiline
-                rows={3}
-                required
-                value={formData.description}
-                onChange={handleInputChange}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                name="price"
-                label="Price"
-                type="number"
-                fullWidth
-                required
-                value={formData.price || ''}
-                onChange={handleInputChange}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                name="preparation_time_in_min"
-                label="Preparation Time (minutes)"
-                type="number"
-                fullWidth
-                required
-                value={formData.preparation_time_in_min  || ''}
-                onChange={handleInputChange}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Autocomplete
-                multiple
-                fullWidth
-                value={selectedCategories}
-                onChange={(event, newValue) => {
-                  setSelectedCategories([...new Set(newValue)]);
-                }}
-                options={categories.map((option) => option)}
-                getOptionLabel={(option) => option.name}
-                renderTags={(tagValue, getTagProps) =>
-                  tagValue.map((option, index) => {
-                    const { key, ...tagProps } = getTagProps({ index });
-                    return <Chip key={key} label={option.name} {...tagProps} />;
-                  })
-                }
-                style={{ width: 500 }}
-                renderInput={(params) => <TextField {...params} label="Categories" placeholder="Favorites" fullWidth />}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Button
-                component="label"
-                role={undefined}
-                variant="contained"
-                tabIndex={-1}
-                startIcon={<CloudUploadIcon />}
-              >
-                Upload product photo
-                <VisuallyHiddenInput
-                  type="file"
-                  onChange={(event) => {
-                    const files = event.target.files;
-                    if (files && files[0]) {
-                      const file = files[0];
-                      setFormData((prev) => ({ ...prev, image_file: file }));
-                    }
-                  }}
-                  accept="image/*"
-                />
-              </Button>
-              {formData.image_file && (
-                <Typography component="span" sx={{ paddingLeft: 1 }}>
-                  {formData.image_file.name} - {formData.image_file.size} bytes
-                </Typography>
-              )}
-            </Grid>
-            <Grid item xs={12}>
-              <FormControlLabel
-                control={<Switch name="is_active" checked={formData.is_active} onChange={handleInputChange} />}
-                label="Active"
-              />
-            </Grid>
-          </Grid>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, gap: 2 }}>
-            <Button component={Link} to="/dashboard/menu-detail">
-              Go Back
-            </Button>
-            <Button type="submit" variant="contained">
-              Submit
-            </Button>
-          </Box>
-        </form>
+    <Box sx={{ p: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
+        <Typography variant="h5">{editMode == false ? 'Create a new menu item' : 'Update a menu item'}</Typography>
       </Box>
-    </DashboardLayout>
+
+      <form onSubmit={handleSubmit}>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <TextField name="name" label="Name" fullWidth required value={formData.name} onChange={handleInputChange} />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              name="description"
+              label="Description"
+              fullWidth
+              multiline
+              rows={3}
+              required
+              value={formData.description}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              name="price"
+              label="Price"
+              type="number"
+              fullWidth
+              required
+              value={formData.price || ''}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              name="preparation_time_in_min"
+              label="Preparation Time (minutes)"
+              type="number"
+              fullWidth
+              required
+              value={formData.preparation_time_in_min || ''}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Autocomplete
+              multiple
+              fullWidth
+              value={selectedCategories}
+              onChange={(event, newValue) => {
+                setSelectedCategories([...new Set(newValue)]);
+              }}
+              options={categories.map((option) => option)}
+              getOptionLabel={(option) => option.name}
+              renderTags={(tagValue, getTagProps) =>
+                tagValue.map((option, index) => {
+                  const { key, ...tagProps } = getTagProps({ index });
+                  return <Chip key={key} label={option.name} {...tagProps} />;
+                })
+              }
+              style={{ width: 500 }}
+              renderInput={(params) => <TextField {...params} label="Categories" placeholder="Favorites" fullWidth />}
+              isOptionEqualToValue={(option, value) => option.id === value.id}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Button
+              component="label"
+              role={undefined}
+              variant="contained"
+              tabIndex={-1}
+              startIcon={<CloudUploadIcon />}
+            >
+              Upload product photo
+              <VisuallyHiddenInput
+                type="file"
+                onChange={(event) => {
+                  const files = event.target.files;
+                  if (files && files[0]) {
+                    const file = files[0];
+                    setFormData((prev) => ({ ...prev, image_file: file }));
+                  }
+                }}
+                accept="image/*"
+              />
+            </Button>
+            {formData.image_file && (
+              <Typography component="span" sx={{ paddingLeft: 1 }}>
+                {formData.image_file.name} - {formData.image_file.size} bytes
+              </Typography>
+            )}
+          </Grid>
+          <Grid item xs={12}>
+            <FormControlLabel
+              control={<Switch name="is_active" checked={formData.is_active} onChange={handleInputChange} />}
+              label="Active"
+            />
+          </Grid>
+        </Grid>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, gap: 2 }}>
+          <Button component={Link} to="/dashboard/menu-detail">
+            Go Back
+          </Button>
+          <Button type="submit" variant="contained">
+            Submit
+          </Button>
+        </Box>
+      </form>
+    </Box>
   );
 };
 

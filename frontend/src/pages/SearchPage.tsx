@@ -1,27 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react';
 import { Box, Container, Grid, Typography } from '@mui/material';
-import CanteenBanner from '../components/organisms/CanteenBanner';
 import axiosInstance from '../utils/AxiosInstance';
-import MenuContainer from '../components/organisms/MenuItemContainer';
 import { useLoading } from '../context/LoadingContext';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import MenuItemCard from '../components/molecules/MenuItemCard';
 
-export const canteenID = 3;
 
 const SearchPage: React.FC = () => {
-  const [canteen, setCanteen] = useState<any>(null);
-  const [ledgerData, setLedgerData] = useState<any>(null); // Changed menuData to ledgerData
   const { setLoading } = useLoading();
   const [menuItems, setMenuItems] = useState<MenuItemTypeI[]>([]);
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-
-  console.log('params', params);
-  console.log('location', location);
-  console.log(params.get('name'));
-  console.log(params.toString());
 
   useEffect(() => {
     const fetchMenuItems = async () => {
@@ -42,8 +32,6 @@ const SearchPage: React.FC = () => {
   return (
     <React.Fragment>
       <Container maxWidth="xl" disableGutters>
-        <Box sx={{ flexGrow: 1, bgcolor: 'white', p: 1 }}>{canteen && <CanteenBanner canteen={canteen} />}</Box>
-
         <Box sx={{ flexGrow: 1, bgcolor: 'white', p: 2 }}>
           <Typography variant="h4" gutterBottom>
             Search Results

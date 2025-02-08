@@ -33,6 +33,8 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests()
                 .requestMatchers("/api/v1/auth/**", "/checkout", "/checkout-process", "/payment-verification/**")
                 .permitAll()
+                .requestMatchers("/api/v1/auth/change-password")
+                .authenticated()
                 .requestMatchers("/api/v1**")
                 .authenticated()
                 .anyRequest()

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Box, Typography, Paper, Divider, Button, Chip } from '@mui/material';
+import { Box, Typography, Paper, Divider, Button, Chip, Container } from '@mui/material';
 import axiosInstance, { API_SERVER } from '../utils/AxiosInstance';
 import ReviewIcon from '@mui/icons-material/RateReview';
 import { useNavigate } from 'react-router-dom';
@@ -89,8 +89,8 @@ const MyOrderHistory: React.FC = () => {
 
   return (
     <React.Fragment>
-      <Box sx={{ p: 2, maxWidth: 800, margin: 'auto' }}>
-        <Typography variant="h4" sx={{ mb: 2 }}>
+      <Container maxWidth="md" sx={{ p: 2, margin: 'auto' }}>
+        <Typography variant="h5" sx={{ mb: 2 }}>
           My Order History
         </Typography>
 
@@ -99,17 +99,17 @@ const MyOrderHistory: React.FC = () => {
             <Typography variant="h6" sx={{ mb: 1 }}>
               Order ID: {order.id}
             </Typography>
-            <Box sx={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <Box sx={{ display: 'flex', gap: '8px', mb:"8px", flexWrap: 'wrap' }}>
               <Typography variant="body1">
-                <Chip label={`Status: ${order.orderStatus}`} color="primary" size="small" />
+                <Chip label={`Status: ${order.orderStatus}`} color="default" size="small" />
               </Typography>
               <Typography variant="body1">
-                <Chip label={`Payment Method: ${order.paymentMethod}`} color="secondary" size="small" />
+                <Chip label={`Payment Method: ${order.paymentMethod}`} color="default" size="small" />
               </Typography>
               <Typography variant="body1">
                 <Chip
                   label={` Payment Status: ${order.paymentStatus}`}
-                  color={order.paymentStatus === 'COMPLETED' ? 'success' : 'warning'}
+                  color='default'
                   size="small"
                 />
               </Typography>
@@ -143,7 +143,7 @@ const MyOrderHistory: React.FC = () => {
             </Button>
           </Paper>
         ))}
-      </Box>
+      </Container>
     </React.Fragment>
   );
 };

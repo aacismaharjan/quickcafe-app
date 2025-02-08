@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import axios, { AxiosError } from 'axios';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { API_SERVER } from '../utils/AxiosInstance';
 import { useLoading } from '../context/LoadingContext';
+import { useNavigate } from 'react-router-dom';
 
 interface User {
   id: number;
@@ -20,7 +20,8 @@ interface User {
 }
 
 interface AuthResponse {
-  token: string;
+  accessToken: string;
+  refreshToken: string;
   user: User;
 }
 
@@ -41,9 +42,10 @@ export const useAuth = () => {
     setLoading(isLoading);
   }, [setLoading, isLoading]);
 
+
   useEffect(() => {
     const initializeAuth = async () => {
-      const tokenData = localStorage.getItem('token');
+      const tokenData = localStorage.getItem('accessToken');
       const userData = localStorage.getItem('user');
 
       if (userData && tokenData) {
@@ -65,18 +67,20 @@ export const useAuth = () => {
         password,
       });
 
-      const { token, user } = response.data;
-      if (token && user) {
-        localStorage.setItem('token', token);
+      const { accessToken, refreshToken, user } = response.data;
+      if (accessToken && user) {
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
         localStorage.setItem('user', JSON.stringify(user));
+
         setUser(user);
         toast.success('Login successful!');
         navigate('/');
       }
     } catch (error) {
       const authError = (error as AxiosError<AuthError>).response?.data;
-      const { statusCode, message, details } = authError || {};
-      toast.error(`Error ${statusCode || ''}: ${message || ''} - ${details || 'Check your credentials'}`);
+      const { message } = authError || {};
+      toast.error(`${message}`);
     }
   };
 
@@ -89,28 +93,54 @@ export const useAuth = () => {
         password,
       });
 
-      const { token, user } = response.data;
-      if (token && user) {
-        localStorage.setItem('token', token);
-        localStorage.setItem('token', JSON.stringify(user));
+      const { user } = response.data;
+      if (user) {
         setUser(user);
-        toast.success('Registration successful!');
+        toast.success('Registration completed. Please verify your email to login.');
         navigate('/');
       }
     } catch (error) {
       const authError = (error as AxiosError<AuthError>).response?.data;
-      const { statusCode, message, details } = authError || {};
-      toast.error(`Error ${statusCode || ''}: ${message || ''} - ${details || 'Unable to register'}`);
+      const { message } = authError || {};
+      toast.error(`${message}`);
     }
   };
 
+  const verify = async (accessToken: string) => {
+    try {
+      await axios.post<AuthResponse>(`${API_SERVER}/api/v1/auth/verify`, {
+        accessToken,
+      });
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const refresh = async () =>  {
+    const refreshToken = localStorage.getItem('refreshToken');
+  
+    if (!refreshToken) return null;
+
+    try {
+      const response = await axios.post(`${API_SERVER}/api/v1/auth/refresh`, {refreshToken});
+      localStorage.setItem('accessToken', response.data.accessToken);
+      return response.data.accessToken;
+    }catch {
+      logout();
+      return null;
+    }
+  }
+
   const logout = (): void => {
-    localStorage.removeItem('token');
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
+
     setUser(null);
     toast.info('Logged out successfully.');
     navigate('/login');
   };
 
-  return { user, login, register, logout, token, isLoading };
+  return { user, login,refresh, register,verify, logout, token, isLoading };
 };

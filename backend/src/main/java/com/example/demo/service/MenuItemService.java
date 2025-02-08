@@ -46,8 +46,6 @@ public class MenuItemService {
     }
 
     public List<MenuItem> getAllMenuItems(Map<String, String> queryParams) {
-    	System.out.println(queryParams);
-    	System.out.println("From getAllMenuItems");
     	Specification<MenuItem> spec = (root, query, criteriaBuilder) -> {
     		List<Predicate> predicates = new ArrayList<>();
     		queryParams.forEach((String key, String value) -> {

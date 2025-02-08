@@ -26,6 +26,7 @@ import { CartContext } from '../context/CartContext';
 import { useAuth } from '../hooks/useAuth';
 import { useLoading } from '../context/LoadingContext';
 import RatingDisplay from '../components/molecules/RatingDisplay';
+import { getPrice } from './CartPage';
 
 const MenuItemPage: React.FC = () => {
   const { menuItemId } = useParams<{ menuItemId: string }>();
@@ -176,7 +177,7 @@ const MenuItemPage: React.FC = () => {
               </Box>
 
               <Typography variant="h6" color="primary" sx={{ mb: 2 }}>
-                ${menuItem.price.toFixed(2)}
+                {getPrice(menuItem.price)}
               </Typography>
 
               <Button

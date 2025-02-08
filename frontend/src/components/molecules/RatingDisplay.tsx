@@ -4,7 +4,7 @@ import { Box } from '@mui/material';
 const RatingDisplay = ({ rating, reviewersNo }: ReviewsStat) => {
   return (
     <div>
-      <Rating name="read-only" value={rating || 0} readOnly />
+      <Rating name="read-only" value={rating || 0} precision={0.5} readOnly />
       <Box style={{ display: 'inline-block', position: 'relative', top: -6, left: 8 }}>({reviewersNo})</Box>
     </div>
   );

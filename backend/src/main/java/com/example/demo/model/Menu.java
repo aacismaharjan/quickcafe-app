@@ -1,8 +1,10 @@
 package com.example.demo.model;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -30,12 +32,31 @@ public class Menu {
 
     private Boolean is_active = true;
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch=FetchType.EAGER)
     @JoinTable(
             name="tbl_menu_menu_items",
             joinColumns = @JoinColumn(name = "menu_id"),
             inverseJoinColumns  = @JoinColumn(name = "item_id"),
             uniqueConstraints = @UniqueConstraint(columnNames = {"menu_id", "item_id"})
     )
-    private List<MenuItem> items = new ArrayList<>();
+    private Set<MenuItem> items = new HashSet<>();
+
+
+
+    // Many-to-many relationship with Ledger
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "menus", cascade= {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    private List<Ledger> ledgers = new ArrayList<>();  // A menu can be associated with multiple ledgers
+
+    @Override
+    public String toString() {
+        return "Menu{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", status='" + status + '\'' +
+                ", created_at=" + created_at +
+                ", is_active=" + is_active +
+                '}';
+    }
 }

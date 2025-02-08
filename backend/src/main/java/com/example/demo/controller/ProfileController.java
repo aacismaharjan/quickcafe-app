@@ -6,16 +6,12 @@ import com.example.demo.utils.AuthUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.coyote.Response;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
-
-import com.example.demo.auth.AuthenticationRequest;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -24,7 +20,6 @@ import javax.crypto.spec.SecretKeySpec;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/profile") // Base mapping for the controller
@@ -62,7 +57,8 @@ public class ProfileController {
     public ResponseEntity<Object> getAllOrderByUserId(@NonNull HttpServletRequest request) {
         try {
             User user = authUtil.getUserFromRequestToken(request);
-            return ResponseEntity.ok(orderService.getAllOrderByUserId(user.getId()));
+            List<Order> orders = orderService.getAllOrderByUserId(user.getId());
+            return ResponseEntity.ok(orders);
         } catch(Exception e) {
             ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
@@ -135,8 +131,8 @@ public class ProfileController {
            if ("COMPLETE".equals(status)) {
                Order order = orderService.getOrderById(orderId).orElseThrow(()-> new RuntimeException(("Couldn't find.")));
                if (order != null) {
-                   order.setPaymentStatus(PaymentStatus.COMPLETED); // 1 for Paid
-                   order.setOrderStatus("Confirmed");
+                   order.setPaymentStatus(PaymentStatus.PAID); // 1 for Paid
+                   order.setOrderStatus(OrderStatus.RECEIVED);
                    orderService.updateOrder(order.getId(), order);
 //                   return ResponseEntity.ok("Order updated successfully");
 

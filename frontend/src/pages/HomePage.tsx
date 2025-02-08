@@ -5,13 +5,14 @@ import CanteenBanner from '../components/organisms/CanteenBanner';
 import axiosInstance from '../utils/AxiosInstance';
 import MenuContainer from '../components/organisms/MenuItemContainer';
 import { useLoading } from '../context/LoadingContext';
+import useStoredIDs from '../utils/useStoredIDs';
 
-export const canteenID = 3;
 
 const HomePage: React.FC = () => {
   const [canteen, setCanteen] = useState<any>(null);
   const [ledgerData, setLedgerData] = useState<any>(null); // Changed menuData to ledgerData
   const { setLoading } = useLoading();
+  const {canteenID, ledgerID} = useStoredIDs();
 
   useEffect(() => {
     const fetchCanteenData = async () => {
@@ -19,6 +20,7 @@ const HomePage: React.FC = () => {
       try {
         const response = await axiosInstance.get(`/canteens/${canteenID}`);
         setCanteen(response.data);
+        setLedgerData(response.data.activeLedger)
       } catch (error) {
         console.error('Error fetching canteen data:', error);
       } finally {
@@ -29,21 +31,21 @@ const HomePage: React.FC = () => {
     fetchCanteenData();
   }, []);
 
-  useEffect(() => {
-    const fetchMenuData = async () => {
-      setLoading(true);
-      try {
-        const response = await axiosInstance.get('/ledgers/2'); // Adjust the endpoint as necessary
-        setLedgerData(response.data); // Set your ledger data
-      } catch (error) {
-        console.error('Error fetching ledger data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchMenuData = async () => {
+  //     setLoading(true);
+  //     try {
+  //       const response = await axiosInstance.get(`/ledgers/${ledgerID}`); // Adjust the endpoint as necessary
+  //       setLedgerData(response.data); // Set your ledger data
+  //     } catch (error) {
+  //       console.error('Error fetching ledger data:', error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchMenuData();
-  }, []);
+  //   fetchMenuData();
+  // }, []);
 
   return (
     <React.Fragment>
