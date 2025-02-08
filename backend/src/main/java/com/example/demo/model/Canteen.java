@@ -27,7 +27,7 @@ public class Canteen {
     @NotBlank(message = "Name cannot be blank")
     private String name;
 
-    private String image_url = "Canteen-Logo.jpg";
+    private String image_url;
 
     @NotBlank(message = "Address cannot be blank")
     private String address;
@@ -46,7 +46,7 @@ public class Canteen {
     private String closing_hours = "10:00 PM";
 
     @ManyToOne
-    @JoinColumn(name="user_id", nullable = false)
+    @JoinColumn(name="user_id", nullable = true)
     private User user;
 
     private Double latitude  = 27.7172;

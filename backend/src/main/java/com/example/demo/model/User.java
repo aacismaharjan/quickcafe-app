@@ -32,6 +32,7 @@ public class User implements UserDetails{
 	private String lastName;
 	private String email;
 	private String password;
+	private String image_url;
 
 	private boolean enabled = false;
 	

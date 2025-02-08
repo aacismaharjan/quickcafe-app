@@ -52,4 +52,30 @@ public class UserService {
         }
         userRepository.deleteById(id);
     }
+
+    public User partiallyUpdateUser(Integer userId, User user) {
+// Retrieve the current user from the database
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Update the fields that are not null in the user object
+        if (user.getFirstName() != null) {
+            existingUser.setFirstName(user.getFirstName());
+        }
+
+        if (user.getLastName() != null) {
+            existingUser.setLastName(user.getLastName());
+        }
+        if (user.getEmail() != null) {
+            existingUser.setEmail(user.getEmail());
+        }
+
+        // If an image is updated, handle saving the image URL or path (assuming image handling logic is present)
+        if (user.getImage_url() != null) {
+            existingUser.setImage_url(user.getImage_url());
+        }
+
+        // Save the updated user object
+        return userRepository.save(existingUser);
+    }
 }

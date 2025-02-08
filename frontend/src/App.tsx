@@ -1,4 +1,4 @@
-import { ToastContainer } from 'react-toastify';
+import { Slide, ToastContainer } from 'react-toastify';
 import AppRoutes from './routes';
 import 'react-toastify/dist/ReactToastify.css';
 import { ThemeProvider } from '@mui/material';
@@ -19,7 +19,7 @@ function App() {
             <BrowserRouter>
               <AppRoutes />
             </BrowserRouter>
-            <ToastContainer position="top-center" />
+            <ToastContainer position="top-center"  newestOnTop={true} closeOnClick theme="colored" transition={Slide} limit={5} autoClose={3000} />
           </CartProvider>
         </ThemeProvider>
       </LoadingProvider>

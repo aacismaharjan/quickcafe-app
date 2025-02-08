@@ -21,6 +21,7 @@ interface UserTypeI {
   accountNonExpired: boolean;
   accountNonLocked: boolean;
   credentialsNonExpired: boolean;
+  image_url: string;
 }
 
 export type OrderStatus = "RECEIVED" | "IN_PROGRESS" | "COMPLETED" | "CANCELED";

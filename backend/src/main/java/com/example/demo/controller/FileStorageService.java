@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,20 +13,42 @@ import java.util.UUID;
 
 @Service
 public class FileStorageService {
+
     @Value("${file.upload-dir}")
-    private String uploadDir;
+    private String defaultUploadDir;
 
-
-    public String saveFile(MultipartFile file) throws Exception {
+    /**
+     * Saves a file to the specified directory. If no directory is provided, uses the default.
+     *
+     * @param file       The file to save
+     * @param customPath (Optional) The subdirectory within the default upload directory
+     * @return The relative file path
+     * @throws IOException if file saving fails
+     */
+    public String saveFile(MultipartFile file, String customPath) throws IOException {
+        // Generate a unique filename
         String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-        Path filePath = Paths.get(uploadDir, fileName);
 
-        // Create directory if it doesn't exist
+        // Determine the directory to save the file
+        String uploadDirectory = (customPath != null && !customPath.isEmpty())
+                ? Paths.get(defaultUploadDir, customPath).toString()
+                : defaultUploadDir;
+
+        Path filePath = Paths.get(uploadDirectory, fileName);
+
+        // Ensure the directory exists
         Files.createDirectories(filePath.getParent());
 
-        // Save the file to the directory
+        // Save the file
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-        return "uploads/" + fileName;
+        return Paths.get(customPath != null ? "uploads/" + customPath :  "uploads/" , fileName).toString().replace("\\", "/");
+    }
+
+    /**
+     * Overloaded method to save a file using only the default upload directory.
+     */
+    public String saveFile(MultipartFile file) throws IOException {
+        return saveFile(file, null);
     }
 }

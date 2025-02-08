@@ -18,6 +18,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByUserIdOrderByCreatedAtDesc(int userId);
     long countByOrderStatus(OrderStatus orderStatus);
 
+    List<Order> findAllByOrderByCreatedAtDesc();
+
     @Query("SELECT SUM(od.unitPrice * od.quantity) FROM Order o JOIN o.orderDetails od WHERE o.orderStatus = :status")
     Double sumTotalRevenueByOrderStatus(OrderStatus status);
 

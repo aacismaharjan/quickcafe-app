@@ -14,6 +14,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -28,6 +29,7 @@ public class ProfileController {
     private final FavoriteService favoriteService; 
     private final OrderService orderService;
     private final AuthUtil authUtil;
+    private final FileStorageService fileStorageService;
 
     @Value("${frontend.server}")
     private String FRONTEND_SERVER;
@@ -35,11 +37,12 @@ public class ProfileController {
     private static final String SECRET_KEY = "8gBm/:&EnhH.1/q"; // Your secret key
     
     @Autowired
-    public ProfileController(UserService userService, AuthUtil authUtil, FavoriteService favoriteService, OrderService orderService) {
+    public ProfileController(UserService userService, AuthUtil authUtil, FavoriteService favoriteService, OrderService orderService, FileStorageService fileStorageService) {
     	this.userService = userService;
     	this.authUtil = authUtil;
     	this.favoriteService = favoriteService;
         this.orderService = orderService;
+        this.fileStorageService = fileStorageService;
     }
 
     @GetMapping
@@ -51,6 +54,32 @@ public class ProfileController {
     public User updateCurrentUser(@NonNull HttpServletRequest request, @RequestBody User user) throws Exception {
         Integer userId = authUtil.getUserIdFromRequestToken(request);
         return userService.updateUser(userId, user);
+    }
+
+    @PatchMapping
+    public ResponseEntity<User> updateCurrentUser(
+            @NonNull HttpServletRequest request,
+            @RequestPart("profileJson") String profileJson,
+            @RequestPart(value = "image_url", required = false) MultipartFile imageFile) {
+        try {
+            Integer userId = authUtil.getUserIdFromRequestToken(request);
+
+            // Convert JSON string to User object
+            ObjectMapper objectMapper = new ObjectMapper();
+            User user = objectMapper.readValue(profileJson, User.class);
+
+            // If an image is uploaded, save and update the image URL
+            if (imageFile != null && !imageFile.isEmpty()) {
+                String imagePath = fileStorageService.saveFile(imageFile, "profile");
+                user.setImage_url(imagePath);
+            }
+
+            // Update the user details
+            User updatedUser = userService.partiallyUpdateUser(userId, user);
+            return ResponseEntity.ok(updatedUser);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GetMapping("/orders")

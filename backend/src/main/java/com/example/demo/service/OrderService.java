@@ -25,7 +25,7 @@ public class OrderService {
     }
 
     public List<Order> getAllOrder() {
-        return orderRepository.findAll();
+        return orderRepository.findAllByOrderByCreatedAtDesc();
     }
 
     public List<Order> getAllOrderByUserId(int userId) {

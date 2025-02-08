@@ -4,25 +4,14 @@ import { toast } from 'react-toastify';
 import { API_SERVER } from '../utils/AxiosInstance';
 import { useLoading } from '../context/LoadingContext';
 import { useNavigate } from 'react-router-dom';
+import {  UserTypeI } from '../global';
 
-interface User {
-  id: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: string;
-  enabled: boolean;
-  username: string;
-  authorities: { authority: string }[];
-  credentialsNonExpired: boolean;
-  accountNonExpired: boolean;
-  accountNonLocked: boolean;
-}
+
 
 interface AuthResponse {
   accessToken: string;
   refreshToken: string;
-  user: User;
+  user: UserTypeI;
 }
 
 interface AuthError {
@@ -32,7 +21,7 @@ interface AuthError {
 }
 
 export const useAuth = () => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserTypeI | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { setLoading } = useLoading();
@@ -49,7 +38,7 @@ export const useAuth = () => {
       const userData = localStorage.getItem('user');
 
       if (userData && tokenData) {
-        const tempUser: User = JSON.parse(userData);
+        const tempUser: UserTypeI = JSON.parse(userData);
         const tempToken = tokenData;
         setUser(tempUser);
         setToken(tempToken);
@@ -132,6 +121,13 @@ export const useAuth = () => {
     }
   }
 
+  const handleChangeUser = (user: UserTypeI) => {
+    console.log("USER", user);
+    setUser(user);
+    console.log("AFTER", user);
+    localStorage.setItem("user", JSON.stringify(user));
+  } 
+
   const logout = (): void => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
@@ -142,5 +138,7 @@ export const useAuth = () => {
     navigate('/login');
   };
 
-  return { user, login,refresh, register,verify, logout, token, isLoading };
+  console.log("USER CHANGED?", user);
+
+  return { user, login,refresh, register,verify, logout, token, isLoading, changeUser: handleChangeUser};
 };

@@ -40,7 +40,7 @@ public class MenuItem {
     @Positive(message = "Price must be positive")
     private double price = 0.0;
 
-    private String image_url = "Cappuccino-Coffee.jpg";
+    private String image_url;
 
     @NotNull(message = "Preparation time is required")
     @Positive(message = "Preparation time must be positive")

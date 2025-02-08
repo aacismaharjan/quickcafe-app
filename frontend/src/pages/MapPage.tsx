@@ -9,8 +9,11 @@ import { useLoading } from '../context/LoadingContext';
 import { useNavigate } from 'react-router-dom';
 import { LocationCity, PeopleAlt } from '@mui/icons-material';
 
-
-const CustomPopup: React.FC<{ canteen: CanteenTypeI; isSelected: boolean, handleBrowse: (id: number) => void }> = ({ canteen, isSelected, handleBrowse }) => {
+const CustomPopup: React.FC<{ canteen: CanteenTypeI; isSelected: boolean; handleBrowse: (id: number) => void }> = ({
+  canteen,
+  isSelected,
+  handleBrowse,
+}) => {
   const navigate = useNavigate();
   const map = useMap();
   const popupRef = useRef<L.Popup | null>(null);
@@ -28,10 +31,12 @@ const CustomPopup: React.FC<{ canteen: CanteenTypeI; isSelected: boolean, handle
     }
   }, [canteen, map, isSelected]); // Dependency array
 
-  if(!canteen) return
+  if (!canteen) return;
+
+  const image_url = `http://localhost:8080/${canteen.image_url}`;
 
   return (
-    <Popup  ref={popupRef} position={[canteen.latitude, canteen.longitude]} >
+    <Popup ref={popupRef} position={[canteen.latitude, canteen.longitude]}>
       <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', p: 2 }}>
         <div
           style={{
@@ -43,14 +48,18 @@ const CustomPopup: React.FC<{ canteen: CanteenTypeI; isSelected: boolean, handle
           }}
         >
           <img
-            src="https://img.freepik.com/premium-vector/restaurant-logo-design_1071427-469.jpg"
+            src={
+              canteen.image_url
+                ? image_url
+                : 'https://img.freepik.com/premium-vector/restaurant-logo-design_1071427-469.jpg'
+            }
             alt={canteen.name}
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />
         </div>
         <h3 style={{ fontSize: '18px', fontWeight: 600, marginTop: 10 }}>{canteen.name}</h3>
         <p style={{ fontSize: '14px', color: '#666', marginBottom: 5 }}>
-          ⭐ {canteen.reviewsStat.rating.toFixed(1) || '4.7'} | <LocationCity sx={{fontSize: 16}} /> {canteen.address}
+          ⭐ {canteen.reviewsStat.rating.toFixed(1) || '4.7'} | <LocationCity sx={{ fontSize: 16 }} /> {canteen.address}
         </p>
         <p style={{ fontSize: '13px', color: '#444', marginBottom: 10 }}>📞 {canteen.phone_no}</p>
         <Button
@@ -93,10 +102,9 @@ const MapPage: React.FC = () => {
     fetchCanteens();
   }, [canteenID]);
 
- 
-
   // Create custom marker
   const createCustomMarker = (canteen: CanteenTypeI) => {
+    const image_url = `http://localhost:8080/${canteen.image_url}`;
     return L.divIcon({
       className: 'custom-marker',
       html: `
@@ -130,7 +138,7 @@ const MapPage: React.FC = () => {
             box-shadow: 0px 0px 0px 1px rgba(255,0,0,0.2);
             overflow: hidden;
           ">
-            <img src="https://img.freepik.com/premium-vector/restaurant-logo-design_1071427-469.jpg" alt="${canteen.name}" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="${image_url}" alt="${canteen.name}" style="width: 100%; height: 100%; object-fit: cover;">
           </div>
           <div style="
             width: 0;
@@ -159,7 +167,7 @@ const MapPage: React.FC = () => {
   };
 
   console.log(selectedCanteen);
-  console.log("cateens", canteens);
+  console.log('cateens', canteens);
 
   if (!selectedCanteen || canteens.length === 0) {
     return;
@@ -176,14 +184,26 @@ const MapPage: React.FC = () => {
         className="absolute top-0 left-0 w-full h-full z-0"
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        {canteens.map((canteen) => (
-          <Marker key={canteen.id}  position={[canteen.latitude, canteen.longitude]} icon={createCustomMarker(canteen)}>
-            {canteen && <CustomPopup canteen={canteen} isSelected={selectedCanteen?.id === canteen.id} handleBrowse={(id: number) => {
-              setCanteenID(id);
-              navigate("/");
-            }} />}
-          </Marker>
-        ))}
+        {canteens.map((canteen) => {
+          return (
+            <Marker
+              key={canteen.id}
+              position={[canteen.latitude, canteen.longitude]}
+              icon={createCustomMarker(canteen)}
+            >
+              {canteen && (
+                <CustomPopup
+                  canteen={canteen}
+                  isSelected={selectedCanteen?.id === canteen.id}
+                  handleBrowse={(id: number) => {
+                    setCanteenID(id);
+                    navigate('/');
+                  }}
+                />
+              )}
+            </Marker>
+          );
+        })}
       </MapContainer>
 
       <div
@@ -191,29 +211,38 @@ const MapPage: React.FC = () => {
         style={{ top: 0, left: 0, minHeight: '100vh' }}
       >
         <h2 className="text-lg font-bold mb-2">Canteens</h2>
-        {canteens.map((canteen) => (
-          <Card
-            key={canteen.id}
-            onClick={() => setSelectedCanteen(canteen)}
-            className={`cursor-pointer mb-2 hover:bg-gray-100 transition ${
-              selectedCanteen?.id === canteen.id ? 'border-blue-500 border-2' : ''
-            }`}
-          >
-            <CardContent className="flex items-center p-3">
-              <div className="w-12 h-12 rounded-full bg-gray-200 mr-4 overflow-hidden">
-                <img
-                  src="https://img.freepik.com/premium-vector/restaurant-logo-design_1071427-469.jpg"
-                  alt={canteen.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div>
-                <h3 className="font-semibold">{canteen.name}</h3>
-                <p className="text-sm text-gray-600">⭐ {canteen.reviewsStat.rating.toFixed(1) || '4.7'} <IconButton size="small"><PeopleAlt sx={{fontSize: "18px"}} /></IconButton>({canteen.reviewsStat.reviewersNo})</p>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+        {canteens.map((canteen) => {
+           const image_url = `http://localhost:8080/${canteen.image_url}`;
+          return (
+            <Card
+              key={canteen.id}
+              onClick={() => setSelectedCanteen(canteen)}
+              className={`cursor-pointer mb-2 hover:bg-gray-100 transition ${
+                selectedCanteen?.id === canteen.id ? 'border-blue-500 border-2' : ''
+              }`}
+            >
+              <CardContent className="flex items-center p-3">
+                <div className="w-12 h-12 rounded-full bg-gray-200 mr-4 overflow-hidden">
+                  <img
+                    src={image_url}
+                    alt={canteen.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div>
+                  <h3 className="font-semibold">{canteen.name}</h3>
+                  <p className="text-sm text-gray-600">
+                    ⭐ {canteen.reviewsStat.rating.toFixed(1) || '4.7'}{' '}
+                    <IconButton size="small">
+                      <PeopleAlt sx={{ fontSize: '18px' }} />
+                    </IconButton>
+                    ({canteen.reviewsStat.reviewersNo})
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )
+        })}
 
         <div className="flex justify-between mt-4">
           <Button variant="outlined" color="secondary" onClick={handleGoBack}>

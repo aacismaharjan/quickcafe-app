@@ -5,9 +5,12 @@ import { toast } from 'react-toastify';
 import { useLoading } from '../context/LoadingContext';
 import { useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
+import FileUploadButtonWithInfo from '../components/molecules/FileUploadButton';
+import { useAuth } from '../hooks/useAuth';
 
 const ProfilePage: React.FC = () => {
   const [profile, setProfile] = useState<any>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [passwordData, setPasswordData] = useState({
     oldPassword: '',
     newPassword: '',
@@ -15,6 +18,7 @@ const ProfilePage: React.FC = () => {
   });
   const navigate = useNavigate();
   const { loading, setLoading } = useLoading();
+  const { changeUser } = useAuth();
 
   // Fetch profile data
   useEffect(() => {
@@ -51,18 +55,39 @@ const ProfilePage: React.FC = () => {
     }));
   };
 
-  // Handle profile update form submission
   const handleSubmit = async (event: React.FormEvent) => {
-    const tempProfile = profile;
-    delete tempProfile['authorities'];
     event.preventDefault();
     try {
-      await axiosInstance.put('/profile', profile); // Update profile
+      const tempProfile = { ...profile };
+      delete tempProfile['authorities'];
+
+      const formData = new FormData();
+      formData.append(
+        'profileJson',
+        JSON.stringify({
+          firstName: profile.firstName,
+          lastName: profile.lastName,
+          email: profile.email,
+        })
+      );
+
+      if (imageFile) {
+        formData.append('image_url', imageFile);
+      }
+
+      const res = await axiosInstance.patch('/profile', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      changeUser(res.data);
+
       toast.info('Profile updated successfully!');
     } catch (err) {
       console.log(err);
       toast.error('Failed to update profile.');
-    } 
+    }
   };
 
   // Handle password change form submission
@@ -75,7 +100,7 @@ const ProfilePage: React.FC = () => {
     try {
       const res = await axiosInstance.post('/auth/change-password', passwordData); // Update password
       toast.info(res.data.message);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       // Type the error as AxiosError to get better type inference
       if (err?.response?.data?.message) {
@@ -84,6 +109,10 @@ const ProfilePage: React.FC = () => {
         toast.error('An unexpected error occurred.');
       }
     }
+  };
+
+  const handleFileChange = (file: File) => {
+    setImageFile(file);
   };
 
   if (loading) return <></>;
@@ -126,6 +155,10 @@ const ProfilePage: React.FC = () => {
                   fullWidth
                   required
                 />
+              </Box>
+
+              <Box mb={2}>
+                <FileUploadButtonWithInfo label="Photo" onFileChange={handleFileChange} />
               </Box>
               <Button disableElevation variant="contained" color="primary" type="submit">
                 Save Changes
