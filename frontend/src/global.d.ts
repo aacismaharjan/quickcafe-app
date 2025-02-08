@@ -97,6 +97,7 @@ interface CanteenTypeI {
   opening_hours: string;
   closing_hours: string;
   user: UserTypeI;
+  reviewsStats: ReviewsStat;
 }
 
 interface LedgerTypeI {

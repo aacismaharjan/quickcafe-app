@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Card, CardContent, Button } from '@mui/material';
+import { Card, CardContent, Button, IconButton } from '@mui/material';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -7,23 +7,10 @@ import axiosInstance from '../utils/AxiosInstance';
 import useStoredIDs from '../utils/useStoredIDs';
 import { useLoading } from '../context/LoadingContext';
 import { useNavigate } from 'react-router-dom';
+import { LocationCity, PeopleAlt } from '@mui/icons-material';
 
-interface Canteen {
-  id: number;
-  name: string;
-  rating: number;
-  logo: string;
-  about: string;
-  address: string;
-  phone_no: string;
-  email: string;
-  opening_hours: string;
-  closing_hours: string;
-  latitude: number;
-  longitude: number;
-}
 
-const CustomPopup: React.FC<{ canteen: Canteen; isSelected: boolean, handleBrowse: (id: number) => void }> = ({ canteen, isSelected, handleBrowse }) => {
+const CustomPopup: React.FC<{ canteen: CanteenTypeI; isSelected: boolean, handleBrowse: (id: number) => void }> = ({ canteen, isSelected, handleBrowse }) => {
   const navigate = useNavigate();
   const map = useMap();
   const popupRef = useRef<L.Popup | null>(null);
@@ -63,7 +50,7 @@ const CustomPopup: React.FC<{ canteen: Canteen; isSelected: boolean, handleBrows
         </div>
         <h3 style={{ fontSize: '18px', fontWeight: 600, marginTop: 10 }}>{canteen.name}</h3>
         <p style={{ fontSize: '14px', color: '#666', marginBottom: 5 }}>
-          ⭐ {canteen.rating || '4.7'} | 📍 {canteen.address}
+          ⭐ {canteen.reviewsStat.rating.toFixed(1) || '4.7'} | <LocationCity sx={{fontSize: 16}} /> {canteen.address}
         </p>
         <p style={{ fontSize: '13px', color: '#444', marginBottom: 10 }}>📞 {canteen.phone_no}</p>
         <Button
@@ -81,8 +68,8 @@ const CustomPopup: React.FC<{ canteen: Canteen; isSelected: boolean, handleBrows
 };
 
 const MapPage: React.FC = () => {
-  const [canteens, setCanteens] = useState<Canteen[]>([]); // State for all canteens
-  const [selectedCanteen, setSelectedCanteen] = useState<Canteen | null>(null); // Selected canteen
+  const [canteens, setCanteens] = useState<CanteenTypeI[]>([]); // State for all canteens
+  const [selectedCanteen, setSelectedCanteen] = useState<CanteenTypeI | null>(null); // Selected canteen
   const { setLoading } = useLoading();
   const navigate = useNavigate();
 
@@ -95,7 +82,7 @@ const MapPage: React.FC = () => {
       try {
         const response = await axiosInstance.get('/canteens');
         setCanteens(response.data); // Assuming the response is an array of canteens
-        setSelectedCanteen(response.data.find((canteen: Canteen) => canteen.id === canteenID) || response.data[0]);
+        setSelectedCanteen(response.data.find((canteen: CanteenTypeI) => canteen.id === canteenID) || response.data[0]);
       } catch (error) {
         console.error('Error fetching canteens:', error);
       } finally {
@@ -109,7 +96,7 @@ const MapPage: React.FC = () => {
  
 
   // Create custom marker
-  const createCustomMarker = (canteen: Canteen) => {
+  const createCustomMarker = (canteen: CanteenTypeI) => {
     return L.divIcon({
       className: 'custom-marker',
       html: `
@@ -222,7 +209,7 @@ const MapPage: React.FC = () => {
               </div>
               <div>
                 <h3 className="font-semibold">{canteen.name}</h3>
-                <p className="text-sm text-gray-600">⭐ {canteen.rating || '4.7'}</p>
+                <p className="text-sm text-gray-600">⭐ {canteen.reviewsStat.rating.toFixed(1) || '4.7'} <IconButton size="small"><PeopleAlt sx={{fontSize: "18px"}} /></IconButton>({canteen.reviewsStat.reviewersNo})</p>
               </div>
             </CardContent>
           </Card>

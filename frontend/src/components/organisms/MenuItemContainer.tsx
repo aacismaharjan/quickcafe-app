@@ -21,10 +21,10 @@ interface MenuContainerProps {
 const MenuContainer: React.FC<MenuContainerProps> = ({ menu }) => {
   return (
     <Box sx={{ mb: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        {menu.name}
+      <Typography variant="h5" color="primary" gutterBottom sx={{fontWeight: "bold"}}>
+        {menu.name.toUpperCase()}
       </Typography>
-      <Typography variant="body1" color="text.secondary" gutterBottom>
+      <Typography variant="body1" color="text.secondary" gutterBottom sx={{marginBottom: 2}}>
         {menu.description}
       </Typography>
       <Grid container spacing={2}>

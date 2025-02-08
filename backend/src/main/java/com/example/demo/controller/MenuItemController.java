@@ -47,6 +47,13 @@ public class MenuItemController {
     	List<MenuItem> menuItems = menuItemService.getAllMenuItems(queryString);
         return ResponseEntity.ok(menuItems);
     }
+
+    @GetMapping(path="/search")
+    public ResponseEntity<Map<String, Object> > getAllMenuItemsWithPagination(@RequestParam Map<String, String> queryString) {
+        Map<String, Object> menuItems = menuItemService.getAllMenuItemsWithPagination(queryString);
+        return ResponseEntity.ok(menuItems);
+    }
+
     @GetMapping("/{id}") // Maps to GET /menuitems/{id}
     public ResponseEntity<MenuItem> getMenuItemById(@PathVariable Long id) {
         Optional<MenuItem> menuItem = menuItemService.getMenuItemById(id);

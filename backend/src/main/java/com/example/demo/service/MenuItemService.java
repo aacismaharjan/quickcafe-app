@@ -5,6 +5,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +17,6 @@ import com.example.demo.utils.APIFeatures;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
-import java.awt.print.Pageable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -108,6 +109,87 @@ public class MenuItemService {
     	};
     	return menuItemRepository.findAll(spec);
     }
+
+	public Map<String, Object> getAllMenuItemsWithPagination(Map<String, String> queryParams) {
+		// Extract pagination parameters
+		int page = Integer.parseInt(queryParams.getOrDefault("page", "0"));
+		int size = Integer.parseInt(queryParams.getOrDefault("size", "10"));
+
+		// Create pageable object for pagination
+		Pageable pageable = PageRequest.of(page, size);
+
+
+		Specification<MenuItem> spec = (root, query, criteriaBuilder) -> {
+			List<Predicate> predicates = new ArrayList<>();
+			queryParams.forEach((String key, String value) -> {
+				Pattern pattern = Pattern.compile("(\\w+)(?:\\[(gte|gt|lte|lt)\\])?$");
+				Matcher matcher = pattern.matcher(key);
+
+				if(matcher.matches()) {
+					String paramName = matcher.group(1);
+					String operator = matcher.group(2);
+					Class<?> fieldType = null;
+
+					try {
+						fieldType = root.get(paramName).getJavaType();
+					}catch(Exception e) {
+						// System.out.println(e);
+					}
+
+
+					if (fieldType == String.class) {
+						predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get(key)), "%" + value.toLowerCase() + "%"));
+					} else if(fieldType == Double.class || fieldType == Integer.class) {
+						switch(operator) {
+							case "gte":
+								predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get(paramName), Double.parseDouble(value)));
+								break;
+							case "gt":
+								predicates.add(criteriaBuilder.greaterThan(root.get(paramName), Double.parseDouble(value)));
+								break;
+							case "lte":
+								predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get(paramName), Double.parseDouble(value)));
+								break;
+							case "lt":
+								predicates.add(criteriaBuilder.lessThan(root.get(paramName), Double.parseDouble(value)));
+								break;
+						}
+					}
+				}
+
+			});
+
+			// Apply sorting if the 'sort' parameter exists
+			if(queryParams.containsKey("sort")) {
+				String sortParam = queryParams.get("sort");
+				List<Order> orders = Arrays.stream(sortParam.split(","))
+						.map(sortField -> {
+							boolean isDescending = sortField.startsWith("-");
+							String fieldName = isDescending ? sortField.substring(1) : sortField;
+
+							if(isDescending) {
+								return criteriaBuilder.desc(root.get(fieldName));
+							}else {
+								return criteriaBuilder.asc(root.get(fieldName));
+							}
+						})
+						.collect(Collectors.toList());
+				query.orderBy(orders);
+			}
+
+			return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+		};
+
+		// Return paginated result
+		Page<MenuItem> result = menuItemRepository.findAll(spec, pageable);
+
+		// Prepare the response structure without 'next' and 'previous'
+		Map<String, Object> response = new HashMap<>();
+		response.put("count", result.getTotalElements());
+		response.put("results", result.getContent());
+
+		return response;
+	}
 
     public Optional<MenuItem> getMenuItemById(Long id) {
         return menuItemRepository.findById(id);

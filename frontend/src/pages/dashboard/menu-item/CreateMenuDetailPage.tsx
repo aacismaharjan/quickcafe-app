@@ -16,6 +16,7 @@ import DashboardLayout from '../DashboardLayout';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import FileUploadButtonWithInfo from '../../../components/molecules/FileUploadButton';
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -210,31 +211,13 @@ const CreateMenuDetailPage = () => {
             />
           </Grid>
           <Grid item xs={12}>
-            <Button
-              component="label"
-              role={undefined}
-              variant="contained"
-              tabIndex={-1}
-              startIcon={<CloudUploadIcon />}
-            >
-              Upload product photo
-              <VisuallyHiddenInput
-                type="file"
-                onChange={(event) => {
-                  const files = event.target.files;
-                  if (files && files[0]) {
-                    const file = files[0];
-                    setFormData((prev) => ({ ...prev, image_file: file }));
-                  }
-                }}
-                accept="image/*"
-              />
-            </Button>
-            {formData.image_file && (
-              <Typography component="span" sx={{ paddingLeft: 1 }}>
-                {formData.image_file.name} - {formData.image_file.size} bytes
-              </Typography>
-            )}
+
+            <FileUploadButtonWithInfo
+              label="Upload product photo"
+              onFileChange={(file: File) => {
+                setFormData((prev) => ({ ...prev, image_file: file }));
+              }} // Pass the file change handler
+            />
           </Grid>
           <Grid item xs={12}>
             <FormControlLabel

@@ -11,10 +11,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Entity
 @Table(name="tbl_canteens")
@@ -74,6 +71,47 @@ public class Canteen {
                 .filter(ledger -> ledger.getIsActive() != null && ledger.getIsActive())  // Ensure it's active
                 .filter(ledger -> ledger.getCanteen() != null).min(Comparator.comparing(Ledger::getCreatedAt))
                 .orElse(null);
+    }
+
+    @Transient
+    public ReviewStats getReviewsStat() {
+        if (ledgers == null || ledgers.isEmpty()) {
+            return new ReviewStats(0.0f, 0);
+        }
+
+        float totalRating = 0.0f;
+        int reviewerCount = 0;
+
+        // Iterate through all Ledgers
+        for (Ledger ledger : ledgers) {
+            // Get Menus related to the Ledger
+            Set<Menu> menus = ledger.getMenus();
+            if (menus != null) {
+                // Iterate through all Menus
+                for (Menu menu : menus) {
+                    // Get MenuItems related to the Menu
+                    Set<MenuItem> menuItems = menu.getItems();
+                    if (menuItems != null) {
+                        // Iterate through all MenuItems
+                        for (MenuItem menuItem : menuItems) {
+                            // Get Reviews related to the MenuItem
+                            List<Review> reviews = menuItem.getReviews();
+                            if (reviews != null) {
+                                // Iterate through all Reviews
+                                for (Review review : reviews) {
+                                    totalRating += review.getRating();
+                                    reviewerCount++;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Calculate average rating if there are reviews
+        float averageRating = reviewerCount > 0 ? totalRating / reviewerCount : 0.0f;
+        return new ReviewStats(averageRating, reviewerCount);
     }
 
     @Override
