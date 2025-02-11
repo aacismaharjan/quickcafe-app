@@ -30,6 +30,7 @@ import { ResetPasswordPage } from '../pages/ResetPasswordPage';
 import { useAuth } from '../hooks/useAuth';
 import MapPage from '../pages/MapPage';
 import ReviewsPage from '../pages/dashboard/review/ReviewsPage';
+import { ViewPage } from '../pages/ViewPage';
 
 const AppRoutes: React.FC = () => {
   const { verify, refresh } = useAuth();
@@ -58,6 +59,7 @@ const AppRoutes: React.FC = () => {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
+      <Route path="/view" element={<ViewPage/>}></Route>
 
         <Route path="/map" element={<MapPage />} />
       {/* Protected Routes for Main App */}

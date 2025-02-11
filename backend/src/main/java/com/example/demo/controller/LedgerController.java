@@ -71,29 +71,6 @@ public class LedgerController {
     @PostMapping
     public ResponseEntity<Ledger> createLedger(@RequestBody Ledger ledger) {
        try {
-           if (ledger.getCanteen() != null && ledger.getCanteen().getId() != null) {
-               // Fetch existing Canteen from DB
-               Canteen existingCanteen = canteenRepository.findById(ledger.getCanteen().getId())
-                       .orElseThrow(() -> new RuntimeException("Canteen not found with id: " + ledger.getCanteen().getId()));
-
-               // Attach the existing Canteen to the Ledger
-               ledger.setCanteen(existingCanteen);
-           }
-
-           // Fetch the existing menus from the database using their IDs
-           Set<Menu> existingMenus = ledger.getMenus().stream()
-                   .map(menuWrapper -> menuWrapper) // Extracting Menu objects
-                   .map(menu -> {
-                       // Assuming you have a MenuService to fetch Menu entities by ID
-                       return menuService.getMenuById(menu.getId())
-                               .orElseThrow(() -> new RuntimeException("Menu not found with ID: " + menu.getId()));
-                   })
-                   .collect(Collectors.toCollection(LinkedHashSet::new));
-
-           // Map the fetched Menu entities to the ledger
-           ledger.setMenus(existingMenus);
-
-           // Save the ledger
            Ledger createdLedger = ledgerService.createLedger(ledger);
            return new ResponseEntity<>(createdLedger, HttpStatus.CREATED);
        }catch(Exception ex) {
@@ -101,42 +78,15 @@ public class LedgerController {
        }
     }
 
-    @PatchMapping(path="/{id}", consumes={MediaType.APPLICATION_JSON_VALUE},
-            produces= MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping("/{id}")
     public ResponseEntity<Ledger> updateLedgerPartially(@PathVariable Long id, @RequestBody Ledger ledger) {
-
-        try{
-            if (ledger.getCanteen() != null && ledger.getCanteen().getId() != null) {
-                // Fetch existing Canteen from DB
-                Canteen existingCanteen = canteenRepository.findById(ledger.getCanteen().getId())
-                        .orElseThrow(() -> new RuntimeException("Canteen not found with id: " + ledger.getCanteen().getId()));
-
-                // Attach the existing Canteen to the Ledger
-                ledger.setCanteen(existingCanteen);
-            }
-
-            // Fetch the existing menus from the database using their IDs
-            Set<Menu> existingMenus = ledger.getMenus().stream()
-                    .map(menu -> {
-                        if(menu.getId() != null) {
-                            return menuRepository.findById(menu.getId()).orElse(menu);
-                        }
-                        return menu;
-                    })
-//                    .collect(Collectors.toSet());
-                    .collect(Collectors.toCollection(LinkedHashSet::new));
-
-            // Map the fetched Menu entities to the ledger
-            ledger.setMenus(existingMenus);
-
-            // Save the ledger
-            Ledger updatedLedger = ledgerService.partiallyUpdateLedger(id, ledger);
-            return new ResponseEntity<>(updatedLedger, HttpStatus.CREATED);
-        } catch(Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        try {
+            Ledger partiallyUpdatedLedger = ledgerService.partiallyUpdateLedger(id, ledger);
+            return new ResponseEntity<>(partiallyUpdatedLedger, HttpStatus.OK);
+        }catch(Exception ex) {
+            throw new RuntimeException(ex.getMessage());
+        }
     }
-    }
-
 
 
     // Update an existing ledger

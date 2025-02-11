@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.model.Menu;
 import com.example.demo.model.MenuItem;
+import com.example.demo.model.Order;
 import com.example.demo.repository.MenuItemRepository;
 import com.example.demo.repository.MenuRepository;
 import jakarta.transaction.Transactional;
@@ -109,5 +110,15 @@ public class MenuService {
         existingMenu.setItems(menu.getItems());
 
         return menuRepository.save(existingMenu);
+    }
+
+    public List<Menu> getAllMenuByCanteenId(Long canteenId) {
+        try {
+//            Optional<Order> order = orderRepository.findByIdAndCanteenId(orderId, canteenId);
+            List<Menu> menus = menuRepository.findByCanteenId(canteenId);
+            return menus;
+        }catch (Exception ex) {
+            throw new RuntimeException("Unable to fetch menu by canteen id.");
+        }
     }
 }

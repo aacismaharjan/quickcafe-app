@@ -9,9 +9,9 @@
       padding: 1rem;
       color: white;
       text-align: center;
-      display: flex;
       align-items: center;
       justify-content: center;
+      display: none;
     }
 
     .form-wrapper {
@@ -20,8 +20,19 @@
         align-items: center;
         justify-content: center;
         margin-top: 8px;
-        padding: 1rem;
+        padding: 1rem 2rem;
         flex: 1;
     }
   }
 }
+
+
+@media(min-width: 1024px) {
+   .auth-wrapper {
+    .container {
+      .banner {
+        display: flex;
+      }
+    }
+   }     
+} 

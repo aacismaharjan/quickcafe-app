@@ -50,6 +50,11 @@ public class MenuItem {
 
     private Boolean is_active = true;
 
+    @ManyToOne( cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(name = "canteen_id", nullable = false)
+    @JsonIgnore
+    private Canteen canteen;
+
     @JsonIgnore
     @ManyToMany(mappedBy = "items", cascade= {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private List<Menu> menus= new ArrayList<>();

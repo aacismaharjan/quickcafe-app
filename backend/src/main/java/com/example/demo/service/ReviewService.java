@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.model.Menu;
 import com.example.demo.model.Review;
 import com.example.demo.repository.ReviewRepository;
 import jakarta.persistence.Entity;
@@ -73,5 +74,14 @@ public class ReviewService {
     // Find reviews by rating
     public List<Review> getReviewsByRating(int rating) {
         return reviewRepository.findByRating(rating);
+    }
+
+    public List<Review> getAllReviewByCanteenId(Long canteenId) {
+        try {
+            List<Review> reviews = reviewRepository.findByCanteenId(canteenId);
+            return reviews;
+        }catch (Exception ex) {
+            throw new RuntimeException(ex.getMessage());
+        }
     }
 }

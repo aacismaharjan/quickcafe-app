@@ -1,12 +1,10 @@
 package com.example.demo.service;
 
-import com.example.demo.model.OrderStatus;
-import com.example.demo.model.PaymentStatus;
+import com.example.demo.model.*;
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.model.Order;
-import com.example.demo.model.OrderDetail;
 import com.example.demo.repository.OrderRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,11 +15,15 @@ public class OrderService {
 
 	@Autowired
     private final OrderRepository orderRepository;
+
+    @Autowired
+    private final EntityManager entityManager;
 	
 
     @Autowired
-    public OrderService(OrderRepository orderRepository) {
+    public OrderService(OrderRepository orderRepository, EntityManager entityManager) {
         this.orderRepository = orderRepository;
+        this.entityManager = entityManager;
     }
 
     public List<Order> getAllOrder() {
@@ -44,7 +46,7 @@ public class OrderService {
 
 
     @Transactional
-    public Order createOrder(Order order) {
+    public Order createOrder(@org.jetbrains.annotations.NotNull Order order) {
         return orderRepository.save(order);
     }
 
@@ -149,4 +151,27 @@ public class OrderService {
 
         return orderRepository.save(existingOrder);
     }
+
+    public List<Order> getAllOrderByCanteenId(Long canteenId) {
+        try {
+           List<Order> orders =  orderRepository.findByCanteenId(canteenId);
+           return orders;
+        }catch (Exception ex) {
+            throw new RuntimeException(ex.getMessage());
+        }
+    }
+
+    public Order getOrderByOrderIdByCanteenId(Long orderId, Long canteenId) {
+        try {
+            Optional<Order> order = orderRepository.findByIdAndCanteenId(orderId, canteenId);
+            if(order.isPresent()) {
+                return order.get();
+            }
+            throw new RuntimeException("Ledger not found.");
+        }catch (Exception ex) {
+            throw new RuntimeException("Unable to fetch order by canteen id.");
+        }
+    }
+
+
 }

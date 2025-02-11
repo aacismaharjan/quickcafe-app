@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   AppBar,
   Box,
@@ -21,9 +21,15 @@ import {
   ExpandLess,
   ExpandMore,
 } from '@mui/icons-material';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import ProfileMenu from '../../components/molecules/ProfileMenu';
 import StarsOutlinedIcon from '@mui/icons-material/StarsOutlined';
+import { handleLogout } from '../../components/template/AppLayout';
+import { toast } from 'react-toastify';
+import { useOwnerCanteenID } from './utils/useOwnerCanteenID';
+import { useLoading } from '../../context/LoadingContext';
+import axiosInstance from '../../utils/AxiosInstance';
+import { AxiosError } from 'axios';
 
 const drawerWidth = 240;
 
@@ -48,8 +54,34 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = (props) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
 
+  const navigate = useNavigate();
+  const { loading: isAppLoading, setLoading } = useLoading();
+  const [ownerCanteenID, setOwnerCanteenID] = useState();
+  const [ownerCanteen, setOwnerCanteen] = useState();
+
   const handleDrawerToggle = () => setOpen(!open);
   const handleMenuToggle = () => setMenuOpen(!menuOpen);
+
+  useEffect(() => {
+    const fetchMyCanteen = async () => {
+      setLoading(true);
+      await axiosInstance('/profile/canteen')
+        .then((res) => {
+          const canteen = res.data;
+          localStorage.setItem('ownerCanteenID', JSON.stringify(canteen.id));
+          localStorage.setItem('ownerCanteen', JSON.stringify(canteen));
+          setOwnerCanteenID(canteen.id);
+          setOwnerCanteen(canteen);
+        })
+        .catch((err: AxiosError<{ message: string }>) => {
+          if (err.response) toast.warn(err.response.data?.message);
+          else toast.warn('Something went wrong.');
+          handleLogout(navigate);
+        })
+        setLoading(false);
+    };
+    fetchMyCanteen();
+  }, []);
 
   const menuSections: MenuSection[] = [
     {
@@ -64,7 +96,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = (props) => {
         {
           text: 'Menu',
           icon: <RestaurantIcon />,
-          href: "",
+          href: '',
           children: [
             { text: 'View Menu', href: '/dashboard/menu' },
             { text: 'Menu Items', href: '/dashboard/menu-detail' },
@@ -79,6 +111,11 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = (props) => {
     },
   ];
 
+  if (ownerCanteen == null) {
+    return <></>;
+  }
+
+
   return (
     <Box sx={{ display: 'flex' }}>
       <AppBar
@@ -88,8 +125,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = (props) => {
           zIndex: (theme) => theme.zIndex.drawer + 1,
           backgroundColor: '#1E293B', // Dark Blue Shade
           color: '#FFFFFF', // White Text
-          width: `calc(100% - ${open ? drawerWidth: 0}px)`,
-          marginLeft: `${open ? drawerWidth: 0}px`
+          width: `calc(100% - ${open ? drawerWidth : 0}px)`,
+          marginLeft: `${open ? drawerWidth : 0}px`,
         }}
       >
         <Toolbar>
@@ -120,19 +157,25 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = (props) => {
         }}
       >
         <Box sx={{ overflow: 'auto', paddingY: 2 }}>
-          <Typography textAlign="center" variant="h5">
-            QuickCafe
-          </Typography>
-          <Typography textAlign="center" variant="subtitle2" color="gray">
-            Scan. Order. Enjoy.
+          <Box sx={{ marginTop: 0 }}>
+            <Box sx={{ transform: 'scale(0.75)' }}>
+              <Typography textAlign="center" variant="h6" color="gray">
+                QuickCafe
+              </Typography>
+              <Typography textAlign="center" variant="subtitle2" color="gray">
+                Scan. Order. Enjoy.
+              </Typography>
+            </Box>
+          </Box>
+
+          <Typography textAlign="center" variant="h6" sx={{ marginTop: 0, marginBottom: 1 }} component={'h3'}>
+            {ownerCanteen?.name}
           </Typography>
 
           <List sx={{ paddingTop: 2 }}>
             {menuSections.map((section) => (
               <Box key={section.label} sx={{ px: 2 }}>
-                <Typography sx={{ paddingY: 1, fontSize: '0.85rem', color: 'gray' }}>
-                  {section.label}
-                </Typography>
+                <Typography sx={{ paddingY: 1, fontSize: '0.85rem', color: 'gray' }}>{section.label}</Typography>
 
                 {section.items.map((item) =>
                   item.children ? (
@@ -144,10 +187,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = (props) => {
                           borderRadius: 2,
                           '&.Mui-selected': { backgroundColor: '#334155' },
                           '&:hover': { backgroundColor: '#1E293B' },
-                          marginBottom: "4px !important",
+                          marginBottom: '4px !important',
                         }}
                       >
-                        <ListItemIcon sx={{ color: (theme) => theme.palette.primary.main  }}>{item.icon}</ListItemIcon>
+                        <ListItemIcon sx={{ color: (theme) => theme.palette.primary.main }}>{item.icon}</ListItemIcon>
                         {open && <ListItemText primary={item.text} />}
                         {menuOpen ? <ExpandLess /> : <ExpandMore />}
                       </ListItemButton>
@@ -185,7 +228,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = (props) => {
                         '&:hover': { backgroundColor: '#1E293B' },
                       }}
                     >
-                      <ListItemIcon sx={{ color: (theme) => theme.palette.primary.main  }}>{item.icon}</ListItemIcon>
+                      <ListItemIcon sx={{ color: (theme) => theme.palette.primary.main }}>{item.icon}</ListItemIcon>
                       {open && <ListItemText primary={item.text} />}
                     </ListItemButton>
                   )
@@ -197,7 +240,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = (props) => {
       </Drawer>
 
       {/* Main Content */}
-      <Box sx={{ flexGrow: 1, paddingTop: '64px',  backgroundColor: '#F1F5F9', minHeight: '100vh' }}>
+      <Box sx={{ flexGrow: 1, paddingTop: '64px', backgroundColor: '#F1F5F9', minHeight: '100vh' }}>
         {props.children}
       </Box>
     </Box>

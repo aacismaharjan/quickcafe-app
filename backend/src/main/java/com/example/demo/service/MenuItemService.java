@@ -242,4 +242,13 @@ public class MenuItemService {
 
 		return menuItemRepository.save(existingMenuItem);
     }
+
+	public List<MenuItem> getAllMenuItemByCanteenId(Long canteenId) {
+		try {
+			List<MenuItem>  menuItems = menuItemRepository.findByCanteenId(canteenId);
+			return menuItems;
+		}catch(Exception ex) {
+			throw new RuntimeException(ex.getMessage());
+		}
+	}
 }

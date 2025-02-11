@@ -28,6 +28,11 @@ public class Review {
     @JoinColumn(name="user_id", nullable = false)
     private User user;
 
+    @ManyToOne( cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(name = "canteen_id", nullable = false)
+    @JsonIgnore
+    private Canteen canteen;
+
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
     @NotNull(message = "Order Detail cannot be null")
     @JoinColumn(name = "order_detail_id", nullable = false)

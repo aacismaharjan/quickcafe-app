@@ -21,6 +21,9 @@ public class HomeController {
     @Value("${esewa}")
     private String secret;
 
+    @Value("${backend.server}")
+    private String backendServer;
+
     @GetMapping("/checkout")
     public String index(Model model) {
         String transactionUuid = UUID.randomUUID().toString();
@@ -32,8 +35,8 @@ public class HomeController {
 
         int productId = 1;
 
-        String success_url = "http://localhost:8080/payment-verification/success/" + productId;
-        String failure_url = "http://localhost:8080/payment-verification/failure/" + productId;
+        String success_url = backendServer + "/payment-verification/success/" + productId;
+        String failure_url = backendServer + "/payment-verification/failure/" + productId;
         model.addAttribute("success_url", success_url);
         model.addAttribute("failure_url", failure_url);
         return "index"; // This will render src/main/resources/templates/index.html

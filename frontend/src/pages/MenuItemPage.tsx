@@ -27,6 +27,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useLoading } from '../context/LoadingContext';
 import RatingDisplay from '../components/molecules/RatingDisplay';
 import { getPrice } from './CartPage';
+import useStoredIDs from '../utils/useStoredIDs';
 
 const MenuItemPage: React.FC = () => {
   const { menuItemId } = useParams<{ menuItemId: string }>();
@@ -39,6 +40,7 @@ const MenuItemPage: React.FC = () => {
   const cartContext = useContext(CartContext);
   const { user } = useAuth();
   const { setLoading } = useLoading();
+  const { canteenID } = useStoredIDs();
 
   const location = useLocation();
   const state = location.state as { enableNewReview: boolean; orderDetail: any } | null;
@@ -108,6 +110,9 @@ const MenuItemPage: React.FC = () => {
             id: user!.id,
           },
           createdAt: new Date(),
+          canteen: {
+            id: canteenID
+          }
         })
         .finally(() => {
           setLoading(false);

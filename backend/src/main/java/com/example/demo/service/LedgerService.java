@@ -1,29 +1,37 @@
 package com.example.demo.service;
 
+import com.example.demo.model.Canteen;
 import com.example.demo.model.Ledger;
 import com.example.demo.model.Menu;
+import com.example.demo.repository.CanteenRepository;
 import com.example.demo.repository.LedgerRepository;
+import com.example.demo.repository.MenuRepository;
 import jakarta.persistence.EntityManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class LedgerService {
 
+    private final MenuService menuService;
+    private final MenuRepository menuRepository;
     private final LedgerRepository ledgerRepository;
     private final EntityManager entityManager;
+    private final CanteenRepository canteenRepository;
 
     @Autowired
-    public LedgerService(LedgerRepository ledgerRepository, EntityManager entityManager) {
+    public LedgerService(MenuService menuService, MenuRepository menuRepository, LedgerRepository ledgerRepository, EntityManager entityManager, CanteenRepository canteenRepository) {
+        this.menuService = menuService;
+        this.menuRepository = menuRepository;
         this.ledgerRepository = ledgerRepository;
         this.entityManager = entityManager;
+
+        this.canteenRepository = canteenRepository;
     }
 
     // Get all ledgers
@@ -50,6 +58,24 @@ public class LedgerService {
     @Transactional
     public Ledger createLedger(Ledger ledger) {
         try {
+            if(ledger.getCanteen() != null && ledger.getCanteen().getId() != null) {
+                Canteen existingCanteen = canteenRepository.findById(ledger.getCanteen().getId())
+                        .orElseThrow(() -> new RuntimeException("Canteen not found with id: " + ledger.getCanteen().getId()));
+                ledger.setCanteen(existingCanteen);
+            }
+
+            // Fetch the existing menus from the database using their IDs
+            Set<Menu> existingMenus = ledger.getMenus().stream()
+                    .map(menuWrapper -> menuWrapper) // Extracting Menu objects
+                    .map(menu -> {
+                        // Assuming you have a MenuService to fetch Menu entities by ID
+                        return menuService.getMenuById(menu.getId())
+                                .orElseThrow(() -> new RuntimeException("Menu not found with ID: " + menu.getId()));
+                    })
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
+
+            ledger.setMenus(existingMenus);
+
             if(ledger.getIsActive()) {
                 deactivateAllLedgersByCanteenId(ledger.getCanteen().getId());
             }
@@ -93,6 +119,30 @@ public class LedgerService {
     @Transactional
     public Ledger partiallyUpdateLedger(Long id, Ledger ledger) {
         try {
+            if (ledger.getCanteen() != null && ledger.getCanteen().getId() != null) {
+                // Fetch existing Canteen from DB
+                Canteen existingCanteen = canteenRepository.findById(ledger.getCanteen().getId())
+                        .orElseThrow(() -> new RuntimeException("Canteen not found with id: " + ledger.getCanteen().getId()));
+
+                // Attach the existing Canteen to the Ledger
+                ledger.setCanteen(existingCanteen);
+            }
+
+            // Fetch the existing menus from the database using their IDs
+            Set<Menu> existingMenus = ledger.getMenus().stream()
+                    .map(menu -> {
+                        if(menu.getId() != null) {
+                            return menuRepository.findById(menu.getId()).orElse(menu);
+                        }
+                        return menu;
+                    })
+//                    .collect(Collectors.toSet());
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
+
+            // Map the fetched Menu entities to the ledger
+            ledger.setMenus(existingMenus);
+            // Updating..
+
             Ledger existingLedger = ledgerRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Ledger not found"));
 
@@ -130,5 +180,23 @@ public class LedgerService {
         } else {
             throw new RuntimeException("Ledger with ID " + id + " not found");
         }
+    }
+
+
+    public Ledger getLedgerByLedgerIdAndCanteenId(Long ledgerId, Long canteenId) {
+        try {
+            Optional<Ledger> ledger = ledgerRepository.findByIdAndCanteenId(ledgerId, canteenId);
+            if(ledger.isPresent()) {
+                return ledger.get();
+            }
+            throw new RuntimeException("Ledger not found.");
+        }catch (Exception ex) {
+            throw new RuntimeException("Unable to fetch ledger by canteen id.");
+        }
+
+    }
+
+    public boolean isLedgerOwnedByCanteen(Long ledgerId, Long canteenId) {
+        return ledgerRepository.existsByIdAndCanteenId(ledgerId, canteenId);
     }
 }

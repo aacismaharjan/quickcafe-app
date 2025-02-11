@@ -14,22 +14,21 @@ const ProtectedRoute: React.FC = () => {
   return user ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
-
-
 export default ProtectedRoute;
 
 export const DashboardProtectedRoute: React.FC = () => {
   const { user, isLoading } = useAuth();
   const roleService = new RoleService();
 
+
   if (isLoading) {
     return <></>;
   }
 
-  if(user && roleService.hasRole("ROLE_ADMIN")) {
-    return <Outlet/>
+  if (user && roleService.hasRole('ROLE_OWNER')) {
+    return <Outlet />;
   }
 
-  toast.warn("You are not authorized to access this page");
+  toast.warn('You are not authorized to access this page');
   return <Navigate to="/" replace />;
-}
+};

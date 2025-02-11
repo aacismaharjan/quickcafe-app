@@ -20,8 +20,9 @@ import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
 import { StyledTableCell, StyledTableRow } from '../menu-item/MenuDetailPage';
 import { getPrice } from '../../CartPage';
-import axiosInstance from '../../../utils/AxiosInstance';
+import axiosInstance, { API_SERVER } from '../../../utils/AxiosInstance';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { useOwnerCanteenID } from '../utils/useOwnerCanteenID';
 
 export enum OrderStatus {
   RECEIVED = 'RECEIVED',
@@ -57,7 +58,7 @@ const getStatusColor = (status) => {
   }
 };
 
-export default function ChipMenu({ label = "Dashboard", options = [], selectedOption, onSelect }) {
+export default function ChipMenu({ label = 'Dashboard', options = [], selectedOption, onSelect }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
 
@@ -98,14 +99,14 @@ export default function ChipMenu({ label = "Dashboard", options = [], selectedOp
   );
 }
 
-
 const OrderPage = () => {
   const [orders, setOrders] = useState<OrderTypeI[]>([]);
   const navigate = useNavigate();
+  const { ownerCanteenID } = useOwnerCanteenID();
 
   const fetchOrders = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/v1/orders');
+      const response = await fetch(`${API_SERVER}/api/v1/canteens/${ownerCanteenID}/orders`);
       const data = await response.json();
       setOrders(data);
     } catch (error) {
@@ -115,19 +116,17 @@ const OrderPage = () => {
 
   const updateOrder = async (orderId: string, updatedFields: Partial<OrderTypeI>) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/orders/${orderId}`, {
+      const response = await fetch(`${API_SERVER}/api/v1/orders/${orderId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(updatedFields),
       });
-  
+
       if (response.ok) {
         setOrders((prevOrders) =>
-          prevOrders.map((order) =>
-            order.id === orderId ? { ...order, ...updatedFields } : order
-          )
+          prevOrders.map((order) => (order.id === orderId ? { ...order, ...updatedFields } : order))
         );
       } else {
         console.error('Error updating order');

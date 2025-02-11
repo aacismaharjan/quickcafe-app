@@ -3,6 +3,9 @@
   flex-direction: row;
   min-height: 100vh;
 }
+
+
+
 .auth-wrapper .container .banner {
   flex-basis: 520px;
   padding: 1rem;

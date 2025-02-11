@@ -19,6 +19,7 @@ import {
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { API_SERVER } from '../../../utils/AxiosInstance';
 
 interface FormDataTypeI extends Partial<MenuTypeI> {}
 
@@ -46,7 +47,7 @@ const CreateMenuPage = () => {
   // Fetch menu items
   const fetchMenu = async (menuId: string) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/menus/${menuId}`);
+      const response = await fetch(`${API_SERVER}/api/v1/menus/${menuId}`);
       const data = await response.json();
       setFormData(data);
       setMenuItems(data.items);
@@ -58,7 +59,7 @@ const CreateMenuPage = () => {
   // Fetch menu items
   const fetchMenuItems = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/v1/menu-items');
+      const response = await fetch(`${API_SERVER}/api/v1/menu-items`);
       const data = await response.json();
       setAllMenuItems(data);
     } catch (error) {
@@ -97,8 +98,8 @@ const CreateMenuPage = () => {
 
     try {
       const url = editMode
-        ? `http://localhost:8080/api/v1/menus/${params.menuId}`
-        : 'http://localhost:8080/api/v1/menus';
+        ? `${API_SERVER}/api/v1/menus/${params.menuId}`
+        : `${API_SERVER}/api/v1/menus`;
 
       const response = await fetch(url, {
         method: editMode ? 'PATCH' : 'POST',
@@ -282,7 +283,7 @@ const CreateMenuPage = () => {
           >
             {menuItems &&
               menuItems.map((item, index) => {
-                const image_url = `http://localhost:8080/${item.image_url}`;
+                const image_url = `${API_SERVER}/${item.image_url}`;
                 return (
                   <ListItem
                     component={Button}

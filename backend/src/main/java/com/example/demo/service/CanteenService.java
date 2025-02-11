@@ -2,7 +2,9 @@ package com.example.demo.service;
 
 import com.example.demo.model.Canteen;
 import com.example.demo.model.MenuItem;
+import com.example.demo.model.User;
 import com.example.demo.repository.CanteenRepository;
+import com.example.demo.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,10 +15,12 @@ import java.util.Optional;
 @Service
 public class CanteenService {
     private final CanteenRepository canteenRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public CanteenService(CanteenRepository canteenRepository) {
+    public CanteenService(CanteenRepository canteenRepository, UserRepository userRepository) {
         this.canteenRepository = canteenRepository;
+        this.userRepository = userRepository;
     }
 
     public List<Canteen> getAllCanteens() {
@@ -74,6 +78,23 @@ public class CanteenService {
         return canteenRepository.save(existingCanteen);
     }
 
+    public boolean isUserOwnerOfCanteen(Integer userId, Long canteenId) {
+        User user = userRepository.findById(userId).orElse(null);  // Fetch user by userId
+
+        if (user == null) {
+            return false;  // User not found
+        }
+
+        Canteen canteen = canteenRepository.findById(canteenId).orElse(null);  // Fetch canteen by canteenId
+
+        if (canteen == null) {
+            return false;  // Canteen not found
+        }
+
+        // Check if the user has the ROLE_OWNER and is associated with the canteen
+        return canteen.getUser().equals(user);
+    }
+
 
     @Transactional
     public void deleteCanteen(Long id) {
@@ -82,5 +103,10 @@ public class CanteenService {
         }else {
             throw new RuntimeException("Canteen not found");
         }
+    }
+
+    public Canteen getCanteenByUserId(Integer userId) {
+        return canteenRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new RuntimeException("Canteen not found for user ID: " + userId));
     }
 }

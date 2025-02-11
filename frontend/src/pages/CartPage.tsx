@@ -20,70 +20,72 @@ const CartPage: React.FC = () => {
     <Container maxWidth="md" disableGutters>
       <React.Fragment>
         <Box sx={{ p: 2 }}>
-         <Paper sx={{p: 2}}>
-         <Typography variant="h4" sx={{ mb: 2 }}>
-            Cart
-          </Typography>
-          {cart.length > 0 ? (
-            <>
-              {cart.map((item) => (
-                <Box key={item.id} sx={{ display: 'flex', mb: 2, borderBottom: '1px solid #ccc', pb: 2 }}>
-                  <img
-                    src={item.imageUrl}
-                    alt={item.title}
-                    style={{
-                      width: '200px',
-                      aspectRatio: '16/9',
-                      padding: '4px',
-                      border: '1px solid #ccc',
-                      borderRadius: '8px',
-                    }}
-                  />
-                  <Box sx={{ ml: 2, flex: 1 }}>
-                    <Typography variant="h6">{item.title}</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {item.description}
-                    </Typography>
-                    {getPrice(item.price)}
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <IconButton
-                        size="small"
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        disabled={item.quantity <= 1}
-                      >
-                        <RemoveIcon />
-                      </IconButton>
-                      <IconButton onClick={() => updateQuantity(item.id, item.quantity + 1)}>
-                        <Typography variant="h6">{item.quantity}</Typography>
-                      </IconButton>
-                      <IconButton size="small" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
-                        <AddIcon />
-                      </IconButton>
-                      <IconButton onClick={() => removeFromCart(item.id)} style={{ marginLeft: 'auto' }}>
-                        <DeleteIcon />
-                      </IconButton>
+          <Paper sx={{ p: 2 }}>
+            <Typography variant="h4" sx={{ mb: 2 }}>
+              Cart
+            </Typography>
+            {cart.length > 0 ? (
+              <>
+                {cart.map((item) => (
+                  <Box key={item.id} sx={{ display: 'flex', mb: 2, borderBottom: '1px solid #ccc', pb: 2 }}>
+                    <img
+                      src={item.imageUrl}
+                      alt={item.title}
+                      style={{
+                        width: '100%', // Ensures it scales within its container
+                        maxWidth: '200px', // Limits max width
+                        aspectRatio: '16/9',
+                        padding: '4px',
+                        border: '1px solid #ccc',
+                        borderRadius: '8px',
+                        objectFit: 'cover', // Ensures it fills the aspect ratio properly
+                      }}
+                    />
+                    <Box sx={{ ml: 2, flex: 1 }}>
+                      <Typography variant="h6">{item.title}</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {item.description}
+                      </Typography>
+                      {getPrice(item.price)}
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <IconButton
+                          size="small"
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          disabled={item.quantity <= 1}
+                        >
+                          <RemoveIcon />
+                        </IconButton>
+                        <IconButton onClick={() => updateQuantity(item.id, item.quantity + 1)}>
+                          <Typography variant="h6">{item.quantity}</Typography>
+                        </IconButton>
+                        <IconButton size="small" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
+                          <AddIcon />
+                        </IconButton>
+                        <IconButton onClick={() => removeFromCart(item.id)} style={{ marginLeft: 'auto' }}>
+                          <DeleteIcon />
+                        </IconButton>
+                      </Box>
                     </Box>
                   </Box>
-                </Box>
-              ))}
-              <Button variant="contained" color="error" onClick={clearCart} sx={{ marginRight: 2 }}>
-                Clear Cart
-              </Button>
+                ))}
+                <Button variant="contained" color="error" onClick={clearCart} sx={{ marginRight: 2 }}>
+                  Clear Cart
+                </Button>
 
-              <Button
-                variant="contained"
-                color="info"
-                onClick={() => {
-                  navigate('/checkout');
-                }}
-              >
-                Checkout
-              </Button>
-            </>
-          ) : (
-            <Typography variant="body1">Your cart is empty.</Typography>
-          )}
-         </Paper>
+                <Button
+                  variant="contained"
+                  color="info"
+                  onClick={() => {
+                    navigate('/checkout');
+                  }}
+                >
+                  Checkout
+                </Button>
+              </>
+            ) : (
+              <Typography variant="body1">Your cart is empty.</Typography>
+            )}
+          </Paper>
         </Box>
       </React.Fragment>
     </Container>
@@ -94,7 +96,7 @@ export { CartPage };
 
 export function getPrice(price: number) {
   return (
-    <Typography variant="subtitle1" style={{ fontWeight: 'bold', color: "black" }}>
+    <Typography variant="subtitle1" style={{ fontWeight: 'bold', color: 'black' }}>
       <svg
         stroke="currentColor"
         fill="none"

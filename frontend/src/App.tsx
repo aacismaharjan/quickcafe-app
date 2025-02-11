@@ -9,6 +9,7 @@ import LoadingOverlay from './components/template/LoadingOverlay';
 import './GlobalStyle.scss';
 import { BrowserRouter } from 'react-router-dom';
 
+
 function App() {
   return (
     <>

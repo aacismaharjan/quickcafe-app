@@ -16,14 +16,17 @@ import moment from 'moment';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { StyledTableCell, StyledTableRow } from '../menu-item/MenuDetailPage';
+import { API_SERVER } from '../../../utils/AxiosInstance';
+import { useOwnerCanteenID } from '../utils/useOwnerCanteenID';
 
 const LedgerPage = () => {
+  const { ownerCanteenID } = useOwnerCanteenID();
   const [ledgers, setLedgers] = useState<LedgerTypeI[]>([]);
 
   // Fetch menu items
   const fetchMenus = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/v1/ledgers');
+      const response = await fetch(`${API_SERVER}/api/v1/canteens/${ownerCanteenID}/ledgers`);
       const data = await response.json();
       setLedgers(data);
     } catch (error) {
@@ -37,7 +40,7 @@ const LedgerPage = () => {
 
   const handleDelete = async (id: number) => {
     try {
-      await fetch(`http://localhost:8080/api/v1/ledgers/${id}`, {
+      await fetch(`${API_SERVER}/api/v1/ledgers/${id}`, {
         method: 'DELETE',
       }).then(() => {
         toast.success('Menu deleted successfully');

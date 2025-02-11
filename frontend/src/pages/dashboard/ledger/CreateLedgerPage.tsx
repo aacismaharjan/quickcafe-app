@@ -19,6 +19,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import DeleteIcon from '@mui/icons-material/Delete';
 import useStoredIDs from '../../../utils/useStoredIDs';
+import { API_SERVER } from '../../../utils/AxiosInstance';
 
 interface FormDataTypeI extends Partial<LedgerTypeI> {}
 
@@ -48,7 +49,7 @@ const CreateLedgerPage = () => {
   // Fetch menu items
   const fetchLedger = async (ledgerId: string) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/ledgers/${ledgerId}`);
+      const response = await fetch(`${API_SERVER}/api/v1/ledgers/${ledgerId}`);
       const data = await response.json();
       setFormData(data);
       setMenus(data.menus);
@@ -60,7 +61,7 @@ const CreateLedgerPage = () => {
   // Fetch menu items
   const fetchMenus = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/v1/menus');
+      const response = await fetch(`${API_SERVER}/api/v1/menus`);
       const data = await response.json();
       setAllMenus(data);
     } catch (error) {
@@ -102,8 +103,8 @@ const CreateLedgerPage = () => {
 
     try {
       const url = editMode
-        ? `http://localhost:8080/api/v1/ledgers/${params.ledgerId}`
-        : 'http://localhost:8080/api/v1/ledgers';
+        ? `${API_SERVER}/api/v1/ledgers/${params.ledgerId}`
+        : `${API_SERVER}/api/v1/ledgers`;
 
       const response = await fetch(url, {
         method: editMode ? 'PATCH' : 'POST',

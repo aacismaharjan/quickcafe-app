@@ -3,6 +3,8 @@ package com.example.demo.model;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.VerificationRepository;
 import com.example.demo.service.EmailService;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,9 @@ import java.util.UUID;
 
 @Service
 public class VerificationService {
+    @Value("${backend.server}")
+    private String backendServer;
+
     private final UserRepository userRepository;
     private final VerificationRepository verificationRepository;
     private final JavaMailSender mailSender;
@@ -32,7 +37,7 @@ public class VerificationService {
         verificationToken.setExpiryDate(LocalDateTime.now().plusHours(24));
         verificationRepository.save(verificationToken);
 
-        String verificationUrl = "http://localhost:8080/api/v1/auth/activate?token=" + token;
+        String verificationUrl =  backendServer + "/api/v1/auth/activate?token=" + token;
         emailService.sendMail(user.getEmail(), "Verify your account", "Click the link: " + verificationUrl);
 
     }

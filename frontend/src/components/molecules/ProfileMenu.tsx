@@ -8,6 +8,7 @@ import { CartContext } from '../../context/CartContext';
 import HistoryIcon from '@mui/icons-material/History';
 import GridViewTwoToneIcon from '@mui/icons-material/GridViewTwoTone';
 import { handleLogout } from '../template/AppLayout';
+import { API_SERVER } from '../../utils/AxiosInstance';
 
 const ProfileMenu: React.FC = () => {
   const navigate = useNavigate();
@@ -31,8 +32,7 @@ const ProfileMenu: React.FC = () => {
   };
 
   useEffect(()=> {
-    console.log("USE EFFECT", user);
-    setImageUrl(`http://localhost:8080/${user?.image_url}`)
+    setImageUrl(`${API_SERVER}/${user?.image_url}`)
   }, [user])
 
   if (!cartContext) {

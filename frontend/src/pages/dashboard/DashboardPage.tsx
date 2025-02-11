@@ -2,6 +2,7 @@ import { Card, CardContent, Typography, Grid, Box, TextField, FormControl } from
 import { useEffect, useState } from 'react';
 import { Bar, Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, Title, CategoryScale, BarElement, LinearScale } from 'chart.js';
+import { API_SERVER } from '../../utils/AxiosInstance';
 
 // Register Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend, Title, CategoryScale);
@@ -24,7 +25,7 @@ const DashboardPage = () => {
   // Fetch data when the component mounts
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch('http://localhost:8080/api/v1/orders/stats'); // Replace with your API URL
+      const response = await fetch(`${API_SERVER}/api/v1/orders/stats`); // Replace with your API URL
       const result = await response.json();
       setData(result);
     };
@@ -34,7 +35,7 @@ const DashboardPage = () => {
 
   useEffect(() => {
     // Fetch monthly order status distribution for the selected year
-    fetch(`http://localhost:8080/api/v1/orders/monthly-status-distribution?year=${year}`)
+    fetch(`${API_SERVER}/api/v1/orders/monthly-status-distribution?year=${year}`)
       .then((response) => response.json())
       .then((data) => setOrderStats(data))
       .catch((error) => console.error('Error fetching order stats:', error));

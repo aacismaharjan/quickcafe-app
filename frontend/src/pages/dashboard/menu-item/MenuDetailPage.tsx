@@ -17,12 +17,13 @@ import {
   styled,
   tableCellClasses,
 } from '@mui/material';
-import OutdoorGrillIcon from '@mui/icons-material/OutdoorGrill';
-import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon} from '@mui/icons-material';
-import moment from "moment";
+import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import moment from 'moment';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { getPrice } from '../../CartPage';
+import { API_SERVER } from '../../../utils/AxiosInstance';
+import { useOwnerCanteenID } from '../utils/useOwnerCanteenID';
 
 export const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -45,12 +46,13 @@ export const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const MenuDetailPage = () => {
+  const { ownerCanteenID } = useOwnerCanteenID();
   const [items, setItems] = useState<MenuItemTypeI[]>([]);
 
   // Fetch menu items
   const fetchMenuItems = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/v1/menu-items');
+      const response = await fetch(`${API_SERVER}/api/v1/canteens/${ownerCanteenID}/menu-items`);
       const data = await response.json();
       setItems(data);
     } catch (error) {
@@ -62,13 +64,12 @@ const MenuDetailPage = () => {
     fetchMenuItems();
   }, []);
 
-
   const handleDelete = async (id: number) => {
     try {
-      await fetch(`http://localhost:8080/api/v1/menu-items/${id}`, {
+      await fetch(`${API_SERVER}/api/v1/menu-items/${id}`, {
         method: 'DELETE',
       }).then(() => {
-        toast.success("Menu item deleted successfully");
+        toast.success('Menu item deleted successfully');
       });
       fetchMenuItems();
     } catch (error) {
@@ -98,52 +99,60 @@ const MenuDetailPage = () => {
                 <StyledTableCell>Categories</StyledTableCell>
                 <StyledTableCell>Reviews</StyledTableCell>
                 <StyledTableCell>Status</StyledTableCell>
-                <StyledTableCell align='center'>Actions</StyledTableCell>
+                <StyledTableCell align="center">Actions</StyledTableCell>
               </StyledTableRow>
             </TableHead>
             <TableBody>
               {items.map((item) => {
-                const image_url = `http://localhost:8080/${item.image_url}`;
+                const image_url = `${API_SERVER}/${item.image_url}`;
                 const created_at_date = moment(item.created_at).format('DD MMM YYYY');
-                const created_at_time = moment(item.created_at).format("h:mm a");
+                const created_at_time = moment(item.created_at).format('h:mm a');
                 return (
                   <StyledTableRow key={item.id}>
+                    <StyledTableCell>{item.id}</StyledTableCell>
                     <StyledTableCell>
-                      {item.id}
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      <Box sx={{display: "flex", flexDirection: "row", gap: "8px"}}>
-                      <CardMedia
-                        component="img"
-                        sx={{ width: 60, height: 60, objectFit: 'cover', borderRadius: "8px" }}
-                        image={image_url}
-                        alt={item.name}
-                      />
-                      <span>{item.name} <div>{getPrice(item.price)}</div></span>
-                      
+                      <Box sx={{ display: 'flex', flexDirection: 'row', gap: '8px' }}>
+                        <CardMedia
+                          component="img"
+                          sx={{ width: 60, height: 60, objectFit: 'cover', borderRadius: '8px' }}
+                          image={image_url}
+                          alt={item.name}
+                        />
+                        <span>
+                          {item.name} <div>{getPrice(item.price)}</div>
+                        </span>
                       </Box>
                     </StyledTableCell>
                     <StyledTableCell>
-                    <div>{created_at_date}</div>
-                    <div>{created_at_time}</div>
+                      <div>{created_at_date}</div>
+                      <div>{created_at_time}</div>
                     </StyledTableCell>
                     <StyledTableCell>{item.description}</StyledTableCell>
                     <StyledTableCell>{item.preparation_time_in_min} mins</StyledTableCell>
                     <StyledTableCell>
-                      <Box sx={{display: "flex", flexDirection: "row", gap: "8px", maxWidth: 180, flexWrap: "wrap"}}>
-                      {item.categories.map((category) => (<div>
-                        <Chip variant="filled" color="default" size="small" label={category.name}/>
-                      </div>))}
+                      <Box sx={{ display: 'flex', flexDirection: 'row', gap: '8px', maxWidth: 180, flexWrap: 'wrap' }}>
+                        {item.categories.map((category) => (
+                          <div>
+                            <Chip variant="filled" color="default" size="small" label={category.name} />
+                          </div>
+                        ))}
                       </Box>
                     </StyledTableCell>
                     <StyledTableCell>
-                    <Rating name="half-rating-read" defaultValue={item.reviewsStat.rating} precision={0.5} readOnly />
-                  <div><em>({item.reviewsStat.reviewersNo} reviews)</em></div>
+                      <Rating name="half-rating-read" defaultValue={item.reviewsStat.rating} precision={0.5} readOnly />
+                      <div>
+                        <em>({item.reviewsStat.reviewersNo} reviews)</em>
+                      </div>
                     </StyledTableCell>
                     <StyledTableCell>
-                      <Chip variant="outlined" color={item.is_active === true ? "success": "error"} size="small" label={item.is_active === true ? "Active" : "Disabled"}/>
+                      <Chip
+                        variant="outlined"
+                        color={item.is_active === true ? 'success' : 'error'}
+                        size="small"
+                        label={item.is_active === true ? 'Active' : 'Disabled'}
+                      />
                     </StyledTableCell>
-                    <StyledTableCell sx={{minWidth: 120}} align='center'>
+                    <StyledTableCell sx={{ minWidth: 120 }} align="center">
                       <IconButton component={Link} to={`/dashboard/menu-detail/${item.id}/edit`} color="primary">
                         <EditIcon />
                       </IconButton>
@@ -157,7 +166,7 @@ const MenuDetailPage = () => {
                       </IconButton>
                     </StyledTableCell>
                   </StyledTableRow>
-                )
+                );
               })}
             </TableBody>
           </Table>

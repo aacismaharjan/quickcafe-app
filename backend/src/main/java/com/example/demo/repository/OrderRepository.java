@@ -1,11 +1,8 @@
 package com.example.demo.repository;
 
-import com.example.demo.model.MenuItem;
-import com.example.demo.model.OrderStatus;
-import com.example.demo.model.PaymentStatus;
+import com.example.demo.model.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.example.demo.model.Order;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -31,4 +28,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "GROUP BY month, o.orderStatus ORDER BY month")
     List<Object[]> countOrdersByStatusAndYearGroupedByMonth(@Param("year") int year, @Param("status") OrderStatus status);
 
+    List<Order> findByCanteenId(Long canteenId);
+    Optional<Order> findByIdAndCanteenId(Long orderId, Long canteenId);
 }

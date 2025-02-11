@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -10,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
 
 import java.util.*;
 
@@ -45,6 +47,7 @@ public class Canteen {
     private String opening_hours  = "08:00 AM";
     private String closing_hours = "10:00 PM";
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name="user_id", nullable = true)
     private User user;
@@ -53,9 +56,25 @@ public class Canteen {
     private Double longitude = 85.324;
 
 
-    @JsonIgnoreProperties("canteen")
+    @JsonIgnore
     @OneToMany(mappedBy = "canteen",  cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private List<Ledger> ledgers;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "canteen",  cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    private List<Menu> menus;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "canteen",  cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    private List<MenuItem> menuItems;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "canteen",  cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    private List<Order> orders;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "canteen", cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    private List<Review> reviews;
 
 
     @Transient
@@ -132,5 +151,24 @@ public class Canteen {
                 ", name='" + name + '\'' +
                 ", id=" + id +
                 '}';
+    }
+
+    @Transient
+    public Long getActiveLedgerId() {
+        if(ledgers == null || ledgers.isEmpty()) {
+            return null;
+        }
+        return ledgers.stream()
+//                .filter(ledger -> ledger.getIsActive() != null && ledger.getIsActive())
+                .filter(ledger -> Boolean.TRUE.equals(ledger.getIsActive()))
+                .filter(ledger -> ledger.getCanteen() != null)
+                .min(Comparator.comparing(Ledger::getCreatedAt))
+                .map(Ledger::getId)
+                .orElse(null);
+    }
+
+    @Transient
+    public Integer getUserId() {
+        return (this.user != null) ? this.user.getId() : null;
     }
 }

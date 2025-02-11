@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import moment from 'moment';
 import { toast } from 'react-toastify';
 import { StyledTableCell, StyledTableRow } from '../menu-item/MenuDetailPage';
+import { API_SERVER } from '../../../utils/AxiosInstance';
 
 const OrderDetailsPage = () => {
   const { id } = useParams<{ id: string }>(); // Get the order ID from the URL
@@ -12,7 +13,7 @@ const OrderDetailsPage = () => {
 
   const fetchOrderDetails = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/orders/${id}`);
+      const response = await fetch(`${API_SERVER}/api/v1/orders/${id}`);
       const data: OrderTypeI = await response.json();
       setOrder(data);
     } catch (error) {
@@ -93,7 +94,7 @@ const OrderDetailsPage = () => {
                 <StyledTableRow key={orderDetail.id}>
                   <StyledTableCell>
                     <img
-                      src={`http://localhost:8080/${orderDetail.menuItem.image_url}`}
+                      src={`${API_SERVER}/${orderDetail.menuItem.image_url}`}
                       alt={orderDetail.menuItem.name}
                       style={{ width: 50, height: 50, objectFit: 'cover' }}
                     />

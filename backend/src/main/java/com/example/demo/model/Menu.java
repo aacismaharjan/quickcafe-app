@@ -4,6 +4,7 @@ import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -42,8 +43,10 @@ public class Menu {
     private Set<MenuItem> items = new HashSet<>();
 
 
-
-    // Many-to-many relationship with Ledger
+    @ManyToOne( cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(name = "canteen_id", nullable = false)
+    @JsonIgnore
+    private Canteen canteen;
 
     @JsonIgnore
     @ManyToMany(mappedBy = "menus", cascade= {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})

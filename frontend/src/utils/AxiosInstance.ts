@@ -1,7 +1,10 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-export const API_SERVER = 'http://127.0.0.1:8080';
+// export const API_SERVER = 'http://127.0.0.1:8080';
+// export const API_SERVER = "http://192.168.23.127:8080";
+export const API_SERVER = "http://192.168.100.41:8080";
+
 // Create an Axios instance
 const axiosInstance = axios.create({
   baseURL: `${API_SERVER}/api/v1`, // Set the base URL for your API

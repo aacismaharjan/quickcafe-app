@@ -17,6 +17,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import FileUploadButtonWithInfo from '../../../components/molecules/FileUploadButton';
+import { API_SERVER } from '../../../utils/AxiosInstance';
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -59,7 +60,7 @@ const CreateMenuDetailPage = () => {
   // Fetch menu items
   const fetchMenuItem = async (menuItemId: string) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/menu-items/${menuItemId}`);
+      const response = await fetch(`${API_SERVER}/api/v1/menu-items/${menuItemId}`);
       const data = await response.json();
       setSelectedCategories(data.categories);
       setFormData(data);
@@ -70,7 +71,7 @@ const CreateMenuDetailPage = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/categories`);
+      const response = await fetch(`${API_SERVER}/api/v1/categories`);
       const data = await response.json();
       setCategories(data);
     } catch (error) {
@@ -100,8 +101,8 @@ const CreateMenuDetailPage = () => {
     e.preventDefault();
     try {
       const url = editMode
-        ? `http://localhost:8080/api/v1/menu-items/${params.menuItemId}`
-        : 'http://localhost:8080/api/v1/menu-items';
+        ? `${API_SERVER}/api/v1/menu-items/${params.menuItemId}`
+        : `${API_SERVER}/api/v1/menu-items`;
 
       delete formData.reviews;
       delete formData.reviewsStat;

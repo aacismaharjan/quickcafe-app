@@ -11,12 +11,15 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface LedgerRepository extends JpaRepository<Ledger, Long> {
 
     // Find all ledgers by a specific canteen ID
     List<Ledger> findByCanteenId(Long canteenId);
+
+    Optional<Ledger> findByIdAndCanteenId(Long ledgerId, Long canteenId);
 
     Ledger findTopByCanteenAndIsActiveOrderByCreatedAtAsc(Canteen canteen, boolean isActive);
 
@@ -27,6 +30,8 @@ public interface LedgerRepository extends JpaRepository<Ledger, Long> {
         nativeQuery = true
     )
     void deactivateOtherLedgers(@Param("canteenId") Long canteenId);
+
+    boolean existsByIdAndCanteenId(Long ledgerId, Long canteenId);
 
 
 }

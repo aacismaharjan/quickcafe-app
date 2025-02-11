@@ -20,26 +20,22 @@ const CanteenBanner: React.FC<CanteenBannerProps> = ({ canteen }) => {
   const theme = useTheme(); // Access the theme
 
   return (
-    <Card sx={{ position: 'relative', overflow: 'hidden', borderRadius: 2, maxHeight: '240px' }}>
-      <CardMedia
-        component="img"
-        height="200"
-        image={`${API_SERVER}/${canteen.image_url}`}
-        alt={canteen.name}
-        sx={{ filter: 'brightness(0.7)' }} // Darken the image for better text visibility
-      />
+    <Card sx={{ position: 'relative',  borderRadius: 2, height:"auto" }}>
       <CardContent
         sx={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
           color: 'white',
           padding: 2,
           // backgroundColor: alpha(theme.palette.primary.dark, 0.7),
           // @ts-expect-error no matter
           backgroundColor: alpha(theme.palette.primary.dark, 0.9),
+          "&::before": {
+            "content": "''",
+            width: "100%",
+            height: "100%",
+            top: 0,
+            left: 0,
+            backgroundImage: `url("${API_SERVER}/${canteen.image_url}")`
+          }
         }}
       >
         <Typography variant="h4" component="div" gutterBottom>

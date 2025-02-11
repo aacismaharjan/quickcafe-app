@@ -100,28 +100,12 @@ public class OrderController {
         }
     }
 
-    @PatchMapping(path="/{id}", consumes={MediaType.APPLICATION_JSON_VALUE},
-            produces= MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(path="/{id}")
     public ResponseEntity<Order> partiallyUpdateOrder(
             @PathVariable Long id,
             @RequestBody Order order
     ) {
         try {
-//            Set<MenuItem> managedMenuItems = menu.getItems().stream()
-//                    .map(menuItem -> {
-//                        if (menuItem.getId() != null) {
-//                            return menuItemRepository.findById(menuItem.getId()).orElse(menuItem);
-//                        }
-//                        return menuItem;
-//                    })
-//                    .collect(Collectors.toCollection(LinkedHashSet::new));
-//            menu.setItems(managedMenuItems);
-//
-//            // Save the menu to the database
-//            Menu savedMenu = menuService.partiallyUpdateMenu(id, menu);
-//
-//            return ResponseEntity.ok(savedMenu);
-
             Order savedOrder = orderService.partiallyUpdateOrder(id, order);
             return ResponseEntity.ok(savedOrder);
         } catch(Exception e) {

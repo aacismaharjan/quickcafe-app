@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Card, CardContent, Button, IconButton } from '@mui/material';
+import { Card, CardContent, Button, IconButton, Box } from '@mui/material';
+import { Menu as MenuIcon, Close as CloseIcon, PeopleAlt, LocationCity } from '@mui/icons-material';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import axiosInstance from '../utils/AxiosInstance';
+import axiosInstance, { API_SERVER } from '../utils/AxiosInstance';
 import useStoredIDs from '../utils/useStoredIDs';
 import { useLoading } from '../context/LoadingContext';
 import { useNavigate } from 'react-router-dom';
-import { LocationCity, PeopleAlt } from '@mui/icons-material';
 
 const CustomPopup: React.FC<{ canteen: CanteenTypeI; isSelected: boolean; handleBrowse: (id: number) => void }> = ({
   canteen,
@@ -33,7 +33,7 @@ const CustomPopup: React.FC<{ canteen: CanteenTypeI; isSelected: boolean; handle
 
   if (!canteen) return;
 
-  const image_url = `http://localhost:8080/${canteen.image_url}`;
+  const image_url = `${API_SERVER}/${canteen.image_url}`;
 
   return (
     <Popup ref={popupRef} position={[canteen.latitude, canteen.longitude]}>
@@ -77,20 +77,19 @@ const CustomPopup: React.FC<{ canteen: CanteenTypeI; isSelected: boolean; handle
 };
 
 const MapPage: React.FC = () => {
-  const [canteens, setCanteens] = useState<CanteenTypeI[]>([]); // State for all canteens
-  const [selectedCanteen, setSelectedCanteen] = useState<CanteenTypeI | null>(null); // Selected canteen
+  const [canteens, setCanteens] = useState<CanteenTypeI[]>([]);
+  const [selectedCanteen, setSelectedCanteen] = useState<CanteenTypeI | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Sidebar state
   const { setLoading } = useLoading();
   const navigate = useNavigate();
+  const { canteenID, setCanteenID } = useStoredIDs();
 
-  const { canteenID, setCanteenID } = useStoredIDs(); // Assuming you have a hook for stored IDs
-
-  // Fetch canteen data
   useEffect(() => {
     setLoading(true);
     const fetchCanteens = async () => {
       try {
         const response = await axiosInstance.get('/canteens');
-        setCanteens(response.data); // Assuming the response is an array of canteens
+        setCanteens(response.data);
         setSelectedCanteen(response.data.find((canteen: CanteenTypeI) => canteen.id === canteenID) || response.data[0]);
       } catch (error) {
         console.error('Error fetching canteens:', error);
@@ -102,53 +101,18 @@ const MapPage: React.FC = () => {
     fetchCanteens();
   }, [canteenID]);
 
-  // Create custom marker
   const createCustomMarker = (canteen: CanteenTypeI) => {
-    const image_url = `http://localhost:8080/${canteen.image_url}`;
+    const image_url = `${API_SERVER}/${canteen.image_url}`;
     return L.divIcon({
       className: 'custom-marker',
       html: `
-        <div style="
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          position: relative;
-          text-align: center;
-        ">
-          <div style="
-            font-size: 12px;
-            font-weight: 600;
-            background: white;
-            padding: 4px 6px;
-            border-radius: 8px;
-            -webkit-text-stroke: 0.5px rgba(0,0,0,0.2);
-            -webkit-text-fill-color: #ff5722;
-            text-shadow: 1px 1px 5px rgba(0,0,0,0.3);
-            line-height: 1;
-            margin-bottom: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-          ">
+        <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+          <div style="font-size: 12px; font-weight: 600; background: white; padding: 4px 6px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
             ${canteen.name}
           </div>
-          <div style="
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: 2px solid white;
-            box-shadow: 0px 0px 0px 1px rgba(255,0,0,0.2);
-            overflow: hidden;
-          ">
+          <div style="width: 36px; height: 36px; border-radius: 50%; overflow: hidden; border: 2px solid white;">
             <img src="${image_url}" alt="${canteen.name}" style="width: 100%; height: 100%; object-fit: cover;">
           </div>
-          <div style="
-            width: 0;
-            height: 0;
-            border-left:12px solid transparent;
-            border-right: 12px solid transparent;
-            border-top: 12px solid #ff5722;
-            margin-top: -5px;
-            z-index: -1;
-          "></div>
         </div>
       `,
       iconSize: [200, 45],
@@ -166,53 +130,41 @@ const MapPage: React.FC = () => {
     navigate('/');
   };
 
-  console.log(selectedCanteen);
-  console.log('cateens', canteens);
-
   if (!selectedCanteen || canteens.length === 0) {
     return;
   }
 
   return (
     <div className="relative w-screen h-screen">
-      <MapContainer
-        center={[selectedCanteen!.latitude, selectedCanteen!.longitude]} // Default to Kathmandu
-        zoom={15}
-        zoomControl={false}
-        doubleClickZoom={false}
-        scrollWheelZoom={false}
-        className="absolute top-0 left-0 w-full h-full z-0"
+      {/* Sidebar Toggle Button */}
+      <IconButton
+        className="absolute top-4 left-4 z-20 bg-white shadow-md rounded-full"
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
       >
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        {canteens.map((canteen) => {
-          return (
-            <Marker
-              key={canteen.id}
-              position={[canteen.latitude, canteen.longitude]}
-              icon={createCustomMarker(canteen)}
-            >
-              {canteen && (
-                <CustomPopup
-                  canteen={canteen}
-                  isSelected={selectedCanteen?.id === canteen.id}
-                  handleBrowse={(id: number) => {
-                    setCanteenID(id);
-                    navigate('/');
-                  }}
-                />
-              )}
-            </Marker>
-          );
-        })}
-      </MapContainer>
+        {isSidebarOpen ? <CloseIcon /> : <MenuIcon />}
+      </IconButton>
 
+      {/* Sidebar */}
       <div
-        className="absolute top-0 left-4 w-80 bg-white shadow-lg p-4 rounded-lg max-h-[80vh] overflow-y-auto z-10"
-        style={{ top: 0, left: 0, minHeight: '100vh' }}
+        className={`absolute top-0 left-0 bg-white shadow-lg p-4 rounded-lg max-h-[80vh] overflow-y-auto z-30 transition-transform duration-300 ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+        style={{ minHeight: '100vh', width: '320px' }}
       >
-        <h2 className="text-lg font-bold mb-2">Canteens</h2>
+        <Box sx={{display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0px 0px 8px 0px" }}>
+          <h2 className="text-lg font-bold">Canteens </h2>
+
+          <IconButton
+            sx={{ display: 'inline-block' }}
+            className="absolute  z-20 bg-white shadow-md rounded-full"
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            size="small"
+          >
+          <CloseIcon/>
+          </IconButton>
+        </Box>
         {canteens.map((canteen) => {
-           const image_url = `http://localhost:8080/${canteen.image_url}`;
+          const image_url = `${API_SERVER}/${canteen.image_url}`;
           return (
             <Card
               key={canteen.id}
@@ -223,11 +175,7 @@ const MapPage: React.FC = () => {
             >
               <CardContent className="flex items-center p-3">
                 <div className="w-12 h-12 rounded-full bg-gray-200 mr-4 overflow-hidden">
-                  <img
-                    src={image_url}
-                    alt={canteen.name}
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={image_url} alt={canteen.name} className="w-full h-full object-cover" />
                 </div>
                 <div>
                   <h3 className="font-semibold">{canteen.name}</h3>
@@ -241,7 +189,7 @@ const MapPage: React.FC = () => {
                 </div>
               </CardContent>
             </Card>
-          )
+          );
         })}
 
         <div className="flex justify-between mt-4">
@@ -253,8 +201,36 @@ const MapPage: React.FC = () => {
           </Button>
         </div>
       </div>
+
+      {/* Map */}
+      <MapContainer
+        center={[selectedCanteen!.latitude, selectedCanteen!.longitude]}
+        zoom={15}
+        zoomControl={false}
+        doubleClickZoom={false}
+        scrollWheelZoom={false}
+        className="absolute top-0 left-0 w-full h-full z-0"
+      >
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        {canteens.map((canteen) => (
+          <Marker key={canteen.id} position={[canteen.latitude, canteen.longitude]} icon={createCustomMarker(canteen)}>
+            {canteen && (
+                <CustomPopup
+                  canteen={canteen}
+                  isSelected={selectedCanteen?.id === canteen.id}
+                  handleBrowse={(id: number) => {
+                    setCanteenID(id);
+                    navigate('/');
+                  }}
+                />
+              )}
+          </Marker>
+        ))}
+      </MapContainer>
     </div>
   );
 };
 
 export default MapPage;
+
+

@@ -15,4 +15,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     // Find reviews by rating
     List<Review> findByRating(int rating);
+
+    List<Review> findByCanteenId(Long canteenId);
 }

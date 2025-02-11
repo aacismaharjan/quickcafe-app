@@ -14,7 +14,9 @@ import {
   Rating,
   styled,
 } from '@mui/material';
-import moment from "moment";
+import moment from 'moment';
+import { API_SERVER } from '../../../utils/AxiosInstance';
+import { useOwnerCanteenID } from '../utils/useOwnerCanteenID';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: theme.palette.grey.A700,
@@ -28,12 +30,14 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const ReviewsPage = () => {
+  const { ownerCanteenID } = useOwnerCanteenID();
+
   const [reviews, setReviews] = useState<ReviewTypeI[]>([]);
 
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/v1/reviews');
+        const response = await fetch(`${API_SERVER}/api/v1/canteens/${ownerCanteenID}/reviews`);
         const data = await response.json();
         setReviews(data);
       } catch (error) {
@@ -45,7 +49,9 @@ const ReviewsPage = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h5" sx={{ mb: 3 }}>Reviews</Typography>
+      <Typography variant="h5" sx={{ mb: 3 }}>
+        Reviews
+      </Typography>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -60,13 +66,15 @@ const ReviewsPage = () => {
           <TableBody>
             {reviews.map((review) => (
               <StyledTableRow key={review.id}>
-                <TableCell>{review.user.firstName} {review.user.lastName}</TableCell>
                 <TableCell>
-                  <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                  {review.user.firstName} {review.user.lastName}
+                </TableCell>
+                <TableCell>
+                  <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                     <CardMedia
                       component="img"
                       sx={{ width: 50, height: 50, borderRadius: 1 }}
-                      image={`http://localhost:8080/${review.menuItem.image_url}`}
+                      image={`${API_SERVER}/${review.menuItem.image_url}`}
                       alt={review.menuItem.name}
                     />
                     {review.menuItem.name}

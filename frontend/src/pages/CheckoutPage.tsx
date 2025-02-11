@@ -7,6 +7,7 @@ import axiosInstance, { API_SERVER } from '../utils/AxiosInstance';
 import { toast } from 'react-toastify';
 import CryptoJS from 'crypto-js';
 import { getPrice } from './CartPage';
+import useStoredIDs from '../utils/useStoredIDs';
 
 export const calculateGrandTotal = (orderDetails: any) => {
   return orderDetails.reduce((total: number, item: any) => {
@@ -20,14 +21,11 @@ const CheckoutPage: React.FC = () => {
   const [paymentMethod, setPaymentMethod] = useState<number>(2); // 0 for cash, 1 for card
   const [formData, setFormData] = useState<any>(null);
   const formRef = useRef<HTMLFormElement>(null); // Reference to the form
+  const { canteenID } = useStoredIDs();
 
-  // Handle form submission when formData is set
   useEffect(() => {
-    console.log('FORMDATA', formData);
-    console.log(formRef.current);
-
     if (formData && formRef.current) {
-      formRef.current.submit(); // Programmatically submit the form
+      formRef.current.submit();
     }
   }, [formData]);
 
@@ -45,6 +43,9 @@ const CheckoutPage: React.FC = () => {
     e.preventDefault();
 
     const orderPayload = {
+      canteen: {
+        id: canteenID,
+      },
       orderStatus: 0,
       orderDetails: cart.map((item) => ({
         menuItem: { id: item.id },

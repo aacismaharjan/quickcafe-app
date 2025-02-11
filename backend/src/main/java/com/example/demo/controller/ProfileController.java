@@ -1,11 +1,13 @@
 package com.example.demo.controller;
 
+import com.example.demo.auth.ResponseWrapper;
 import com.example.demo.model.*;
 import com.example.demo.service.*;
 import com.example.demo.utils.AuthUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -30,6 +32,8 @@ public class ProfileController {
     private final OrderService orderService;
     private final AuthUtil authUtil;
     private final FileStorageService fileStorageService;
+    private final CanteenService canteenService;
+    private final EntityManager entityManager;
 
     @Value("${frontend.server}")
     private String FRONTEND_SERVER;
@@ -37,12 +41,14 @@ public class ProfileController {
     private static final String SECRET_KEY = "8gBm/:&EnhH.1/q"; // Your secret key
     
     @Autowired
-    public ProfileController(UserService userService, AuthUtil authUtil, FavoriteService favoriteService, OrderService orderService, FileStorageService fileStorageService) {
+    public ProfileController(UserService userService, AuthUtil authUtil, FavoriteService favoriteService, OrderService orderService, FileStorageService fileStorageService, CanteenService canteenService, EntityManager entityManager) {
     	this.userService = userService;
     	this.authUtil = authUtil;
     	this.favoriteService = favoriteService;
         this.orderService = orderService;
         this.fileStorageService = fileStorageService;
+        this.canteenService = canteenService;
+        this.entityManager = entityManager;
     }
 
     @GetMapping
@@ -183,7 +189,12 @@ public class ProfileController {
     public ResponseEntity<Order> createOrder(@NonNull HttpServletRequest request, @RequestBody Order order) {
         try {
             User user = authUtil.getUserFromRequestToken(request);
+
+            Canteen canteen = canteenService.getCanteenById(order.getCanteen().getId())
+                    .orElseThrow(() -> new RuntimeException("Canteen not found with id: " + order.getCanteen().getId()));
+
             order.setUser(user);
+            order.setCanteen(canteen);
             return ResponseEntity.ok(orderService.createOrder(order));
         }catch(Exception e) {
             return ResponseEntity.badRequest().build();
@@ -255,4 +266,17 @@ public class ProfileController {
             return ResponseEntity.badRequest().body("Unable to do UnFavorite: " + e.getMessage());
         }
     }
+
+    @GetMapping(path = "/canteen")
+    public ResponseEntity<?> getMyCanteen(@NonNull HttpServletRequest request) throws Exception {
+        try {
+            Integer userId = authUtil.getUserIdFromRequestToken(request);
+            Canteen canteen = canteenService.getCanteenByUserId(userId);
+            return ResponseEntity.ok(canteen);
+        }catch(Exception ex){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseWrapper<Void>(false, ex.getMessage()));
+        }
+    }
+
+
 }
