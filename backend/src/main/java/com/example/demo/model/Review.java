@@ -30,21 +30,22 @@ public class Review {
 
     @ManyToOne( cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "canteen_id", nullable = false)
-    @JsonIgnore
+    @JsonBackReference("canteen-reviews")
     private Canteen canteen;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
     @NotNull(message = "Order Detail cannot be null")
     @JoinColumn(name = "order_detail_id", nullable = false)
     @JsonIgnoreProperties({"review", "menuItem"})
-    @JsonManagedReference
+    @JsonManagedReference("review-orderDetail")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     private OrderDetail orderDetail;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
     @JoinColumn(name="menu_item_id", nullable = false)
     @NotNull(message = "Menu Item cannot be null")
-    @JsonIgnoreProperties({"reviews"})
+//    @JsonBackReference
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     private MenuItem menuItem;
 
     @Min(value = 1, message = "Rating must be at least 1")

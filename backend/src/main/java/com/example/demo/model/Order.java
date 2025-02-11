@@ -2,9 +2,7 @@ package com.example.demo.model;
 
 import java.util.*;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -31,9 +29,9 @@ public class Order {
     @JoinColumn(name="user_id", nullable = false)
     private User user;
 
-//    @JsonIgnoreProperties({"ledgers", "activeLedger", "orders"})
-    @ManyToOne( cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.})
+    @ManyToOne( cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "canteen_id", nullable = false)
+    @JsonBackReference("canteen-orders")
     private Canteen canteen;
 
     @NotNull(message = "Order status cannot be null")

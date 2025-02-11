@@ -20,7 +20,7 @@ import lombok.Data;
 
 @Entity
 @Table(name = "tbl_favorites", uniqueConstraints = @UniqueConstraint(columnNames = {"menu_item_id", "user_id"}))  
-@Data 
+@Data
 public class Favorite {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

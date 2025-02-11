@@ -1,15 +1,14 @@
 package com.example.demo.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Cascade;
 
 import java.util.*;
 
@@ -38,15 +37,10 @@ public class Ledger {
     private Date createdAt = new Date();
 
 
-    @JsonIgnoreProperties({"ledgers", "activeLedger"})
     @ManyToOne( cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "canteen_id", nullable = false)
+    @JsonBackReference("canteen-ledgers")
     private Canteen canteen;
-
-
-//    // Many-to-many relationship with Menu
-//    @ManyToMany(mappedBy = "ledgers") // mappedBy indicates this is the inverse side
-//    private Set<Menu> menus = new HashSet<>(); // A ledger can have multiple menus
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch=FetchType.EAGER)
     @JoinTable(

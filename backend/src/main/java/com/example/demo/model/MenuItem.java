@@ -4,9 +4,7 @@ import java.sql.Array;
 import java.util.*;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -52,7 +50,7 @@ public class MenuItem {
 
     @ManyToOne( cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "canteen_id", nullable = false)
-    @JsonIgnore
+    @JsonBackReference("canteen-menuItems")
     private Canteen canteen;
 
     @JsonIgnore
@@ -70,7 +68,7 @@ public class MenuItem {
     private List<Category> categories;
 
     @OneToMany(mappedBy = "menuItem", cascade = CascadeType.ALL, orphanRemoval = true,  fetch = FetchType.EAGER)
-    @JsonIgnoreProperties({"menuItem"})
+//    @JsonManagedReference
     private List<Review> reviews = new ArrayList<>();
 
     public ReviewStats getReviewsStat() {

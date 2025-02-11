@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.model.Canteen;
 import com.example.demo.model.Menu;
 import com.example.demo.model.Review;
 import com.example.demo.repository.ReviewRepository;
@@ -19,11 +20,13 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final EntityManager entityManager;
+    private final CanteenService canteenService;
 
     @Autowired
-    public ReviewService(ReviewRepository reviewRepository, EntityManager entityManager) {
+    public ReviewService(ReviewRepository reviewRepository, EntityManager entityManager, CanteenService canteenService) {
         this.reviewRepository = reviewRepository;
         this.entityManager = entityManager;
+        this.canteenService = canteenService;
     }
 
     // Retrieve all reviews
@@ -39,9 +42,15 @@ public class ReviewService {
     // Save a new review
     @Transactional
     public Review saveReview(@Valid Review review) {
-        Review savedReview =  reviewRepository.save(review);
-        entityManager.refresh(savedReview);
-        return savedReview;
+        try {
+            Canteen canteen = canteenService.getCanteenById(review.getCanteen().getId())
+                    .orElseThrow(() -> new RuntimeException("Canteen not found with id: " + review.getCanteen().getId()));;
+            review.setCanteen(canteen);
+            Review savedReview =  reviewRepository.save(review);
+            return savedReview;
+        }catch (Exception ex) {
+            throw new RuntimeException(ex.getMessage());
+        }
     }
 
     // Update an existing review

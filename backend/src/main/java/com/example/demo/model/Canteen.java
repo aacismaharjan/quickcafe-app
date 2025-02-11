@@ -1,8 +1,6 @@
 package com.example.demo.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -21,6 +19,7 @@ import java.util.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Canteen {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,36 +55,34 @@ public class Canteen {
     private Double longitude = 85.324;
 
 
-    @JsonIgnore
+    @JsonManagedReference("canteen-ledgers")
     @OneToMany(mappedBy = "canteen",  cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private List<Ledger> ledgers;
 
-    @JsonIgnore
+    @JsonManagedReference("canteen-menus")
     @OneToMany(mappedBy = "canteen",  cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private List<Menu> menus;
 
-    @JsonIgnore
+    @JsonManagedReference("canteen-menuItems")
     @OneToMany(mappedBy = "canteen",  cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private List<MenuItem> menuItems;
 
-    @JsonIgnore
+    @JsonManagedReference("canteen-orders")
     @OneToMany(mappedBy = "canteen",  cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private List<Order> orders;
 
-    @JsonIgnore
+    @JsonManagedReference("canteen-reviews")
     @OneToMany(mappedBy = "canteen", cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private List<Review> reviews;
 
 
     @Transient
     @JsonProperty(value = "activeLedger", access = JsonProperty.Access.READ_ONLY)
+    @JsonIgnoreProperties({"activeLedger"})
     public Ledger getActiveLedger() {
         if (ledgers == null || ledgers.isEmpty()) {
             return null;
         }
-        // Ensure it's active
-        // Prevent null canteen
-        // Oldest first
         return ledgers.stream()
                 .filter(ledger -> ledger.getIsActive() != null && ledger.getIsActive())  // Ensure it's active
                 .filter(ledger -> ledger.getCanteen() != null).min(Comparator.comparing(Ledger::getCreatedAt))
