@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Menu;
+import com.example.demo.model.OrderStats;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,48 +37,16 @@ public class OrderController {
 
     // Endpoint to get monthly order status distribution for a specific year
     @GetMapping("/monthly-status-distribution")
-    public Map<String, Map<Integer, Long>> getMonthlyOrderStatusDistribution(@RequestParam int year) {
-        return orderService.getMonthlyOrderStatusDistributionByYear(year);
+    public Map<String, Map<Integer, Long>> getMonthlyOrderStatusDistribution(@RequestParam int year, Long canteenId) {
+        return orderService.getMonthlyOrderStatusDistributionByYear(year, canteenId);
     }
 
     @GetMapping("/stats")
     public OrderStats getOrderStats() {
-        long totalOrders = orderService.getTotalOrders();
-        long pendingOrders = orderService.getPendingOrders();
-        long completedOrders = orderService.getCompletedOrders();
-        long cancelledOrders = orderService.getCancelledOrders();
-
-        double totalRevenue = orderService.getTotalRevenue();
-        double pendingPayment = orderService.getPendingPayment();
-        double paidAmount = orderService.getPaidAmount();
-        double failedAmount = orderService.getFailedAmount();
-
-        return new OrderStats(
-                totalOrders,
-                pendingOrders,
-                completedOrders,
-                cancelledOrders,
-                totalRevenue,
-                pendingPayment,
-                paidAmount,
-                failedAmount
-        );
+        return orderService.getOrderStats();
     }
 
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    public static class OrderStats {
-        private long totalOrders;
-        private long pendingOrders;
-        private long completedOrders;
-        private long cancelledOrders;
-        private double totalRevenue;
-        private double pendingPayment;
-        private double paidAmount;
-        private double failedAmount;
 
-    }
 
     @GetMapping("/{id}") // Maps to GET /order/{id}
     public ResponseEntity<Order> getOrderById(@PathVariable Long id) {

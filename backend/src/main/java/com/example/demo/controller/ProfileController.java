@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -137,53 +138,72 @@ public class ProfileController {
         return Base64.getEncoder().encodeToString(hmacBytes);
     }
 
-
     @GetMapping("/orders/{orderId}/checkout")
-    public ResponseEntity<String> handleCheckout(@PathVariable Long orderId, @RequestParam("data") String encodedResponse) {
-       try {
-           // Step 1: Decode the Base64 response
-           byte[] deocdedBytes = Base64.getDecoder().decode(encodedResponse);
-           System.out.println(Arrays.toString(deocdedBytes));
-           String decodedResponse = new String(deocdedBytes, StandardCharsets.UTF_8);
+    public ResponseEntity<?> handleCheckout(@PathVariable Long orderId,
+                                            @RequestParam(value = "data", required = false) String encodedResponse) {
+        try {
+            // Step 1: Handle the case where "data" is missing
+            if (encodedResponse == null || encodedResponse.isEmpty()) {
+                String errorMessage = "Payment not completed.";
+                URI redirectUri = URI.create(FRONTEND_SERVER + "/order-confirmation?orderId=" + orderId + "&error=true&message="
+                        + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
+                return ResponseEntity.status(HttpStatus.SEE_OTHER).location(redirectUri).build();
+            }
 
-           // Step 2: Parse JSON response
-           ObjectMapper objectMapper = new ObjectMapper();
-           Map<String, String> responseData;
-           try {
-               responseData = objectMapper.readValue(decodedResponse, new TypeReference<Map<String, String>>() {});
-           }catch(JsonProcessingException e) {
-               return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid response data");
-           }
+            // Step 2: Decode the Base64 response
+            byte[] decodedBytes = Base64.getDecoder().decode(encodedResponse);
+            String decodedResponse = new String(decodedBytes, StandardCharsets.UTF_8);
 
-           // Step 3: Verify the signature
-           String expectedSignature = generateSignature(responseData); // Implement this based on your setup
-           if (!expectedSignature.equals(responseData.get("signature"))) {
-               return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Signature verification failed");
-           }
+            // Step 3: Parse the decoded JSON response
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, String> responseData;
+            try {
+                responseData = objectMapper.readValue(decodedResponse, new TypeReference<Map<String, String>>() {});
+            } catch (JsonProcessingException e) {
+                String errorMessage = "Invalid response data.";
+                URI redirectUri = URI.create(FRONTEND_SERVER + "/order-confirmation?orderId=" + orderId + "&error=true&message="
+                        + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
+                return ResponseEntity.status(HttpStatus.SEE_OTHER).location(redirectUri).build();
+            }
 
-           // Step 4: Update Order Status based on Payment Response
-           String status = responseData.get("status");
-           if ("COMPLETE".equals(status)) {
-               Order order = orderService.getOrderById(orderId).orElseThrow(()-> new RuntimeException(("Couldn't find.")));
-               if (order != null) {
-                   order.setPaymentStatus(PaymentStatus.PAID); // 1 for Paid
-                   order.setOrderStatus(OrderStatus.RECEIVED);
-                   orderService.updateOrder(order.getId(), order);
-//                   return ResponseEntity.ok("Order updated successfully");
+            // Step 4: Verify the signature
+            String expectedSignature = generateSignature(responseData);
+            if (!expectedSignature.equals(responseData.get("signature"))) {
+                String errorMessage = "Signature verification failed.";
+                URI redirectUri = URI.create(FRONTEND_SERVER + "/order-confirmation?orderId=" + orderId + "&error=true&message="
+                        + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
+                return ResponseEntity.status(HttpStatus.SEE_OTHER).location(redirectUri).build();
+            }
 
-                   // Redirect to the React app's /order-confirmation page
-                   URI redirectUri = URI.create(FRONTEND_SERVER + "/order-confirmation?orderId=" + order.getId());
-                   return ResponseEntity.status(HttpStatus.SEE_OTHER).location(redirectUri).build();
-               } else {
-                   return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found");
-               }
-           }
+            // Step 5: Update Order Status based on Payment Response
+            String status = responseData.get("status");
+            if ("COMPLETE".equals(status)) {
+                // Process successful payment
+                Order order = orderService.getOrderById(orderId).orElseThrow(() -> new RuntimeException("Couldn't find order."));
+                order.setPaymentStatus(PaymentStatus.PAID);  // 1 for Paid
+                order.setOrderStatus(OrderStatus.RECEIVED);
+                orderService.updateOrder(order.getId(), order);
 
-           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment not completed");
-       }catch(Exception e) {
-           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-       }
+                URI redirectUri = URI.create(FRONTEND_SERVER + "/order-confirmation?orderId=" + order.getId()
+                        + "&paymentStatus=" + status + "&error=false");
+                return ResponseEntity.status(HttpStatus.SEE_OTHER).location(redirectUri).build();
+            }
+
+            // Handle payment not completed
+            String errorMessage = "Payment not completed.";
+            URI redirectUri = URI.create(FRONTEND_SERVER + "/order-confirmation?orderId=" + orderId + "&paymentStatus=" + status
+                    + "&error=true&message=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
+            return ResponseEntity.status(HttpStatus.SEE_OTHER).location(redirectUri).build();
+        } catch (Exception e) {
+            // Handle unexpected exceptions
+            String errorMessage = "An unexpected error occurred during the checkout process.";
+            URI redirectUri = URI.create(FRONTEND_SERVER + "/order-confirmation?orderId=" + orderId + "&error=true&message="
+                    + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
+            return ResponseEntity.status(HttpStatus.SEE_OTHER).location(redirectUri).build();
+        }
     }
+
+
 
     @PostMapping("/orders")
     public ResponseEntity<Order> createOrder(@NonNull HttpServletRequest request, @RequestBody Order order) {

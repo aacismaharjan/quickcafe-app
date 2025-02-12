@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -213,6 +214,16 @@ public class CanteenController {
         }catch(Exception ex) {
             throw new RuntimeException(ex.getMessage());
         }
+    }
+
+    @GetMapping("/{canteenId}/orders/stats")
+    public OrderStats getOrderStats(@PathVariable Long canteenId) {
+        return orderService.getOrderStats(canteenId);
+    }
+
+    @GetMapping("/{canteenId}/orders/monthly-status-distribution")
+    public Map<String, Map<Integer, Long>> getMonthlyOrderStatusDistribution(@RequestParam int year, @PathVariable Long canteenId) {
+        return orderService.getMonthlyOrderStatusDistributionByYear(year, canteenId);
     }
 
 }

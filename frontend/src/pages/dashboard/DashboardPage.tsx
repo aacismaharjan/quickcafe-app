@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Bar, Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, Title, CategoryScale, BarElement, LinearScale } from 'chart.js';
 import { API_SERVER } from '../../utils/AxiosInstance';
+import { useOwnerCanteenID } from './utils/useOwnerCanteenID';
 
 // Register Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend, Title, CategoryScale);
@@ -11,6 +12,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 const DashboardPage = () => {
   const [orderStats, setOrderStats] = useState<any>({});
   const [year, setYear] = useState(2025); // Default year
+  const {ownerCanteenID} = useOwnerCanteenID();
   const [data, setData] = useState({
     totalOrders: 0,
     pendingOrders: 0,
@@ -25,7 +27,7 @@ const DashboardPage = () => {
   // Fetch data when the component mounts
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch(`${API_SERVER}/api/v1/orders/stats`); // Replace with your API URL
+      const response = await fetch(`${API_SERVER}/api/v1/canteens/${ownerCanteenID}/orders/stats`); // Replace with your API URL
       const result = await response.json();
       setData(result);
     };
@@ -35,7 +37,7 @@ const DashboardPage = () => {
 
   useEffect(() => {
     // Fetch monthly order status distribution for the selected year
-    fetch(`${API_SERVER}/api/v1/orders/monthly-status-distribution?year=${year}`)
+    fetch(`${API_SERVER}/api/v1/canteens/${ownerCanteenID}/orders/monthly-status-distribution?year=${year}`)
       .then((response) => response.json())
       .then((data) => setOrderStats(data))
       .catch((error) => console.error('Error fetching order stats:', error));
