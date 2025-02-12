@@ -9,64 +9,55 @@ import {
   TableHead,
   Typography,
   Chip,
-  Select,
   MenuItem,
-  FormControl,
-  InputLabel,
   Menu,
 } from '@mui/material';
-import { Edit as EditIcon, RemoveRedEye } from '@mui/icons-material';
+import { RemoveRedEye } from '@mui/icons-material';
 import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
 import { StyledTableCell, StyledTableRow } from '../menu-item/MenuDetailPage';
 import { getPrice } from '../../CartPage';
-import axiosInstance, { API_SERVER } from '../../../utils/AxiosInstance';
+import { API_SERVER } from '../../../utils/AxiosInstance';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useOwnerCanteenID } from '../utils/useOwnerCanteenID';
 
-export enum OrderStatus {
-  RECEIVED = 'RECEIVED',
-  IN_PROGRESS = 'IN_PROGRESS',
-  COMPLETED = 'COMPLETED',
-  CANCELED = 'CANCELED',
-}
-
-export enum PaymentStatus {
-  PENDING = 'PENDING',
-  PAID = 'PAID',
-  FAILED = 'FAILED',
-}
-
-const getStatusColor = (status) => {
+// Utility Function to get Status Color
+const getStatusColor = (status: string) => {
   switch (status) {
-    case 'RECEIVED':
+    case OrderStatus.RECEIVED:
       return 'info';
-    case 'IN_PROGRESS':
+    case OrderStatus.IN_PROGRESS:
       return 'warning';
-    case 'COMPLETED':
+    case OrderStatus.COMPLETED:
       return 'success';
-    case 'CANCELED':
+    case OrderStatus.CANCELED:
       return 'error';
-    case 'PENDING':
-      return 'warning';
-    case 'PAID':
+    case PaymentStatus.PAID:
       return 'success';
-    case 'FAILED':
+    case PaymentStatus.FAILED:
       return 'error';
     default:
       return 'default';
   }
 };
 
-export default function ChipMenu({ label = 'Dashboard', options = [], selectedOption, onSelect }) {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+// Reusable Chip Menu Component
+interface ChipMenuProps {
+  label?: string;
+  options: string[];
+  selectedOption?: string;
+  onSelect?: (option: string) => void;
+}
+
+const ChipMenu: React.FC<ChipMenuProps> = ({ label = 'Dashboard', options, selectedOption, onSelect }) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
-  const handleClick = (event) => {
+  const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = (option) => {
+  const handleClose = (option?: string) => {
     setAnchorEl(null);
     if (option && onSelect) {
       onSelect(option);
@@ -80,13 +71,13 @@ export default function ChipMenu({ label = 'Dashboard', options = [], selectedOp
         onClick={handleClick}
         deleteIcon={<ArrowDropDownIcon />}
         onDelete={handleClick}
-        color={getStatusColor(selectedOption)}
+        color={getStatusColor(selectedOption || '')}
         size="small"
       />
       <Menu
         anchorEl={anchorEl}
         open={open}
-        onClose={() => handleClose(null)}
+        onClose={() => handleClose()}
         MenuListProps={{ 'aria-labelledby': 'chip-menu' }}
       >
         {options.map((option, index) => (
@@ -97,24 +88,27 @@ export default function ChipMenu({ label = 'Dashboard', options = [], selectedOp
       </Menu>
     </div>
   );
-}
+};
 
-const OrderPage = () => {
+// Order Page Component
+const OrderPage: React.FC = () => {
   const [orders, setOrders] = useState<OrderTypeI[]>([]);
   const navigate = useNavigate();
   const { ownerCanteenID } = useOwnerCanteenID();
 
-  const fetchOrders = async () => {
+  // Fetch Orders
+  const fetchOrders = async (): Promise<void> => {
     try {
       const response = await fetch(`${API_SERVER}/api/v1/canteens/${ownerCanteenID}/orders`);
-      const data = await response.json();
+      const data: OrderTypeI[] = await response.json();
       setOrders(data);
     } catch (error) {
       console.error('Error fetching orders:', error);
     }
   };
 
-  const updateOrder = async (orderId: string, updatedFields: Partial<OrderTypeI>) => {
+  // Update Order
+  const updateOrder = async (orderId: number, updatedFields: Partial<OrderTypeI>): Promise<void> => {
     try {
       const response = await fetch(`${API_SERVER}/api/v1/orders/${orderId}`, {
         method: 'PATCH',
@@ -177,7 +171,7 @@ const OrderPage = () => {
                       label="Status"
                       options={Object.values(OrderStatus)}
                       selectedOption={order.orderStatus}
-                      onSelect={(value) => updateOrder(order.id, { orderStatus: value })}
+                      onSelect={(value) => updateOrder(order.id, { orderStatus: value as OrderStatus })}
                     />
                   </StyledTableCell>
                   <StyledTableCell>
@@ -185,7 +179,7 @@ const OrderPage = () => {
                       label="Payment Status"
                       options={Object.values(PaymentStatus)}
                       selectedOption={order.paymentStatus}
-                      onSelect={(value) => updateOrder(order.id, { paymentStatus: value })}
+                      onSelect={(value) => updateOrder(order.id, { paymentStatus: value as PaymentStatus })}
                     />
                   </StyledTableCell>
                   <StyledTableCell>

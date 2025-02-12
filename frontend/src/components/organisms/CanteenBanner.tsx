@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardMedia, CardContent, Typography, Box, alpha } from '@mui/material';
+import { Card, CardContent, Typography, Box, alpha } from '@mui/material';
 import { Phone, LocationOn } from '@mui/icons-material';
 import { useTheme } from '@emotion/react';
 import { API_SERVER } from '../../utils/AxiosInstance';

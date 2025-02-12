@@ -14,7 +14,6 @@ const CustomPopup: React.FC<{ canteen: CanteenTypeI; isSelected: boolean; handle
   isSelected,
   handleBrowse,
 }) => {
-  const navigate = useNavigate();
   const map = useMap();
   const popupRef = useRef<L.Popup | null>(null);
 

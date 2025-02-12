@@ -26,7 +26,6 @@ import ProfileMenu from '../../components/molecules/ProfileMenu';
 import StarsOutlinedIcon from '@mui/icons-material/StarsOutlined';
 import { handleLogout } from '../../components/template/AppLayout';
 import { toast } from 'react-toastify';
-import { useOwnerCanteenID } from './utils/useOwnerCanteenID';
 import { useLoading } from '../../context/LoadingContext';
 import axiosInstance from '../../utils/AxiosInstance';
 import { AxiosError } from 'axios';
@@ -55,9 +54,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = (props) => {
   const location = useLocation();
 
   const navigate = useNavigate();
-  const { loading: isAppLoading, setLoading } = useLoading();
-  const [ownerCanteenID, setOwnerCanteenID] = useState();
-  const [ownerCanteen, setOwnerCanteen] = useState();
+  const { setLoading } = useLoading();
+  const [ownerCanteen, setOwnerCanteen] = useState<CanteenTypeI>();
 
   const handleDrawerToggle = () => setOpen(!open);
   const handleMenuToggle = () => setMenuOpen(!menuOpen);
@@ -70,15 +68,14 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = (props) => {
           const canteen = res.data;
           localStorage.setItem('ownerCanteenID', JSON.stringify(canteen.id));
           localStorage.setItem('ownerCanteen', JSON.stringify(canteen));
-          setOwnerCanteenID(canteen.id);
           setOwnerCanteen(canteen);
         })
         .catch((err: AxiosError<{ message: string }>) => {
           if (err.response) toast.warn(err.response.data?.message);
           else toast.warn('Something went wrong.');
           handleLogout(navigate);
-        })
-        setLoading(false);
+        });
+      setLoading(false);
     };
     fetchMyCanteen();
   }, []);
@@ -114,7 +111,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = (props) => {
   if (ownerCanteen == null) {
     return <></>;
   }
-
 
   return (
     <Box sx={{ display: 'flex' }}>

@@ -8,30 +8,15 @@ import {
   Typography,
   Switch,
   FormControlLabel,
-  styled,
   Autocomplete,
   Chip,
 } from '@mui/material';
-import DashboardLayout from '../DashboardLayout';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import FileUploadButtonWithInfo from '../../../components/molecules/FileUploadButton';
 import { API_SERVER } from '../../../utils/AxiosInstance';
-import useStoredIDs from '../../../utils/useStoredIDs';
 import { useOwnerCanteenID } from '../utils/useOwnerCanteenID';
 
-const VisuallyHiddenInput = styled('input')({
-  clip: 'rect(0 0 0 0)',
-  clipPath: 'inset(50%)',
-  height: 1,
-  overflow: 'hidden',
-  position: 'absolute',
-  bottom: 0,
-  left: 0,
-  whiteSpace: 'nowrap',
-  width: 1,
-});
 
 interface FormDataTypeI extends Partial<MenuItemTypeI> {
   image_file?: any;
@@ -200,7 +185,7 @@ const CreateMenuDetailPage = () => {
               multiple
               fullWidth
               value={selectedCategories}
-              onChange={(event, newValue) => {
+              onChange={(_, newValue) => {
                 setSelectedCategories([...new Set(newValue)]);
               }}
               options={categories.map((option) => option)}

@@ -4,7 +4,6 @@ import { toast } from 'react-toastify';
 import { API_SERVER } from '../utils/AxiosInstance';
 import { useLoading } from '../context/LoadingContext';
 import { useNavigate } from 'react-router-dom';
-import {  UserTypeI } from '../global';
 
 
 

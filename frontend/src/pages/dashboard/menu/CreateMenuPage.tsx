@@ -79,7 +79,7 @@ const CreateMenuPage = () => {
     fetchMenuItems();
   }, []);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -87,7 +87,7 @@ const CreateMenuPage = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const finalData = {

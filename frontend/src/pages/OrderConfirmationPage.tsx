@@ -31,7 +31,6 @@ const OrderConfirmationPage: React.FC = () => {
   const { loading, setLoading } = useLoading();
   const [error, setError] = useState<string | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<string | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -43,7 +42,6 @@ const OrderConfirmationPage: React.FC = () => {
 
   useEffect(() => {
     if (errorParam === 'true' && messageParam) {
-      setErrorMessage(messageParam);
       toast.error(messageParam);
     }
     if (paymentStatusParam) {

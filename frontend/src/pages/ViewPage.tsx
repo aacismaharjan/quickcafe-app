@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react';
 import { Box, Container } from '@mui/material';
 import CanteenBanner from '../components/organisms/CanteenBanner';
@@ -6,7 +7,7 @@ import MenuContainer from '../components/organisms/MenuItemContainer';
 import { useLoading } from '../context/LoadingContext';
 import { useLocation, useNavigate } from 'react-router-dom'; // Import useLocation
 import { toast } from 'react-toastify';
-import AppLayout, { MyAppBar } from '../components/template/AppLayout';
+import { MyAppBar } from '../components/template/AppLayout';
 
 const ViewPage: React.FC = () => {
   const [canteen, setCanteen] = useState<any>(null);

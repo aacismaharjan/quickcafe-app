@@ -22,5 +22,5 @@
 
     "typeRoots": ["./src/theme"],
   },
-  "include": ["src", "vite.config.ts"]
+  "include": ["src", "vite.config.ts", "src/global.d.ts"]
 }

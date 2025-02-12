@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react';
 import { TextField, Button, Typography, Box, Container, Paper } from '@mui/material';
 import axiosInstance from '../utils/AxiosInstance';
 import { toast } from 'react-toastify';
 import { useLoading } from '../context/LoadingContext';
 import { useNavigate } from 'react-router-dom';
-import { AxiosError } from 'axios';
 import FileUploadButtonWithInfo from '../components/molecules/FileUploadButton';
 import { useAuth } from '../hooks/useAuth';
 

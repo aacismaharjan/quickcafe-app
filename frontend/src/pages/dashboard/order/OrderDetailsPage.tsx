@@ -53,7 +53,7 @@ const OrderDetailsPage = () => {
         Payment:{" "}
           <Chip
             variant="outlined"
-            color={order.paymentStatus === 'Completed' ? 'warning' : 'success'}
+            color={order.paymentStatus === 'PAID' ? 'warning' : 'success'}
             label={order.paymentStatus}
             size="small"
           />
@@ -62,7 +62,7 @@ const OrderDetailsPage = () => {
           Order Status:{' '}
           <Chip
             variant="outlined"
-            color={order.orderStatus === 'Pending' ? 'warning' : 'success'}
+            color={order.orderStatus === 'IN_PROGRESS' ? 'warning' : 'success'}
             label={order.orderStatus}
             size="small"
           />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   CardMedia,
@@ -10,7 +10,6 @@ import {
   TableHead,
   TableRow,
   Typography,
-  Chip,
   Rating,
   styled,
 } from '@mui/material';

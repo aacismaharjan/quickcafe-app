@@ -18,7 +18,6 @@ import {
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import DeleteIcon from '@mui/icons-material/Delete';
-import useStoredIDs from '../../../utils/useStoredIDs';
 import { API_SERVER } from '../../../utils/AxiosInstance';
 import { useOwnerCanteenID } from '../utils/useOwnerCanteenID';
 
@@ -32,7 +31,6 @@ const CreateLedgerPage = () => {
   const [draggedItem, setDraggedItem] = useState<MenuTypeI | null>(null);
   const navigate = useNavigate();
   const params = useParams();
-  const {canteenID} = useStoredIDs();
   const {ownerCanteenID} = useOwnerCanteenID();
 
   const [formData, setFormData] = useState<FormDataTypeI>({
@@ -81,7 +79,7 @@ const CreateLedgerPage = () => {
     fetchMenus();
   }, []);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -89,7 +87,7 @@ const CreateLedgerPage = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const finalData = {

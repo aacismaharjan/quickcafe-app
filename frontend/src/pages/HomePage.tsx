@@ -7,12 +7,11 @@ import MenuContainer from '../components/organisms/MenuItemContainer';
 import { useLoading } from '../context/LoadingContext';
 import useStoredIDs from '../utils/useStoredIDs';
 
-
 const HomePage: React.FC = () => {
   const [canteen, setCanteen] = useState<any>(null);
   const [ledgerData, setLedgerData] = useState<any>(null); // Changed menuData to ledgerData
   const { setLoading } = useLoading();
-  const {canteenID, ledgerID} = useStoredIDs();
+  const { canteenID } = useStoredIDs();
 
   useEffect(() => {
     const fetchCanteenData = async () => {
@@ -20,7 +19,7 @@ const HomePage: React.FC = () => {
       try {
         const response = await axiosInstance.get(`/canteens/${canteenID}`);
         setCanteen(response.data);
-        setLedgerData(response.data.activeLedger)
+        setLedgerData(response.data.activeLedger);
       } catch (error) {
         console.error('Error fetching canteen data:', error);
       } finally {
