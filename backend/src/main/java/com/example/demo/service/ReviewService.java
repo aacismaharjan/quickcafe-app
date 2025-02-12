@@ -47,6 +47,7 @@ public class ReviewService {
                     .orElseThrow(() -> new RuntimeException("Canteen not found with id: " + review.getCanteen().getId()));;
             review.setCanteen(canteen);
             Review savedReview =  reviewRepository.save(review);
+            entityManager.refresh(savedReview);
             return savedReview;
         }catch (Exception ex) {
             throw new RuntimeException(ex.getMessage());

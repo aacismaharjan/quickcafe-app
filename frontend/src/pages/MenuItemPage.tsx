@@ -260,7 +260,7 @@ const MenuItemPage: React.FC = () => {
         )}
 
         {/* Modal for adding a new review */}
-        <Modal open={modalOpen} onClose={handleCloseModal}>
+        <Modal open={modalOpen} onClose={handleCloseModal} sx={{margin: "16px"}}>
           <Box
             sx={{
               bgcolor: 'white',
