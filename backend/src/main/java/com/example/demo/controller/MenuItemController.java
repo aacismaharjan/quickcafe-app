@@ -1,7 +1,9 @@
 package com.example.demo.controller;
 
+import com.example.demo.model.Canteen;
 import com.example.demo.model.Category;
 import com.example.demo.repository.CategoryRepository;
+import com.example.demo.service.CanteenService;
 import com.example.demo.service.CategoryService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,15 +29,15 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/menu-items") // Base mapping for the controller
 public class MenuItemController {
 
+    private final CanteenService canteenService;
     private final MenuItemService menuItemService;
-
     private final FileStorageService fileStorageService;
-
     private final CategoryRepository categoryRepository;
 
     @Autowired
-    public MenuItemController(MenuItemService menuItemService, FileStorageService fileStorageService,
+    public MenuItemController(CanteenService canteenService, MenuItemService menuItemService, FileStorageService fileStorageService,
                               CategoryRepository categoryRepository) {
+        this.canteenService = canteenService;
         this.menuItemService = menuItemService;
         this.fileStorageService = fileStorageService;
         this.categoryRepository = categoryRepository;
@@ -76,6 +78,11 @@ public class MenuItemController {
             // Convert the JSON string to a MenuItem object
             ObjectMapper objectMapper = new ObjectMapper();
             MenuItem menuItem = objectMapper.readValue(menuItemJson, MenuItem.class);
+
+
+            Canteen canteen = canteenService.getCanteenById(menuItem.getCanteen().getId())
+                    .orElseThrow(() -> new RuntimeException("Canteen not found with id: " + menuItem.getCanteen().getId()));
+            menuItem.setCanteen(canteen);
 
             // Deserialize categoriesJson into a List<Category> using TypeReference
             List<Category> categories = objectMapper.readValue(categoriesJson, new TypeReference<List<Category>>() {});

@@ -1,9 +1,11 @@
 package com.example.demo.controller;
 
+import com.example.demo.model.Canteen;
 import com.example.demo.model.Category;
 import com.example.demo.model.Menu;
 import com.example.demo.model.MenuItem;
 import com.example.demo.repository.MenuItemRepository;
+import com.example.demo.service.CanteenService;
 import com.example.demo.service.MenuItemService;
 import com.example.demo.service.MenuService;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -24,12 +26,14 @@ public class MenuController {
     private final MenuService menuService;
     private final MenuItemService menuItemService;
     private final MenuItemRepository menuItemRepository;
+    private final CanteenService canteenService;
 
     @Autowired
-    public MenuController(MenuService menuService, MenuItemService menuItemService, MenuItemRepository menuItemRepository) {
+    public MenuController(MenuService menuService, MenuItemService menuItemService, MenuItemRepository menuItemRepository, CanteenService canteenService) {
         this.menuService = menuService;
         this.menuItemService = menuItemService;
         this.menuItemRepository = menuItemRepository;
+        this.canteenService = canteenService;
     }
 
     @GetMapping
@@ -51,6 +55,12 @@ public class MenuController {
                 .map(itemId -> menuItemService.getMenuItemById(itemId)
                         .orElseThrow(() -> new RuntimeException("Item not found with ID: " + itemId)))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
+
+
+        Canteen canteen = canteenService.getCanteenById(menu.getCanteen().getId())
+                .orElseThrow(() -> new RuntimeException("Canteen not found with id: " + menu.getCanteen().getId()));
+        menu.setCanteen(canteen);
+
 
         menu.setItems(existingItems);
         return menuService.createMenu(menu);

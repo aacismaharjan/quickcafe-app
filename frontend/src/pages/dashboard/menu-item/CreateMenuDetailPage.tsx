@@ -18,6 +18,8 @@ import { toast } from 'react-toastify';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import FileUploadButtonWithInfo from '../../../components/molecules/FileUploadButton';
 import { API_SERVER } from '../../../utils/AxiosInstance';
+import useStoredIDs from '../../../utils/useStoredIDs';
+import { useOwnerCanteenID } from '../utils/useOwnerCanteenID';
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -41,6 +43,8 @@ const CreateMenuDetailPage = () => {
   const [selectedCategories, setSelectedCategories] = useState<CategoryTypeI[]>([]);
   const navigate = useNavigate();
   const params = useParams();
+  // const {canteenID} = useStoredIDs();
+  const {ownerCanteenID} = useOwnerCanteenID();
   console.log(params);
 
   const [formData, setFormData] = useState<FormDataTypeI>({
@@ -118,6 +122,7 @@ const CreateMenuDetailPage = () => {
           price: formData.price,
           preparation_time_in_min: formData.preparation_time_in_min,
           is_active: formData.is_active,
+          canteen: {id: ownerCanteenID}
         })
       );
 

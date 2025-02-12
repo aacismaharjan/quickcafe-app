@@ -20,6 +20,7 @@ import { toast } from 'react-toastify';
 import DeleteIcon from '@mui/icons-material/Delete';
 import useStoredIDs from '../../../utils/useStoredIDs';
 import { API_SERVER } from '../../../utils/AxiosInstance';
+import { useOwnerCanteenID } from '../utils/useOwnerCanteenID';
 
 interface FormDataTypeI extends Partial<LedgerTypeI> {}
 
@@ -32,6 +33,7 @@ const CreateLedgerPage = () => {
   const navigate = useNavigate();
   const params = useParams();
   const {canteenID} = useStoredIDs();
+  const {ownerCanteenID} = useOwnerCanteenID();
 
   const [formData, setFormData] = useState<FormDataTypeI>({
     name: '',
@@ -96,7 +98,7 @@ const CreateLedgerPage = () => {
         id: item.id,
       })),
       canteen: {
-        id: canteenID,
+        id: ownerCanteenID,
       },
       created_at: new Date().toISOString(),
     };

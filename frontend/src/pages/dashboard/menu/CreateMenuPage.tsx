@@ -20,6 +20,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { API_SERVER } from '../../../utils/AxiosInstance';
+import { useOwnerCanteenID } from '../utils/useOwnerCanteenID';
 
 interface FormDataTypeI extends Partial<MenuTypeI> {}
 
@@ -28,6 +29,7 @@ const CreateMenuPage = () => {
   const [menuItems, setMenuItems] = useState<MenuItemTypeI[]>([]);
   const [allMenuItems, setAllMenuItems] = useState<MenuItemTypeI[]>([]);
   const [draggedItem, setDraggedItem] = useState<MenuItemTypeI | null>(null);
+  const { ownerCanteenID } = useOwnerCanteenID();
   const navigate = useNavigate();
   const params = useParams();
 
@@ -94,12 +96,11 @@ const CreateMenuPage = () => {
         id: item.id,
       })),
       created_at: new Date().toISOString(),
+      canteen: { id: ownerCanteenID },
     };
 
     try {
-      const url = editMode
-        ? `${API_SERVER}/api/v1/menus/${params.menuId}`
-        : `${API_SERVER}/api/v1/menus`;
+      const url = editMode ? `${API_SERVER}/api/v1/menus/${params.menuId}` : `${API_SERVER}/api/v1/menus`;
 
       const response = await fetch(url, {
         method: editMode ? 'PATCH' : 'POST',
