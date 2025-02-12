@@ -6,9 +6,10 @@ import { toast } from 'react-toastify';
 // const SERVER = "http://127.0.0.1";
 
 // Turn on for local network
-const SERVER = "http://192.168.100.41";
+// const SERVER = "http://192.168.100.41";
+export const API_SERVER = "https://quickcafe-app-production.up.railway.app";
 
-export const API_SERVER = `${SERVER}:8080`;
+// export const API_SERVER = `${SERVER}:8080`;
 
 // Create an Axios instance
 const axiosInstance = axios.create({

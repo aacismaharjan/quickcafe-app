@@ -21,7 +21,6 @@
     "noFallthroughCasesInSwitch": true,
 
     "typeRoots": ["./src/theme"],
-    "types": ["jest"]
   },
   "include": ["src", "vite.config.ts"]
 }
