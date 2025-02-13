@@ -25,7 +25,7 @@ public class FileStorageService {
      * @return The relative file path
      * @throws IOException if file saving fails
      */
-    public String saveFile(MultipartFile file, String customPath) throws IOException {
+    public String saveFile(MultipartFile file, String customPath) {
         // Generate a unique filename
         String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
 
@@ -36,11 +36,16 @@ public class FileStorageService {
 
         Path filePath = Paths.get(uploadDirectory, fileName);
 
-        // Ensure the directory exists
-        Files.createDirectories(filePath.getParent());
+        try {
+            // Ensure the directory exists
+            Files.createDirectories(filePath.getParent());
 
-        // Save the file
-        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            // Save the file
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            // Handle file-related exceptions
+            throw new RuntimeException("Could not save file " + fileName + ". Please try again!", e);
+        }
 
         return Paths.get(customPath != null ? "uploads/" + customPath :  "uploads/" , fileName).toString().replace("\\", "/");
     }
@@ -48,7 +53,7 @@ public class FileStorageService {
     /**
      * Overloaded method to save a file using only the default upload directory.
      */
-    public String saveFile(MultipartFile file) throws IOException {
+    public String saveFile(MultipartFile file) {
         return saveFile(file, null);
     }
 }

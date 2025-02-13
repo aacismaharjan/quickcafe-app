@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Entity
 @Table(name="tbl_users")
-@JsonIgnoreProperties({"password"})
+@JsonIgnoreProperties({"password", "authorities"})
 @Setter
 @Getter
 public class User implements UserDetails{

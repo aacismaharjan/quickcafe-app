@@ -25,12 +25,12 @@ public class OrderDetail {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@NotNull
 	@JoinColumn(name = "menu_item_id")
+	@JsonIgnoreProperties({"reviews", "reviewsStat"})
 	private MenuItem menuItem;
 	
 	private int quantity;
 	private double unitPrice;
 
 	@OneToOne(mappedBy = "orderDetail", fetch = FetchType.EAGER)
-	@JsonBackReference("review-orderDetail")
 	private Review review;
 }

@@ -6,6 +6,7 @@ import axiosInstance from '../utils/AxiosInstance';
 import { calculateGrandTotal } from './CheckoutPage';
 import { useLoading } from '../context/LoadingContext';
 import { toast } from 'react-toastify';
+import { getPrice } from './CartPage';
 
 interface OrderDetail {
   id: number;
@@ -103,11 +104,11 @@ const OrderConfirmationPage: React.FC = () => {
                 <Box key={item.id} sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Typography variant="body1">{item?.menuItem?.name}</Typography>
                   <Typography variant="body1">{`x ${item?.quantity}`}</Typography>
-                  <Typography variant="body1">{`$${(item?.unitPrice * item?.quantity).toFixed(2)}`}</Typography>
+                  <Typography variant="body1">{getPrice((item?.unitPrice * item?.quantity))}</Typography>
                 </Box>
               ))}
               <Typography variant="h6" sx={{ mt: 2 }}>
-                Total: ${calculateGrandTotal(order.orderDetails).toFixed(2)}
+                Total: {getPrice(calculateGrandTotal(order.orderDetails))}
               </Typography>
             </Paper>
 

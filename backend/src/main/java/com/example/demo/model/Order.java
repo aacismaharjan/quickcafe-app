@@ -31,7 +31,7 @@ public class Order {
 
     @ManyToOne( cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "canteen_id", nullable = false)
-    @JsonBackReference("canteen-orders")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Canteen canteen;
 
     @NotNull(message = "Order status cannot be null")

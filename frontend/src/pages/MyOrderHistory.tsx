@@ -5,6 +5,7 @@ import ReviewIcon from '@mui/icons-material/RateReview';
 import { useNavigate } from 'react-router-dom';
 import { CartContext } from '../context/CartContext'; // Ensure your context is properly imported
 import { useLoading } from '../context/LoadingContext';
+import { getPrice } from './CartPage';
 
 interface MenuItem {
   id: number;
@@ -64,7 +65,7 @@ const MyOrderHistory: React.FC = () => {
     clearCart();
     order.orderDetails.forEach((item) => {
       addToCart({
-        id: item.id,
+        id: item.menuItem.id,
         title: item.menuItem.name,
         description: item.menuItem.description,
         price: item.menuItem.price,
@@ -134,7 +135,7 @@ const MyOrderHistory: React.FC = () => {
                   </Box>
                   <Typography variant="body2">Quantity: {item.quantity}</Typography>
                 </Box>
-                <Typography variant="body1">${(item.unitPrice * item.quantity).toFixed(2)}</Typography>
+                <Typography variant="body1">{getPrice(item.unitPrice * item.quantity)}</Typography>
               </Box>
             ))}
             <Divider sx={{ my: 1 }} />

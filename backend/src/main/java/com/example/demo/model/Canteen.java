@@ -46,39 +46,39 @@ public class Canteen {
     private String opening_hours  = "08:00 AM";
     private String closing_hours = "10:00 PM";
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name="user_id", nullable = true)
+    @JsonIgnore
     private User user;
 
     private Double latitude  = 27.7172;
     private Double longitude = 85.324;
 
 
-    @JsonManagedReference("canteen-ledgers")
+    @JsonIgnore
     @OneToMany(mappedBy = "canteen",  cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private List<Ledger> ledgers;
 
-    @JsonManagedReference("canteen-menus")
+    @JsonIgnore
     @OneToMany(mappedBy = "canteen",  cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private List<Menu> menus;
 
-    @JsonManagedReference("canteen-menuItems")
+    @JsonIgnore
     @OneToMany(mappedBy = "canteen",  cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private List<MenuItem> menuItems;
 
-    @JsonManagedReference("canteen-orders")
+    @JsonIgnore
     @OneToMany(mappedBy = "canteen",  cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private List<Order> orders;
 
-    @JsonManagedReference("canteen-reviews")
+    @JsonIgnore
     @OneToMany(mappedBy = "canteen", cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private List<Review> reviews;
 
 
     @Transient
     @JsonProperty(value = "activeLedger", access = JsonProperty.Access.READ_ONLY)
-    @JsonIgnoreProperties({"activeLedger"})
+    @JsonIgnore
     public Ledger getActiveLedger() {
         if (ledgers == null || ledgers.isEmpty()) {
             return null;
@@ -86,6 +86,21 @@ public class Canteen {
         return ledgers.stream()
                 .filter(ledger -> ledger.getIsActive() != null && ledger.getIsActive())  // Ensure it's active
                 .filter(ledger -> ledger.getCanteen() != null).min(Comparator.comparing(Ledger::getCreatedAt))
+                .orElse(null);
+    }
+
+
+    @Transient
+    public Long getActiveLedgerId() {
+        if(ledgers == null || ledgers.isEmpty()) {
+            return null;
+        }
+        return ledgers.stream()
+//                .filter(ledger -> ledger.getIsActive() != null && ledger.getIsActive())
+                .filter(ledger -> Boolean.TRUE.equals(ledger.getIsActive()))
+                .filter(ledger -> ledger.getCanteen() != null)
+                .min(Comparator.comparing(Ledger::getCreatedAt))
+                .map(Ledger::getId)
                 .orElse(null);
     }
 
@@ -130,6 +145,12 @@ public class Canteen {
         return new ReviewStats(averageRating, reviewerCount);
     }
 
+
+    @Transient
+    public Integer getUserId() {
+        return (this.user != null) ? this.user.getId() : null;
+    }
+
     @Override
     public String toString() {
         return "Canteen{" +
@@ -148,24 +169,5 @@ public class Canteen {
                 ", name='" + name + '\'' +
                 ", id=" + id +
                 '}';
-    }
-
-    @Transient
-    public Long getActiveLedgerId() {
-        if(ledgers == null || ledgers.isEmpty()) {
-            return null;
-        }
-        return ledgers.stream()
-//                .filter(ledger -> ledger.getIsActive() != null && ledger.getIsActive())
-                .filter(ledger -> Boolean.TRUE.equals(ledger.getIsActive()))
-                .filter(ledger -> ledger.getCanteen() != null)
-                .min(Comparator.comparing(Ledger::getCreatedAt))
-                .map(Ledger::getId)
-                .orElse(null);
-    }
-
-    @Transient
-    public Integer getUserId() {
-        return (this.user != null) ? this.user.getId() : null;
     }
 }

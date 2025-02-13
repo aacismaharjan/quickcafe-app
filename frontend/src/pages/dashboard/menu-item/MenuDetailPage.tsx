@@ -132,7 +132,7 @@ const MenuDetailPage = () => {
                     <StyledTableCell>
                       <Box sx={{ display: 'flex', flexDirection: 'row', gap: '8px', maxWidth: 180, flexWrap: 'wrap' }}>
                         {item.categories.map((category) => (
-                          <div>
+                          <div key={category.id}>
                             <Chip variant="filled" color="default" size="small" label={category.name} />
                           </div>
                         ))}

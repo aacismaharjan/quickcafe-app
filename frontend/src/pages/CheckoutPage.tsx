@@ -37,7 +37,7 @@ const CheckoutPage: React.FC = () => {
 
   // Calculate totals
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const grandTotal = subtotal * 1.1; // Assuming a 10% tax rate or other adjustments
+  const grandTotal = subtotal * 1; // Assuming a 0% tax rate or other adjustments
 
   const handleCompleteOrder = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -63,8 +63,9 @@ const CheckoutPage: React.FC = () => {
       if (order.paymentMethod == 'ONLINE' && order.paymentStatus == 'PENDING') {
         // Calculate grand total
         const amount = calculateGrandTotal(order.orderDetails);
-        const tax_amount = 10; // tax as provided in the requirements
-        const total_amount = amount + tax_amount;
+        const tax_amount = 0; // tax as provided in the requirements
+        const product_service_charge = amount * 1.1;
+        const total_amount = amount + tax_amount + product_service_charge;
 
         const hash = CryptoJS.HmacSHA256(
           `total_amount=${total_amount},transaction_uuid=${order.uuid},product_code=EPAYTEST`,
@@ -77,7 +78,7 @@ const CheckoutPage: React.FC = () => {
           amount: amount,
           failure_url: `${API_SERVER}/api/v1/profile/orders/${order.id}/checkout`,
           product_delivery_charge: 0,
-          product_service_charge: 0,
+          product_service_charge: product_service_charge,
           product_code: 'EPAYTEST',
           signature: hashInBase64,
           signed_field_names: 'total_amount,transaction_uuid,product_code',
@@ -87,10 +88,10 @@ const CheckoutPage: React.FC = () => {
           transaction_uuid: order.uuid,
         });
 
+        toast.info('We are loading digital wallet screen.');
         return;
       }
 
-      clearCart();
       toast.info('Your order has been successfully placed.');
       navigate(`/order-confirmation?orderId=${res.data.id}`, {
         state: {
@@ -100,6 +101,8 @@ const CheckoutPage: React.FC = () => {
       });
     } catch (error) {
       console.error('Failed to complete order', error);
+    } finally {
+      clearCart();
     }
   };
 

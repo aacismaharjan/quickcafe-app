@@ -3,18 +3,7 @@ declare global {
     myGlobalVariable: string;
   }
 
-  enum OrderStatus {
-    RECEIVED = 'RECEIVED',
-    IN_PROGRESS = 'IN_PROGRESS',
-    COMPLETED = 'COMPLETED',
-    CANCELED = 'CANCELED',
-  }
-
-  enum PaymentStatus {
-    PENDING = 'PENDING',
-    PAID = 'PAID',
-    FAILED = 'FAILED',
-  }
+  
 
   interface RoleTypeI {
     id: number;
@@ -134,12 +123,6 @@ declare global {
     rating: number;
     reviewersNo: number;
   }
-
-  type OrderStatus = 'RECEIVED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELED';
-
-  type PaymentStatus = 'PENDING' | 'PAID' | 'FAILED';
-
-  type PaymentMethod = 'CARD' | 'CASH' | 'ONLINE';
 }
 
 export {};

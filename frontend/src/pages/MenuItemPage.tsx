@@ -111,8 +111,8 @@ const MenuItemPage: React.FC = () => {
           },
           createdAt: new Date(),
           canteen: {
-            id: canteenID
-          }
+            id: canteenID,
+          },
         })
         .finally(() => {
           setLoading(false);
@@ -228,39 +228,42 @@ const MenuItemPage: React.FC = () => {
               Reviews
             </Typography>
             <List>
-              {reviews.map((review) => (
-                <ListItem key={review.id} alignItems="flex-start" sx={{ mb: 2 }}>
-                  <ListItemAvatar>
-                    <Avatar>
-                      {review.user ? review.user?.firstName?.charAt(0) + review.user?.lastName?.charAt(0) : 'AN'}
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={
-                      <Typography variant="h6">
-                        {review.user ? `${review.user?.firstName} ${review.user?.lastName}` : 'Anonymous'}
-                      </Typography>
-                    }
-                    secondary={
-                      <>
-                        <Typography variant="body2" color="text.secondary">
-                          {new Date(review.createdAt).toLocaleDateString()}
+              {reviews.map((review) => {
+                const imageUrl = `${API_SERVER}/${review.user?.image_url}`;
+                return (
+                  <ListItem key={review.id} alignItems="flex-start" sx={{ mb: 2 }}>
+                    <ListItemAvatar>
+                      <Avatar alt="User Avatar" src={imageUrl}>
+                        {user?.firstName.charAt(0)}
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={
+                        <Typography variant="h6">
+                          {review.user ? `${review.user?.firstName} ${review.user?.lastName}` : 'Anonymous'}
                         </Typography>
-                        <Rating value={review.rating} readOnly precision={0.5} sx={{ mt: 1 }} />
-                        <Typography variant="body1" sx={{ mt: 1 }}>
-                          {review.comment}
-                        </Typography>
-                      </>
-                    }
-                  />
-                </ListItem>
-              ))}
+                      }
+                      secondary={
+                        <>
+                          <Typography variant="body2" color="text.secondary">
+                            {new Date(review.createdAt).toLocaleDateString()}
+                          </Typography>
+                          <Rating value={review.rating} readOnly precision={0.5} sx={{ mt: 1 }} />
+                          <Typography variant="body1" sx={{ mt: 1 }}>
+                            {review.comment}
+                          </Typography>
+                        </>
+                      }
+                    />
+                  </ListItem>
+                );
+              })}
             </List>
           </Box>
         )}
 
         {/* Modal for adding a new review */}
-        <Modal open={modalOpen} onClose={handleCloseModal} sx={{margin: "16px"}}>
+        <Modal open={modalOpen} onClose={handleCloseModal} sx={{ margin: '16px' }}>
           <Box
             sx={{
               bgcolor: 'white',

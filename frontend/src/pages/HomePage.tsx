@@ -14,37 +14,26 @@ const HomePage: React.FC = () => {
   const { canteenID } = useStoredIDs();
 
   useEffect(() => {
-    const fetchCanteenData = async () => {
+    const fetchCanteenAndLedgerData = async () => {
       setLoading(true);
       try {
-        const response = await axiosInstance.get(`/canteens/${canteenID}`);
-        setCanteen(response.data);
-        setLedgerData(response.data.activeLedger);
+        const canteenResponse = await axiosInstance.get(`/canteens/${canteenID}`);
+        setCanteen(canteenResponse.data);
+
+        const activeLedgerId = canteenResponse.data.activeLedgerId;
+        if (activeLedgerId) {
+          const ledgerResponse = await axiosInstance.get(`/ledgers/${activeLedgerId}`);
+          setLedgerData(ledgerResponse.data);
+        }
       } catch (error) {
-        console.error('Error fetching canteen data:', error);
+        console.error('Error fetching data:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCanteenData();
+    fetchCanteenAndLedgerData();
   }, []);
-
-  // useEffect(() => {
-  //   const fetchMenuData = async () => {
-  //     setLoading(true);
-  //     try {
-  //       const response = await axiosInstance.get(`/ledgers/${ledgerID}`); // Adjust the endpoint as necessary
-  //       setLedgerData(response.data); // Set your ledger data
-  //     } catch (error) {
-  //       console.error('Error fetching ledger data:', error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchMenuData();
-  // }, []);
 
   return (
     <React.Fragment>

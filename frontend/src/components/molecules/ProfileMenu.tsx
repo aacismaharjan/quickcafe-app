@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { IconButton, Avatar, Menu, MenuItem, ListItemIcon, Divider, Typography, Box,  } from '@mui/material';
+import { IconButton, Avatar, Menu, MenuItem, ListItemIcon, Divider, Typography, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { RoleService } from '../../utils/Utils';
@@ -14,13 +14,11 @@ const ProfileMenu: React.FC = () => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const isMenuOpen = Boolean(anchorEl);
-  const [imageUrl, setImageUrl] = useState("");
+  const [imageUrl, setImageUrl] = useState('');
   const { user } = useAuth();
   const roleService = new RoleService();
 
   const cartContext = useContext(CartContext);
-
-  
 
   // Handle menu open/close
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -31,21 +29,19 @@ const ProfileMenu: React.FC = () => {
     setAnchorEl(null);
   };
 
-  useEffect(()=> {
-    setImageUrl(`${API_SERVER}/${user?.image_url}`)
-  }, [user])
+  useEffect(() => {
+    setImageUrl(`${API_SERVER}/${user?.image_url}`);
+  }, [user]);
 
   if (!cartContext) {
     return null;
   }
-
 
   return (
     <div>
       <IconButton onClick={handleMenuClick}>
         <Avatar
           alt="User Avatar"
-          // src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6SBFO_34s3mUw1zz2SuAVXn83OArtd8D9GQ&s"
           src={imageUrl}
         >
           {user?.firstName.charAt(0)}
@@ -104,11 +100,10 @@ const ProfileMenu: React.FC = () => {
           }}
         >
           <Box>
-            <Box sx={{display: "flex", gap: "4px"}}>
-              <Avatar
-                sx={{ '&.MuiAvatar-root': { width: '45px', height: '45px' } }}
-                src={imageUrl}
-              />
+            <Box sx={{ display: 'flex', gap: '4px' }}>
+              <Avatar alt="User Avatar" sx={{ '&.MuiAvatar-root': { width: '45px', height: '45px' } }} src={imageUrl}>
+                {user?.firstName.charAt(0)}
+              </Avatar>
               <Box>
                 <Typography variant="subtitle1" sx={{ lineHeight: '1.4' }}>
                   {user?.firstName} {user?.lastName}
@@ -116,12 +111,14 @@ const ProfileMenu: React.FC = () => {
                 <Typography variant="subtitle2">
                   {/* {user?.email && user?.email.length > 20 ? `${user?.email.substring(0, 17)}...` : user?.email} */}
                   {/* {user?.roles && user.roles.map(role => <Chip label={role.name.substring(5)}  size="small" sx={{marginRight: 0.5}}/>)} */}
-                  {user?.email && user.email.length > 25 ? (() => {
-    const [name, domain] = user.email.split("@");
-    const maxNameLength = 25 - (domain.length + 5); // 5 = "[txt]@"
-    
-    return `${name.substring(0, maxNameLength)}***@${domain}`;
-  })() : user?.email}
+                  {user?.email && user.email.length > 25
+                    ? (() => {
+                        const [name, domain] = user.email.split('@');
+                        const maxNameLength = 25 - (domain.length + 5); // 5 = "[txt]@"
+
+                        return `${name.substring(0, maxNameLength)}***@${domain}`;
+                      })()
+                    : user?.email}
                 </Typography>
               </Box>
             </Box>

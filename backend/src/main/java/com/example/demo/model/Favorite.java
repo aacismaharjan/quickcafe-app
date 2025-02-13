@@ -1,10 +1,6 @@
 package com.example.demo.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -29,6 +25,7 @@ public class Favorite {
     @NotNull(message = "Menu item cannot be null")
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "menu_item_id")
+    @JsonIgnoreProperties({"reviews", "reviewsStat"})
     private MenuItem menuItem;
 
     @NotNull(message = "User cannot be null")
