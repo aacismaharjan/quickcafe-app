@@ -22,8 +22,8 @@ const ViewPage: React.FC = () => {
   };
 
   useEffect(() => {
-    const fetchCanteenData = async () => {
-      const canteenID = getCanteenIdFromQuery(); // Get the canteenId from query
+    const fetchCanteenAndLedgerData = async () => {
+      const canteenID = getCanteenIdFromQuery(); 
 
       if (!canteenID) {
         toast.error('Canteen ID is missing.');
@@ -33,18 +33,24 @@ const ViewPage: React.FC = () => {
 
       setLoading(true);
       try {
-        const response = await axiosInstance.get(`/canteens/${canteenID}`);
-        setCanteen(response.data);
-        setLedgerData(response.data.activeLedger);
+        const canteenResponse = await axiosInstance.get(`/canteens/${canteenID}`);
+        setCanteen(canteenResponse.data);
+
+        const activeLedgerId = canteenResponse.data.activeLedgerId;
+        if (activeLedgerId) {
+          const ledgerResponse = await axiosInstance.get(`/ledgers/${activeLedgerId}`);
+          setLedgerData(ledgerResponse.data);
+        }
       } catch (error) {
-        console.error('Error fetching canteen data:', error);
+        console.error('Error fetching data:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCanteenData();
+    fetchCanteenAndLedgerData();
   }, [location.search]); // Trigger the effect whenever the location changes (i.e., query parameters)
+
 
   return (
     <React.Fragment>
